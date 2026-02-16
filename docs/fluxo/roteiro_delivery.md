@@ -290,16 +290,18 @@ Criar um projeto **web frontend** seguindo estritamente as definições fornecid
 ## Restrições
 
 - Armazenar todos os arquivos no diretório `/frontend`
-- Coloque todo o código-fonte no diretório `/frontend/src`
+- Armazenar todo o código-fonte no diretório `/frontend/src`
 - Não criar projeto backend
 - Não configurar integrações externas
-- Execução inicial apenas local
-- Estrutura preparada para futura integração com backend
+- Executar inicialmente apenas local
+- Criar estrutura preparada para futura integração com backend
 ```
 
 - Execute o plano e monitore o progresso até a conclusão.
+- Siga as instruções do agente para verificar o resultado.
 - Acesse a aplicação por meio do navegador web (padrão: <http://localhost:3000>).
 - Navegue pela aplicação para verificar as páginas criadas.
+- Cas sejam encontrados erros, copie a mensagem de erro e cole no chat do agente para correção.
 
 ### Atualização de informações do projeto
 
@@ -307,16 +309,15 @@ Criar um projeto **web frontend** seguindo estritamente as definições fornecid
 - Solicite a atualização do arquivo README.md:
 
 ```
-Reconstrua o arquivo README.md utilizando as recomendações do GitHub
+Atualize o arquivo README.md utilizando as boas práticas recomendadas pelo GitHub
 ```
 
-- No painel Agent, selecione a opção Start a new conversation.
 - Solicite a criação do arquivo AGENTS.md:
 
 ```
 Crie o arquivo AGENTS.md para o projeto usando como contexto apenas as seguintes informações:
-- documentos docs/prd.md docs/prd.md docs/spec_ui.md e docs/spec_tech.md
-- diretório src.
+- documentos docs/prd.md docs/spec_ui.md e docs/spec_tech.md
+- diretório frontend.
 Use referências relativas para os arquivos citados.
 ```
 
