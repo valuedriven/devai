@@ -1,6 +1,6 @@
 # Roteiro de Delivery
 
-## Desenvolvimento
+## 2.1 Desenvolvimento
 
 **Visão geral**
 
@@ -20,9 +20,9 @@ Considerações:
 
 ---
 
-## Preparação do Antigravity
+### 2.1.1 Preparação do Antigravity
 
-### Configuração de rules
+#### Configuração de rules
 
 - Acesse o Antigravity.
 - Selecione o painel Agent.
@@ -115,8 +115,9 @@ Transparente sempre.
 - No painel Agent, acione o comando Back to agent.
 - Verifique no diretório .agents se a rule foi configurada.
 
+---
 
-### Configuração de skills
+#### Configuração de skills
 
 - Acesse o Antigravity.
 - Selecione o painel Agent.
@@ -155,7 +156,9 @@ Diretórios para Exclusão:
 - Analise também o conteúdo do arquivo Task.
 - Verifique no diretório .agents se as skills foram instaladas.
 
-### Configuração de MCP Servers
+---
+
+#### Configuração de MCP Servers
 
 **Obtenção de credenciais**
 
@@ -262,8 +265,7 @@ CLERK_SECRET_KEY=
 - Salve o arquivo.
 - No painel Manage MCP servers, acione o comando Refresh.
 
-### Teste de MCP Servers
-
+#### Teste de MCP Servers
 
 - Solicite listar os projetos disponíveis no Stitch:
 
@@ -283,7 +285,7 @@ Use o mcp server do Supabase para listar as organizações e projetos
 Use o mcp server do Vercel para listar os times e projetos
 ```
 
-## Criação do projeto web
+### 2.1.2 Criação do projeto web
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Solicite a criação de um projeto (troque o <nome do projeto> pelo nome do projeto criado no Stitch e garanta que o @ se refira aos arquivos do projeto):
@@ -319,11 +321,8 @@ Criar um projeto **web frontend** seguindo estritamente as definições fornecid
 
 - Execute o plano e monitore o progresso até a conclusão.
 - Siga as instruções do agente para verificar o resultado.
-- Acesse a aplicação por meio do navegador web (padrão: <http://localhost:3000>).
-- Navegue pela aplicação para verificar as páginas criadas.
-- Cas sejam encontrados erros, copie a mensagem de erro e cole no chat do agente para correção.
 
-### Atualização de informações do projeto
+#### Atualização de informações do projeto
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Solicite a atualização do arquivo README.md:
@@ -341,9 +340,42 @@ Crie o arquivo AGENTS.md para o projeto usando como contexto apenas as seguintes
 Use referências relativas para os arquivos citados.
 ```
 
+## 2.2 Testes
+
+Resultados:
+- Produto testado
+
+Participantes:
+- Desenvolvedor
+- Designer UX
+
+Ferramentas:
+- Ambientes de desenvolvimento.
+
+---
+
+- Acesse a aplicação por meio do navegador web (padrão: <http://localhost:3000>).
+- Navegue pela aplicação para verificar as páginas criadas.
+- Cas sejam encontrados erros, copie a mensagem de erro e cole no chat do agente para correção.
+
+---
+
+## 2.3 Liberação
+
+Resultados:
+- Produto implantado
+
+Participantes:
+- Desenvolvedor
+- Designer UX
+
+Ferramentas:
+- Ambientes de desenvolvimento.
+- Infraestrutura de deployment (Vercel).
+
 -  Faça o commit das modificações locais e o push para o repositório remoto no GitHub.
 
-## Deploy com Vercel
+### 2.3.1 Deploy com Vercel
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Solicite a criação do projeto Vercel (substitua <nome do time> pelo valor correspondente configurado no vercel):
@@ -356,7 +388,7 @@ Use a skill vercel (.agent/skills/vercel),  crie um projeto e faça o deploy da 
 - Ao final do processo, acesse a aplicação por meio do navegador web (O endereço é disponibilizado no formato https://<projeto>.vercel.app/).
 
 
-## Configuração de segurança com Clerk
+### 2.3.2 Configuração de segurança com Clerk
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Solicite a criação de uma nova aplicação no Clerk (substitua <nome do projeto> pelo nome do projeto):
@@ -370,7 +402,7 @@ Use o mcp server clerk e a skill .agent/skills/clerk para criar uma aplicação 
 - Faça o registro e o login de um usuário.
 
 
-## Configuração do banco de dados com Supabase
+### 2.3.3 Configuração do banco de dados com Supabase
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Solicite a criação do projeto Vercel (substitua <nome do projeto> pelo nome do projeto e <nome da organização> pelo valor correspondente configurado no supabase):
@@ -384,35 +416,6 @@ Use o mcp server supabase e skill .agent/skills/supabase para criar um projeto d
 - Atualize o projeto no Vercel com as variáveis de ambiente do Supabase e Clerk
 - Faça o deploy do projeto no Vercel
 - Verifique se a aplicação está funcionando corretamente.
-
----
-
-## Testes
-
-Resultados:
-- Produto testado
-
-Participantes:
-- Desenvolvedor
-- Designer UX
-
-Ferramentas:
-- Ambientes de desenvolvimento.
-
-Considerações:
-
-## Liberação
-
-Resultados:
-- Produto implantado
-
-Participantes:
-- Desenvolvedor
-- Designer UX
-
-Ferramentas:
-- Ambientes de desenvolvimento.
-- Infraestrutura de deployment (Vercel).
 
 ---
 
