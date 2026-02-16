@@ -7,13 +7,11 @@ title: Visão geral do fluxo de desenvolvimento com IA
 graph LR 
 
 subgraph Discovery
-    A[<a href='https://github.com/valuedriven/sewai/blob/main/docs/fluxo/fluxo_discovery.md'>Fluxo</a>]
-    B[<a href='https://github.com/valuedriven/sewai/blob/main/docs/fluxo/roteiro_discovery.md'>Roteiro</a>]
+    A[<a href='https://github.com/valuedriven/sewai/blob/main/docs/fluxo/roteiro_discovery.md'>Roteiro</a>]
 end
 
 subgraph Delivery
-    C[<a href='https://github.com/valuedriven/sewai/blob/main/docs/fluxo/fluxo_delivery.md'>Fluxo</a>]
-    D[<a href='https://github.com/valuedriven/sewai/blob/main/docs/fluxo/roteiro_delivery.md'>Roteiro</a>]
+    B[<a href='https://github.com/valuedriven/sewai/blob/main/docs/fluxo/roteiro_delivery.md'>Roteiro</a>]
 end
 
 Discovery --> Delivery
