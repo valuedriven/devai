@@ -86,7 +86,6 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - **Isolamento:** Cada tenant possui schema próprio (ex: `tenant_abc123`).
 - **Identificação:** Tenant ID extraído do subdomain (`tenant.dominio.com`) ou header `X-Tenant-ID`.
 - **Migrações:** Prisma migrations devem ser executadas para todos os schemas ativos.
-- **Segurança:** Row Level Security (RLS) habilitado em todas as tabelas, filtrando automaticamente pelo tenant_id.
 
 MVP mono-tenant com evolução planejada
 

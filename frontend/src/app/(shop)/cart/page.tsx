@@ -1,16 +1,87 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input"; // For quantity if needed
+import { Trash2, CheckCircle, LogIn } from "lucide-react";
+
+interface CartItem {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+}
+
+const initialCartItems: CartItem[] = [
+    { id: 1, name: "Smartphone X", price: 2999.00, quantity: 1, image: "https://placehold.co/100x100/136dec/ffffff?text=Phone" },
+    { id: 2, name: "Camiseta Devia", price: 89.90, quantity: 2, image: "https://placehold.co/100x100/136dec/ffffff?text=Shirt" },
+];
 
 export default function CartPage() {
-    // Mock cart items
-    const cartItems = [
-        { id: 1, name: "Smartphone X", price: 2999.00, quantity: 1, image: "https://placehold.co/100x100/136dec/ffffff?text=Phone" },
-        { id: 2, name: "Camiseta Devia", price: 89.90, quantity: 2, image: "https://placehold.co/100x100/136dec/ffffff?text=Shirt" },
-    ];
+    const router = useRouter();
+    const { isSignedIn } = useUser();
+    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [orderConfirmed, setOrderConfirmed] = useState(false);
+    const [orderId, setOrderId] = useState("");
+
+    const updateQuantity = (id: number, delta: number) => {
+        setCartItems((prev) =>
+            prev.map((item) =>
+                item.id === id
+                    ? { ...item, quantity: Math.max(1, item.quantity + delta) }
+                    : item
+            )
+        );
+    };
+
+    const removeItem = (id: number) => {
+        setCartItems((prev) => prev.filter((item) => item.id !== id));
+    };
 
     const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const formatCurrency = (value: number) =>
+        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+    const handleConfirmOrder = async () => {
+        setIsConfirming(true);
+        // Simula processamento do pedido
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const newOrderId = `${1000 + Math.floor(Math.random() * 9000)}`;
+        setOrderId(newOrderId);
+        setOrderConfirmed(true);
+        setIsConfirming(false);
+        setCartItems([]);
+    };
+
+    if (orderConfirmed) {
+        return (
+            <div className="container py-8">
+                <div className="order-success-container">
+                    <CheckCircle className="order-success-icon" />
+                    <h1 className="order-success-title">Pedido Confirmado!</h1>
+                    <p className="order-success-text">
+                        Seu pedido <strong>#{orderId}</strong> foi realizado com sucesso.
+                    </p>
+                    <p className="order-success-subtext">
+                        Você receberá uma confirmação por e-mail em breve.
+                    </p>
+                    <div className="order-success-actions">
+                        <Button size="lg" onClick={() => router.push("/orders")}>
+                            Ver Meus Pedidos
+                        </Button>
+                        <Link href="/" className="text-primary hover:underline text-sm">
+                            Continuar comprando
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container py-8">
@@ -28,17 +99,41 @@ export default function CartPage() {
                             <div className="flex-1">
                                 <h3 className="font-semibold">{item.name}</h3>
                                 <p className="text-muted-foreground text-sm">
-                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                                    {formatCurrency(item.price)}
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button variant="outline" size="icon" className="h-8 w-8">-</Button>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => updateQuantity(item.id, -1)}
+                                    disabled={item.quantity <= 1}
+                                >
+                                    -
+                                </Button>
                                 <span className="w-8 text-center">{item.quantity}</span>
-                                <Button variant="outline" size="icon" className="h-8 w-8">+</Button>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => updateQuantity(item.id, 1)}
+                                >
+                                    +
+                                </Button>
                             </div>
                             <div className="font-bold">
-                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price * item.quantity)}
+                                {formatCurrency(item.price * item.quantity)}
                             </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive"
+                                onClick={() => removeItem(item.id)}
+                                aria-label={`Remover ${item.name}`}
+                            >
+                                <Trash2 className="icon-sm" />
+                            </Button>
                         </Card>
                     ))}
 
@@ -58,7 +153,7 @@ export default function CartPage() {
                         <CardContent className="space-y-2">
                             <div className="flex justify-between">
                                 <span>Subtotal</span>
-                                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}</span>
+                                <span>{formatCurrency(total)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Frete</span>
@@ -66,11 +161,28 @@ export default function CartPage() {
                             </div>
                             <div className="border-t pt-2 mt-2 flex justify-between font-bold text-lg">
                                 <span>Total</span>
-                                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}</span>
+                                <span>{formatCurrency(total)}</span>
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button className="w-full" size="lg">Confirmar Pedido</Button>
+                            {isSignedIn ? (
+                                <Button
+                                    className="w-full"
+                                    size="lg"
+                                    disabled={cartItems.length === 0 || isConfirming}
+                                    loading={isConfirming}
+                                    onClick={handleConfirmOrder}
+                                >
+                                    {isConfirming ? 'Processando...' : 'Confirmar Pedido'}
+                                </Button>
+                            ) : (
+                                <SignInButton mode="modal">
+                                    <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
+                                        <LogIn className="icon-sm" style={{ marginRight: '0.5rem' }} />
+                                        Faça login para confirmar
+                                    </Button>
+                                </SignInButton>
+                            )}
                         </CardFooter>
                     </Card>
 

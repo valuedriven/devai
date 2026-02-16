@@ -294,15 +294,19 @@ h6 {
 }
 
 .btn-primary {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background-color: hsl(245, 58%, 51%);
+  color: #f8fafc;
   box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
-  /* Indigo shadow */
+}
+
+button.btn-primary,
+a.btn-primary {
+  background-color: hsl(245, 58%, 51%);
+  color: #f8fafc;
 }
 
 .btn-primary:hover {
   background-color: hsl(245, 58%, 45%);
-  /* Darker shade */
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
 }
@@ -833,6 +837,30 @@ h6 {
   gap: 0.5rem;
 }
 
+/* Cart Icon Badge */
+.cart-icon-wrapper {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  color: #ffffff;
+  background-color: hsl(0, 84%, 60%);
+  border-radius: 9999px;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: translate(40%, -40%);
+}
+
 /* Layout: Footer */
 .footer {
   border-top: 1px solid hsl(var(--border));
@@ -988,4 +1016,60 @@ h6 {
 .icon-md {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+/* Order Success Screen */
+.order-success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1rem;
+  gap: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.order-success-icon {
+  width: 4rem;
+  height: 4rem;
+  color: hsl(142, 71%, 45%);
+  animation: scale-in 0.4s ease-out;
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.order-success-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.order-success-text {
+  font-size: 1.125rem;
+  color: hsl(var(--foreground));
+}
+
+.order-success-subtext {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.order-success-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }

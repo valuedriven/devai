@@ -5,6 +5,12 @@ import { ShoppingCart, User, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useState } from "react";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import {
+    SignedIn,
+    SignedOut,
+    SignInButton,
+    UserButton,
+} from "@clerk/nextjs";
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,14 +47,22 @@ export function Header() {
 
                 {/* Actions */}
                 <div className="header-actions">
-                    <Link href="/cart" className="btn-icon-size btn-ghost rounded-md">
+                    <Link href="/cart" className="btn-icon-size btn-ghost rounded-md cart-icon-wrapper">
                         <ShoppingCart className="icon-md" />
+                        <span className="cart-badge">3</span>
                         <span className="sr-only">Carrinho</span>
                     </Link>
-                    <Link href="/login" className="btn-icon-size btn-ghost rounded-md">
-                        <User className="icon-md" />
-                        <span className="sr-only">Perfil</span>
-                    </Link>
+                    <SignedOut>
+                        <SignInButton mode="modal">
+                            <button className="btn-icon-size btn-ghost rounded-md">
+                                <User className="icon-md" />
+                                <span className="sr-only">Login</span>
+                            </button>
+                        </SignInButton>
+                    </SignedOut>
+                    <SignedIn>
+                        <UserButton />
+                    </SignedIn>
                 </div>
             </div>
 

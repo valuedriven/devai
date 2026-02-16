@@ -325,62 +325,42 @@ Use referências relativas para os arquivos citados.
 
 ## 2.3 Deploy com Vercel
 
-- Acesse o site da Vercel <https://vercel.com/>.
-- No canto superior direito, acione o comando Add New...
-- Selecione "Project".
-- Selecione "Import Git Repository".
-- Selecione o repositório do seu projeto.
-- Clique em "Import".
-- Clique em "Deploy".
-- Aguarde o deploy.
-- Clique em "Continue to Dashboard".
+- No painel Agent, selecione a opção Start a new conversation.
+- Solicite a criação do projeto Vercel (substitua <nome do time> pelo valor correspondente configurado no vercel):
+
+```
+Use a skill vercel (.agent/skills/vercel),  crie um projeto e faça o deploy da aplicação. Utilize o time <nome do time>
+```
+
 - Caso tenha ocorrido algum erro, copie a mensagem de erro e cole no chat do agente para correção.
-- Acesse a aplicação por meio do navegador web (O endereço é disponibilizado no formato https://<projeto>.vercel.app/).
+- Ao final do processo, acesse a aplicação por meio do navegador web (O endereço é disponibilizado no formato https://<projeto>.vercel.app/).
 
 
-## 2.4 Configuração do banco de dados Supabase
+## 2.4 Configuração de segurança com Clerk
 
-### Criação de banco de dados no Supabase
-
-- No canto superior direito, selecione a organização criada.
-- Na página Projects, acione o comando New Project.
-- Para Project name, informe o nome do projeto.
-- Para Database password, informe a senha.
-- Para Region, selecione a região mais próxima de você.
-- Acione o comando Create new project.
-- Na página do projeto, posicione o mouse sobre o endereço do banco de dados.
-- Copie os valores exibidos.
-- Acesse o Antigravity.
-- Edite o arquivo .env.local, preenchendo os seguintes valores:
+- No painel Agent, selecione a opção Start a new conversation.
+- Solicite a criação de uma nova aplicação no Clerk (substitua <nome do projeto> pelo nome do projeto):
 
 ```
-#Supabase
-SUPABASE_ACCESS_TOKEN=<access token>
-NEXT_PUBLIC_SUPABASE_URL=<Project URL>
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<Publishable Key>
+Use o mcp server clerk e a skill .agent/skills/clerk para criar uma aplicação com o nome <nome do projeto>
 ```
 
-### Criação de tabelas do banco de dados
+- Após a conclusão, navegue na aplicação localmente e verifique se tanto o botão Login quanto o Finalizar compra apontam para a página de login.
+- Caso ocorra algum erro, copie a mensagem de erro e cole no chat do agente para correção.
+- Faça o registro e o login de um usuário.
 
-- Selecione o painel Agent. 
-- Abra uma nova conversa com o agente.
-- Solicite ao agente a criação das tabelas do projeto:
+
+## 2.5 Configuração do banco de dados com Supabase
+
+- No painel Agent, selecione a opção Start a new conversation.
+- Solicite a criação do projeto Vercel (substitua <nome do projeto> pelo nome do projeto e <nome da organização> pelo valor correspondente configurado no supabase):
 
 ```
-Use o mcp server para criar as tabelas do banco de dados no Supabase.
+Use o mcp server supabase e correspondente skill para criar um projeto de banco de dados com o nome <nome do projeto> e as respectivas tabelas na organização <nome da organização>
 ```
-  
-- Avalie o plano de implementação e faça a aprovação.
-- Acesse a aplicação com um usuário de perfil administrador.
-- Cadastre itens relativos a categoria, cliente e produto (use imagens disponíveis em https://unsplash.com/)
-- Acesse o Supabase.
-- Na página Projects, selecione o projeto criado.
-- No menu lateral esquerdo, selecione o item Database.
-- Selecione o schema public.
-- Verifique os dados persistidos.
-- Acesse o Vercel e inclua as variáveis de ambiente do Supabase.
-- Faça o commit das modificações locais e o push para o repositório remoto no GitHub.
-- Verifique a aplicação publicada.
+
+- Caso tenha ocorrido algum erro, copie a mensagem de erro e cole no chat do agente para correção.
+
 
 ---
 

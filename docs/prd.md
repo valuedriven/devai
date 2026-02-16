@@ -4,7 +4,7 @@
 
 O **Problema** A falta de controle em pedidos e pagamentos gera prejuízos diários para o microempreendedor.
 
-A **Solução** O SeWAI resolve isso com uma plataforma de fluxo duplo:
+A **Solução** O DevIA resolve isso com uma plataforma de fluxo duplo:
 
 Para o **Cliente** Uma vitrine digital simples para realizar pedidos.
 
