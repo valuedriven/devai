@@ -5,6 +5,22 @@ Pré-requisitos:
 
 ## 1.1 Definição do problema
 
+Resultados:
+- Definição do problema (problem_statement.md)
+
+Participantes:
+- Gerente de produtos
+
+Ferramentas:
+- IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.)
+
+Considerações:
+ - Usar deepresearch para validar problema
+
+--- 
+
+## Atividades
+
 - Identifique um cenário em que haja um problema ou oportunidade que você deseja resolver.
 - Execute o seguinte prompt:
 
@@ -40,6 +56,29 @@ Resultado esperado:
 ---
 
 ## 1.2 Refinamento
+
+**Visão Geral**
+
+Resultados:
+- Definição do produto (prd.md)
+- Especificação de requisitos (spec_req.md)
+- Especificação técnica (spec_tech.md)
+- Especificação de UI (spec_ui.md)
+
+Participantes:
+- Gerente de produtos
+- Desenvolvedor
+- Designer UX
+
+Ferramentas:
+- IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.)
+
+Considerações:
+- Solicitar IA para validar resultados
+
+---
+
+## Atividades
 
 ### Definição do produto
 
@@ -207,7 +246,7 @@ backend, persistência, ORM, Integrações etc.]
 - Revise o documento e faça os devidos ajustes.
 - Registre o problema no arquivo docs/spec_tech.md.
 
-### Especificação de UI
+## Especificação de UI
 
 - A partir da definição do produto, elabore uma especificação de ui
 - Execute o seguinte prompt:
@@ -247,8 +286,6 @@ Resultado esperado:
 
 ---
 
----
-
 ## Diretrizes para IA
 
 [detalhes de como a IA deve interpretar o documento].
@@ -257,7 +294,7 @@ Resultado esperado:
 - Revise o documento e faça os devidos ajustes.
 - Registre o problema no arquivo docs/spec_ui.md.
 
-### Revisão do refinamento
+## Revisão do refinamento
 
 - Solicite a uma IA para revisar os documentos criados.
 - Execute o seguinte prompt:
@@ -275,6 +312,28 @@ Revise os seguintes documentos:
 ---
 
 ## 1.3 Desenho
+
+**Visão geral**
+
+Resultados:
+- Protótipos
+- Design system (design_system.md)
+- Modelo de dados
+
+Participantes:
+- Designer UX
+- Desenvolvedor
+
+Ferramentas:
+- IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.)
+- Ferramentas de prototipação (Stitch etc.)
+
+Considerações:
+- Solicitar IA para validar resultados
+
+---
+
+## Atividades
 
 - Solicite a alguma IA para elaborar um prompt a ser usado na criação de protótipos:
 

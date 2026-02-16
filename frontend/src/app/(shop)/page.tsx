@@ -1,7 +1,8 @@
 import { ProductCard } from "@/components/ui/ProductCard";
-import { products } from "@/lib/mock-data";
+import { getProducts } from "@/lib/data";
 
-export default function Home() {
+export default async function Home() {
+    const products = await getProducts();
     return (
         <div className="container home-container">
 

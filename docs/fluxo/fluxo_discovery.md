@@ -2,36 +2,56 @@
 
 ## 1.1 Entendimento do problema
 
-Resultados:
+## Visão geral
+
+### Resultados:
+
 - Definição do problema (problem_statement.md)
 
-Participantes:
+### Participantes:
+
 - Gerente de produtos
 
-Ferramentas:
+### Ferramentas:
+
 - IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.)
 
-Considerações:
+### Considerações:
+
 - Usar deepresearch para validar problema
 
 ## 1.2 Refinamento
 
-Resultados:
+### Visão geral
+
+#### Resultados
+
 - Definição do produto (prd.md)
 - Especificação de requisitos (spec_req.md)
 - Especificação técnica (spec_tech.md)
 - Especificação de UI (spec_ui.md)
 
-Participantes:
+#### Participantes
+
 - Gerente de produtos
 - Desenvolvedor
 - Designer UX
 
-Ferramentas:
+#### Ferramentas
+
 - IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.)
 
-Considerações:
+#### Considerações
+
 - Solicitar IA para validar resultados
+
+#### Atividades
+
+- Refinar problema
+- Definir produto
+- Especificar requisitos
+- Especificar tecnologia
+- Especificar UI
 
 ## 1.3 Desenho
 

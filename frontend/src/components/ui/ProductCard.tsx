@@ -3,17 +3,29 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Product } from "@/lib/mock-data";
+import { Product } from "@/lib/types";
 import { useState } from "react";
 import { ImageOff, Loader2 } from "lucide-react";
+import { useCart } from "@/lib/CartContext";
 
 interface ProductCardProps {
     product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const { addItem } = useCart();
     const [imageError, setImageError] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
+
+    const handleAdd = () => {
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        });
+    };
 
     return (
         <div className="product-card group">
@@ -74,6 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
                         className="w-full"
                         disabled={!product.active || product.stock === 0}
                         variant={product.stock === 0 ? "secondary" : "primary"}
+                        onClick={handleAdd}
                     >
                         {product.stock === 0 ? 'Indisponível' : 'Adicionar ao Carrinho'}
                     </Button>

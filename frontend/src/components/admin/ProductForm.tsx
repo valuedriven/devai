@@ -2,9 +2,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
-import { categories } from "@/lib/mock-data";
+import { getCategories } from "@/lib/data";
 
-export function ProductForm() {
+export async function ProductForm() {
+    const categories = await getCategories();
     return (
         <Card className="max-w-2xl mx-auto">
             <CardHeader>

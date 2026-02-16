@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser, SignInButton } from "@clerk/nextjs";
+import { useCart } from "@/lib/CartContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Trash2, CheckCircle, LogIn } from "lucide-react";
@@ -16,34 +17,14 @@ interface CartItem {
     image: string;
 }
 
-const initialCartItems: CartItem[] = [
-    { id: 1, name: "Smartphone X", price: 2999.00, quantity: 1, image: "https://placehold.co/100x100/136dec/ffffff?text=Phone" },
-    { id: 2, name: "Camiseta Devia", price: 89.90, quantity: 2, image: "https://placehold.co/100x100/136dec/ffffff?text=Shirt" },
-];
-
 export default function CartPage() {
     const router = useRouter();
     const { isSignedIn } = useUser();
-    const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
+    const { items: cartItems, updateQuantity, removeItem, clearCart, totalAmount: total } = useCart();
     const [isConfirming, setIsConfirming] = useState(false);
     const [orderConfirmed, setOrderConfirmed] = useState(false);
     const [orderId, setOrderId] = useState("");
 
-    const updateQuantity = (id: number, delta: number) => {
-        setCartItems((prev) =>
-            prev.map((item) =>
-                item.id === id
-                    ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-                    : item
-            )
-        );
-    };
-
-    const removeItem = (id: number) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
@@ -55,7 +36,7 @@ export default function CartPage() {
         setOrderId(newOrderId);
         setOrderConfirmed(true);
         setIsConfirming(false);
-        setCartItems([]);
+        clearCart();
     };
 
     if (orderConfirmed) {
@@ -96,8 +77,8 @@ export default function CartPage() {
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                             </div>
-                            <div className="flex-1">
-                                <h3 className="font-semibold">{item.name}</h3>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold truncate">{item.name}</h3>
                                 <p className="text-muted-foreground text-sm">
                                     {formatCurrency(item.price)}
                                 </p>
@@ -125,15 +106,17 @@ export default function CartPage() {
                             <div className="font-bold">
                                 {formatCurrency(item.price * item.quantity)}
                             </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-destructive"
-                                onClick={() => removeItem(item.id)}
-                                aria-label={`Remover ${item.name}`}
-                            >
-                                <Trash2 className="icon-sm" />
-                            </Button>
+                            <div className="flex-shrink-0">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-destructive"
+                                    onClick={() => removeItem(item.id)}
+                                    aria-label={`Remover ${item.name}`}
+                                >
+                                    <Trash2 className="icon-sm" />
+                                </Button>
+                            </div>
                         </Card>
                     ))}
 

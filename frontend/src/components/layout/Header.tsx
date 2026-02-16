@@ -5,6 +5,7 @@ import { ShoppingCart, User, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { useState } from "react";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { useCart } from "@/lib/CartContext";
 import {
     SignedIn,
     SignedOut,
@@ -14,6 +15,7 @@ import {
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { itemCount } = useCart();
 
     return (
         <header className="header-root">
@@ -49,7 +51,7 @@ export function Header() {
                 <div className="header-actions">
                     <Link href="/cart" className="btn-icon-size btn-ghost rounded-md cart-icon-wrapper">
                         <ShoppingCart className="icon-md" />
-                        <span className="cart-badge">3</span>
+                        {itemCount > 0 && <span className="cart-badge">{itemCount}</span>}
                         <span className="sr-only">Carrinho</span>
                     </Link>
                     <SignedOut>

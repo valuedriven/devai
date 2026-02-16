@@ -2,9 +2,10 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { orders } from "@/lib/mock-data";
+import { getOrders } from "@/lib/data";
 
-export default function OrdersPage() {
+export default async function OrdersPage() {
+    const orders = await getOrders();
     const statusToneMap: Record<string, "neutral" | "success" | "info" | "error" | "warning"> = {
         "Novo": "neutral",
         "Pago": "success",

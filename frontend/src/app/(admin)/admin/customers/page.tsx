@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { customers } from "@/lib/mock-data";
+import { getCustomers } from "@/lib/data";
 import { Plus, Edit, Trash, Search, Mail, Phone } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 
-export default function AdminCustomersPage() {
+export default async function AdminCustomersPage() {
+    const customers = await getCustomers();
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">

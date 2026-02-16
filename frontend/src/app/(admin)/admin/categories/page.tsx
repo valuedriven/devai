@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { categories } from "@/lib/mock-data";
+import { getCategories } from "@/lib/data";
 import { Plus, Edit, Trash, Search } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 
-export default function AdminCategoriesPage() {
+export default async function AdminCategoriesPage() {
+    const categories = await getCategories();
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">

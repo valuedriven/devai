@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { orders } from "@/lib/mock-data";
+import { getOrders } from "@/lib/data";
 import { Badge } from "@/components/ui/Badge";
 import { DollarSign, ShoppingBag, Clock } from "lucide-react";
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+    const orders = await getOrders();
     const totalSales = orders
         .filter(o => o.status !== 'Cancelado')
         .reduce((acc, curr) => acc + curr.total, 0);

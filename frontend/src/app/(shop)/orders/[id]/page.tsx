@@ -2,18 +2,20 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { orders, products } from "@/lib/mock-data";
+import { getOrder, getProducts } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
 
-export default function OrderDetailsPage({ params }: { params: { id: string } }) {
-    const order = orders.find((o) => o.id === params.id);
+export default async function OrderDetailsPage({ params }: { params: { id: string } }) {
+    const { id } = await params;
+    const order = await getOrder(id);
+    const allProducts = await getProducts();
 
     if (!order) {
         return <div className="container py-8">Pedido não encontrado</div>;
     }
 
-    const orderProducts = order.items.map(item => {
-        const product = products.find(p => p.id === item.productId);
+    const orderProducts = (order.items || []).map(item => {
+        const product = allProducts.find(p => String(p.id) === String(item.product_id));
         return { ...item, product };
     });
 

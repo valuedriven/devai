@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { products } from "@/lib/mock-data";
+import { AddToCartButton } from "@/components/ui/AddToCartButton";
+import { getProduct } from "@/lib/data";
 import { ArrowLeft, ShoppingCart, Truck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,7 +15,7 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
     const { id } = await params;
-    const product = products.find((p) => p.id === id);
+    const product = await getProduct(id);
 
     if (!product) {
         notFound();
@@ -62,10 +63,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
                     <div className="space-y-4 pt-6 border-t">
                         <div className="flex items-center gap-4">
-                            <Button size="lg" className="w-full md:w-auto" disabled={product.stock === 0}>
-                                <ShoppingCart className="mr-2 h-5 w-5" />
-                                Adicionar ao Carrinho
-                            </Button>
+                            <AddToCartButton product={product} />
                         </div>
 
                         {/* Shipping Simulator Mock */}
