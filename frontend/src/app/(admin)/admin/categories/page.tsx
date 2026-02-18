@@ -3,8 +3,9 @@ import { Button, buttonVariants } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { getCategories } from "@/lib/data";
-import { Plus, Edit, Trash, Search } from "lucide-react";
+import { Plus, Edit, Search } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import { DeleteCategoryButton } from "@/components/admin/DeleteCategoryButton";
 
 export default async function AdminCategoriesPage() {
     const categories = await getCategories();
@@ -50,9 +51,7 @@ export default async function AdminCategoriesPage() {
                                                 <Link href={`/admin/categories/${category.id}/edit`} className={buttonVariants({ variant: "ghost", size: "icon" })}>
                                                     <Edit className="h-4 w-4" />
                                                 </Link>
-                                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-                                                    <Trash className="h-4 w-4" />
-                                                </Button>
+                                                <DeleteCategoryButton id={category.id} name={category.name} />
                                             </div>
                                         </td>
                                     </tr>

@@ -42,6 +42,12 @@ jobs:
     permissions:
       contents: read
       deployments: write
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ENV: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'production' || 'preview' }}
+      VERCEL_BUILD_ARG: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '--prod' || '' }}
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
@@ -54,39 +60,20 @@ jobs:
       - name: Instalar Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Set Vercel Environment
-        run: |
-          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "VERCEL_ENV=production" >> $GITHUB_ENV
-            echo "VERCEL_BUILD_ARG=--prod" >> $GITHUB_ENV
-          else
-            echo "VERCEL_ENV=preview" >> $GITHUB_ENV
-            echo "VERCEL_BUILD_ARG=" >> $GITHUB_ENV
-          fi
-
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=${{ env.VERCEL_ENV }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=${{ env.VERCEL_ENV }} --token=${{ env.VERCEL_TOKEN }}
         working-directory: frontend
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Build Project Artifacts
-        run: vercel build ${{ env.VERCEL_BUILD_ARG }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build ${{ env.VERCEL_BUILD_ARG }} --token=${{ env.VERCEL_TOKEN }}
         working-directory: frontend
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         run: |
-          vercel deploy --prebuilt ${{ env.VERCEL_BUILD_ARG }} --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
+          vercel deploy --prebuilt ${{ env.VERCEL_BUILD_ARG }} --token=${{ env.VERCEL_TOKEN }} > deployment-url.txt
           echo "DEPLOYMENT_URL=$(cat deployment-url.txt)" >> $GITHUB_OUTPUT
         working-directory: frontend
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Notificação de Status
         if: always()
