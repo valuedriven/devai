@@ -1,7 +1,7 @@
 # C4 – Diagrama de Deployment  
 ```mermaid
 C4Deployment
-title Sistema SeWAI - Deployment Atual
+title Sistema DevAI - Deployment Atual
 
 Deployment_Node(user_device, "Dispositivo do Usuário", "Browser") {
     Container(user_browser, "Browser", "")

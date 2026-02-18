@@ -2,12 +2,12 @@
 
 ```mermaid
 C4Container
-title Sistema SeWAI - Diagrama de Contêiner
+title Sistema DevAI - Diagrama de Contêiner
 
 Person(customer, "Cliente", "Usuário final da vitrine e carrinho")
 Person(admin, "Administrador", "Gerencia tenants e configurações")
 
-System_Boundary(sewai_boundary, "SeWAI") {
+System_Boundary(DevAI_boundary, "DevAI") {
     Container(frontend, "Frontend Web", "Next.js 16+", "Interface responsiva, gerenciamento de estado e consumo de APIs")
     Container(backend, "Backend API", "NestJS 11+", "Regras de negócio, Webhooks, Multitenancy e Auditoria")        
 }

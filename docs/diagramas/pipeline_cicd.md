@@ -2,7 +2,7 @@
 
 ```mermaid
 C4Dynamic
-    title Sistema SeWAI - Fluxo de CI/CD e Deployment
+    title Sistema DevAI - Fluxo de CI/CD e Deployment
 
     Person(developer, "Desenvolvedor", "Engenheiro de Software / AI")
     
