@@ -113,7 +113,7 @@ export async function getOrder(id: string): Promise<Order | null> {
         date: data.created_at,
         total: Number(data.total_amount),
         customerId: String(data.customer_id),
-        items: (data.order_items || []).map((item: any) => ({
+        items: (data.order_items || []).map((item: { id: number; product_id: number; unit_price: number }) => ({
             ...item,
             id: String(item.id),
             productId: String(item.product_id),
