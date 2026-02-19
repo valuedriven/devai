@@ -4,11 +4,11 @@
 
 ### Configuração de skill
 
-
-- Prompt para configurar skill:
+- No painel Agent do Antigravity, abra uma nova conversa.
+- Informe o seguinte prompt para configurar skill:
 
 ```
-Ative no diretório .agent/skills a skill github-api conforme definido em https://playbooks.com/skills/markpitt/claude-skills/github-api. 
+Configure no diretório .agent/skills a skill github-api conforme definido em https://playbooks.com/skills/markpitt/claude-skills/github-api. 
 
 Configurações obrigatórias:
 - Base URL: https://api.github.com
@@ -22,7 +22,11 @@ Você deve agir como um Software Architect. Sempre que eu solicitar uma análise
 
 ### Configuração de rule
 
-- Configure a seguinte rule:
+- No painel Agent do Antigravity, acione o comando More options (três pontos).
+- Selecione a opção Customizations.
+- Selecione a aba Rules, comando +Workspace.
+- No campo Enter rule name, informe "automacao-infraestrutura" e acione Enter.
+- No campo Content, informe o texto a seguir:
 
 ```
 # 📜 Regras de Configuração (Rules) para Automação de Infraestrutura
@@ -77,7 +81,7 @@ jobs:
 
 ### Prompt para criação do pipeline
 
-
+- No painel Agent do Antigravity, abra uma nova conversa.
 - Informe o seguinte prompt para a criação do pipeline de deploy:
 
 ```
@@ -111,3 +115,6 @@ Crie um arquivo de workflow do GitHub Actions (`.github/workflows/deploy.yml`) p
 - Sugestão de como adicionar uma notificação de status ao final do processo.
 ```
 
+- Acesse o diretório .github/workflows do repositório no GitHub.
+- Verifique o arquivo deploy.yml com o conteúdo gerado pelo Antigravity.
+- Verifique se o arquivo foi criado com sucesso.
