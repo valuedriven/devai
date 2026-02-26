@@ -118,3 +118,5 @@ Crie um arquivo de workflow do GitHub Actions (`.github/workflows/deploy.yml`) p
 - Acesse o diretório .github/workflows do repositório no GitHub.
 - Verifique o arquivo deploy.yml com o conteúdo gerado pelo Antigravity.
 - Verifique se o arquivo foi criado com sucesso.
+- Configure as secrets no repositório do GitHub.
+- Verifique se as secrets foram configuradas com sucesso.
