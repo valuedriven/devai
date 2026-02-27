@@ -124,3 +124,11 @@ Crie um arquivo de workflow do GitHub Actions (`.github/workflows/deploy.yml`) p
   - VERCEL_PROJECT_ID no endereço: https://vercel.com/<team>/<project>/settings, campo Project ID.
 - Configure as secrets no repositório do GitHub, no endereço: https://github.com/<usuário>/<projeto>/settings/secrets/actions.
 - Verifique se as secrets foram configuradas com sucesso.
+
+
+## Verificação da execução do pipeline
+
+- No painel do GitHub, acesse o repositório do projeto.
+- Clique na aba Actions.
+- Verifique se o workflow deploy.yml foi criado com sucesso.
+- Verifique se o workflow foi executado com sucesso.
