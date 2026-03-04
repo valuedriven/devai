@@ -49,4 +49,4 @@ USER nestjs
 EXPOSE $PORT
 
 # Start the application
-CMD ["node", "backend/dist/src/main"]
+CMD ["node", "backend/dist/main"]
