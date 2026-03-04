@@ -18,16 +18,24 @@ export class ProductService {
         });
     }
 
-    async findAll(tenantId: string) {
+    async findAll(tenantId: string, search?: string) {
+        console.log('ProductService.findAll CALLED:', { tenantId, search });
         return this.prisma.product.findMany({
-            where: { tenantId },
+            where: {
+                tenantId,
+                ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
+            },
             include: { category: true },
         });
     }
 
-    async findAllActive(tenantId: string) {
+    async findAllActive(tenantId: string, search?: string) {
         return this.prisma.product.findMany({
-            where: { tenantId, active: true },
+            where: {
+                tenantId,
+                active: true,
+                ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
+            },
             include: { category: true },
         });
     }

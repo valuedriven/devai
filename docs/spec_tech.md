@@ -22,7 +22,7 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 ### Stack Base
 
 - **Frontend:** Next.js 16+ (App Router).
-- **Backend:** NestJS 11+; API RESTful.
+- **Backend:** NestJS 11+; Node 24; API RESTful.
 - **Persistência:** PostgreSQL 15+.
 - **ORM:** Prisma 5+.
 
@@ -32,7 +32,6 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - **Persistência:** Supabase.
 - **Deployment:** Vercel.
 - **Segurança (autenticação e autorização):** Clerk.
-- **Notificações:** Resender.
 - **Observabilidade:** Grafana Cloud.
 
 ### Integrações - Stack Futura
