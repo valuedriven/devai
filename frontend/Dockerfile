@@ -20,6 +20,8 @@ COPY frontend/ ./frontend/
 # Environment variables for build time (Next.js public variables)
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_API_URL
+ARG NODE_ENV=production
+ARG FRONTEND_PORT=3000
 
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
@@ -31,8 +33,11 @@ RUN npm run build --workspace=frontend
 FROM node:24-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV PORT=3000
+ARG NODE_ENV=production
+ARG FRONTEND_PORT=3000
+
+ENV NODE_ENV=$NODE_ENV
+ENV PORT=$FRONTEND_PORT
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
@@ -46,7 +51,7 @@ COPY --from=builder /app/frontend/.next/static ./frontend/.next/static
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE $PORT
 
 ENV HOSTNAME="0.0.0.0"
 

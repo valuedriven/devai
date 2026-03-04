@@ -25,8 +25,6 @@ export AWS_DEFAULT_REGION=[colocar a região]
 
 Configure os MCP servers no seu cliente (ex: Cursor ou Claude Desktop) usando os comandos abaixo. 
 
-> [!NOTE]
-> O erro `npm error 404` ocorre se você tentar usar `npx` para pacotes Python. Use sempre `uvx`.
 
 ```json
 {

@@ -24,7 +24,6 @@ jobs:
 
       - name: Instalar Dependências
         run: npm ci
-        working-directory: backend
               
       - name: Executar Linter
         run: npm run lint
@@ -48,11 +47,10 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          #cache-dependency-path: package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Instalar Dependências
         run: npm ci
-        working-directory: frontend
       
       - name: Executar Linter
         run: npm run lint

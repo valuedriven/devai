@@ -1,11 +1,14 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
+const isServer = typeof window === 'undefined';
+const API_BASE_URL = isServer
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/v1')
+    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/v1');
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
 export async function fetchApi<T>(
     path: string,
     options: RequestInit = {},
 ): Promise<T> {
-    const url = `${API_BASE_URL}${path}`;
+    const url = `${API_BASE_URL.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
     const response = await fetch(url, {
         ...options,
         headers: {

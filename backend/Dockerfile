@@ -19,6 +19,10 @@ WORKDIR /app
 # Copy backend source code
 COPY backend/ ./backend/
 
+# Generate Prisma client
+# Using direct path to ensure it's found in the workspace structure
+RUN ./backend/node_modules/.bin/prisma generate --schema=backend/src/database/prisma/schema.prisma
+
 # Build the application
 RUN npm run build --workspace=backend
 
@@ -28,20 +32,24 @@ FROM node:24-alpine AS runner
 WORKDIR /app
 
 ARG NODE_ENV=production
-ARG PORT=3001
+ARG BACKEND_PORT=3001
 
 ENV NODE_ENV=$NODE_ENV
-ENV PORT=$PORT
+ENV PORT=$BACKEND_PORT
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nestjs
 
 # Copy necessary files from builder
-# We need the root node_modules because of the workspace structure
+# We need both root node_modules and backend node_modules due to workspace structure
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/node_modules ./backend/node_modules
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/backend/package.json ./backend/package.json
+
+# Use backend as working directory for the application
+WORKDIR /app/backend
 
 # Use non-root user
 USER nestjs
@@ -49,4 +57,4 @@ USER nestjs
 EXPOSE $PORT
 
 # Start the application
-CMD ["node", "backend/dist/main"]
+CMD ["node", "dist/main"]

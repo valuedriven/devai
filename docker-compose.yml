@@ -23,12 +23,12 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: devai-backend
+    container_name: backend
     restart: always
-    env_file:
-      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-dbname}
     ports:
-      - "${PORT:-3001}:${PORT:-3001}"
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
     depends_on:
       db:
         condition: service_healthy
@@ -41,13 +41,15 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:3001}
-    container_name: devai-frontend
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001/v1}
+    container_name: frontend
     restart: always
+    environment:
+      - INTERNAL_API_URL=http://backend:${BACKEND_PORT:-3001}/v1
     env_file:
-      - ./frontend/.env
+      - ./.env
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     depends_on:
       backend:
         condition: service_started

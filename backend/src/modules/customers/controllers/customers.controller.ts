@@ -15,7 +15,7 @@ import { TenantId } from '../../../core/decorators/tenant-id.decorator';
 
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly customersService: CustomersService) {}
+  constructor(private readonly customersService: CustomersService) { }
 
   @Post()
   create(
@@ -49,7 +49,8 @@ export class CustomersController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @TenantId() tenantId: string) {
-    return this.customersService.findOne(BigInt(id), tenantId);
+    const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
+    return this.customersService.findOne(bigIntId, tenantId);
   }
 
   @Patch(':id')
@@ -58,8 +59,9 @@ export class CustomersController {
     @Body() updateCustomerDto: UpdateCustomerDto,
     @TenantId() tenantId: string,
   ) {
+    const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
     return this.customersService.update(
-      BigInt(id),
+      bigIntId,
       updateCustomerDto,
       tenantId,
     );
@@ -67,6 +69,7 @@ export class CustomersController {
 
   @Delete(':id')
   remove(@Param('id') id: string, @TenantId() tenantId: string) {
-    return this.customersService.remove(BigInt(id), tenantId);
+    const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
+    return this.customersService.remove(bigIntId, tenantId);
   }
 }
