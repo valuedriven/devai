@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.next
+.env
+.env.local
+backend/dist
+backend/node_modules
+frontend/.next
+frontend/node_modules

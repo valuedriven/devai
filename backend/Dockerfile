@@ -1,33 +1,52 @@
-# Stage 1: Builder
-FROM node:24-alpine AS builder
+# Stage 1: Base - Install dependencies
+FROM node:24-alpine AS base
 
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
-RUN npm ci
+# Copy root package files
+COPY package.json package-lock.json ./
+# Copy backend package file
+COPY backend/package.json ./backend/
 
-# Copy source and build
-COPY . .
-RUN npm run build
+# Install dependencies (respecting the root lockfile)
+RUN npm ci --workspace=backend
 
-# Stage 2: Production
-FROM node:24-alpine AS production
+# Stage 2: Builder - Build the application
+FROM base AS builder
 
 WORKDIR /app
 
-# Install only production dependencies
-COPY package*.json ./
-RUN npm ci --only=production
+# Copy backend source code
+COPY backend/ ./backend/
 
-# Copy built artifacts from builder
-COPY --from=builder /app/dist ./dist
+# Build the application
+RUN npm run build --workspace=backend
 
-# Non-root user setup for security
-USER node
+# Stage 3: Runner - Production environment
+FROM node:24-alpine AS runner
 
-# Port exposure
+WORKDIR /app
+
+ARG NODE_ENV=production
+ARG PORT=3001
+
+ENV NODE_ENV=$NODE_ENV
+ENV PORT=$PORT
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs
+
+# Copy necessary files from builder
+# We need the root node_modules because of the workspace structure
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/dist ./backend/dist
+COPY --from=builder /app/backend/package.json ./backend/package.json
+
+# Use non-root user
+USER nestjs
+
 EXPOSE $PORT
 
-# Start application
-CMD ["node", "dist/main"]
+# Start the application
+CMD ["node", "backend/dist/src/main"]
