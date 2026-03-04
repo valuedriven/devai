@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { ShoppingCart, User, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useCart } from "@/lib/CartContext";
 import {
@@ -18,6 +19,26 @@ export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { itemCount } = useCart();
     const { user } = useUser();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const [searchValue, setSearchValue] = useState(searchParams.get("search") || "");
+
+    useEffect(() => {
+        setSearchValue(searchParams.get("search") || "");
+    }, [searchParams]);
+
+    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            const params = new URLSearchParams(searchParams.toString());
+            if (searchValue) {
+                params.set("search", searchValue);
+            } else {
+                params.delete("search");
+            }
+            router.push(`/?${params.toString()}`);
+        }
+    };
 
     const isAdmin = user?.publicMetadata?.role === "admin";
 
@@ -36,7 +57,7 @@ export function Header() {
                         <span className="sr-only">Menu</span>
                     </button>
                     <Link href="/" className="header-logo ml-2">
-                        DEVIA
+                        DevAI
                     </Link>
                 </div>
 
@@ -48,6 +69,9 @@ export function Header() {
                             type="search"
                             placeholder="Buscar produtos..."
                             className="search-input"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            onKeyDown={handleSearch}
                         />
                     </div>
                 </div>

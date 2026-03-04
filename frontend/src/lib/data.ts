@@ -3,14 +3,19 @@
 import { Category, Product, Customer, Order, OrderItem } from './types';
 import { fetchApi } from './api';
 
-export async function getCategories(): Promise<Category[]> {
+export async function getCategories(search?: string): Promise<Category[]> {
     try {
         const categories = await fetchApi<any[]>('/categories');
-        return categories.map(cat => ({
+        const mapped = categories.map(cat => ({
             ...cat,
             id: String(cat.id),
             active: true
         })) as Category[];
+        if (search) {
+            const lower = search.toLowerCase();
+            return mapped.filter(c => c.name.toLowerCase().includes(lower));
+        }
+        return mapped;
     } catch (error) {
         console.error('Error fetching categories:', error);
         return [];
@@ -80,9 +85,10 @@ export async function deleteCategory(id: string): Promise<boolean> {
     }
 }
 
-export async function getProducts(): Promise<Product[]> {
+export async function getProducts(search?: string): Promise<Product[]> {
     try {
-        const products = await fetchApi<any[]>('/products');
+        const url = search ? `/products?search=${encodeURIComponent(search)}` : '/products';
+        const products = await fetchApi<any[]>(url);
         return products.map(p => ({
             ...p,
             id: String(p.id),
@@ -181,13 +187,21 @@ export async function deleteProduct(id: string): Promise<boolean> {
     }
 }
 
-export async function getCustomers(): Promise<Customer[]> {
+export async function getCustomers(search?: string): Promise<Customer[]> {
     try {
-        const customers = await fetchApi<any[]>('/customers');
-        return customers.map(c => ({
+        const url = search ? `/customers?search=${encodeURIComponent(search)}` : '/customers';
+        const customers = await fetchApi<any[]>(url);
+        let mapped = customers.map(c => ({
             ...c,
             id: String(c.id)
         })) as Customer[];
+
+        if (search) {
+            const lower = search.toLowerCase();
+            mapped = mapped.filter(c => c.name.toLowerCase().includes(lower) || c.email.toLowerCase().includes(lower));
+        }
+
+        return mapped;
     } catch (error) {
         console.error('Error fetching customers:', error);
         return [];
@@ -288,20 +302,36 @@ export async function syncCustomerApi(user: { email: string; name: string }): Pr
 }
 
 
-export async function getOrders(customerEmail?: string): Promise<Order[]> {
+export async function getOrders(customerEmail?: string, search?: string): Promise<Order[]> {
     try {
-        const url = customerEmail
-            ? `/orders?customerEmail=${encodeURIComponent(customerEmail)}`
-            : '/orders';
+        let url = '/orders';
+        const params = new URLSearchParams();
+        if (customerEmail) params.append('customerEmail', customerEmail);
+        if (search) params.append('search', search);
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
         const orders = await fetchApi<any[]>(url);
 
-        return orders.map(o => ({
+        let mapped = orders.map(o => ({
             ...o,
             id: String(o.id),
             date: o.createdAt,
             total: Number(o.totalAmount),
             customerId: String(o.customerId)
         })) as Order[];
+
+        if (search) {
+            const lower = search.toLowerCase();
+            mapped = mapped.filter(o =>
+                o.status.toLowerCase().includes(lower) ||
+                o.customerId.toLowerCase().includes(lower) ||
+                o.id.toLowerCase().includes(lower)
+            );
+        }
+
+        return mapped;
     } catch (error) {
         console.error('Error fetching orders:', error);
         return [];

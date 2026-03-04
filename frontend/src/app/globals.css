@@ -1592,3 +1592,28 @@ a.btn-primary {
 .object-cover {
   object-fit: cover;
 }
+
+/* Utility classes required for AdminSearchBar */
+.absolute {
+  position: absolute;
+}
+
+.left-3 {
+  left: 0.75rem;
+}
+
+.top-1\/2 {
+  top: 50%;
+}
+
+.-translate-y-1\/2 {
+  transform: translateY(-50%);
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.pl-9 {
+  padding-left: 2.25rem;
+}

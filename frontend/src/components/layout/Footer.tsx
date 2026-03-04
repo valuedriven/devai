@@ -3,7 +3,7 @@ export function Footer() {
         <footer className="footer">
             <div className="footer-container">
                 <div className="text-sm">
-                    &copy; {new Date().getFullYear()} Devia Store. Todos os direitos reservados.
+                    &copy; {new Date().getFullYear()} DevAI Store. Todos os direitos reservados.
                 </div>
                 <div className="footer-links">
                     <a href="#" className="footer-link">Termos</a>

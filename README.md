@@ -1,4 +1,4 @@
-# Devia
+# DevAI
 
 > **Plataforma de e-commerce para microempreendedores** — Controle total de pedidos e pagamentos com uma vitrine digital profissional.
 
@@ -14,7 +14,7 @@
 
 ## 📋 Sobre o Projeto
 
-**Devia** é uma solução completa para microempreendedores que buscam profissionalizar sua presença digital e simplificar a gestão de pedidos. Focada na facilidade de uso e eficiência, a plataforma permite que negócios locais cresçam com organização e credibilidade.
+**DevAI** é uma solução completa para microempreendedores que buscam profissionalizar sua presença digital e simplificar a gestão de pedidos. Focada na facilidade de uso e eficiência, a plataforma permite que negócios locais cresçam com organização e credibilidade.
 
 ### ✨ Funcionalidades em Destaque
 
@@ -58,8 +58,8 @@ O projeto é estruturado como um **Monorepo** utilizando npm workspaces, garanti
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/devia.git
-   cd devia
+   git clone https://github.com/seu-usuario/devai.git
+   cd devai
    ```
 
 2. **Instale as dependências (Monorepo)**
@@ -105,7 +105,7 @@ npm run dev:backend
 ## 📁 Estrutura do Projeto
 
 ```
-devia/
+devai/
 ├── backend/               # API NestJS
 │   ├── src/
 │   │   ├── core/         # Interceptors, Decorators, Guards Globais

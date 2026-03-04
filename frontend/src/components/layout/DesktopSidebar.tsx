@@ -15,7 +15,7 @@ export function DesktopSidebar() {
     return (
         <aside className="sidebar-desktop">
             <div className="sidebar-header">
-                <Link href="/">DEVIA</Link>
+                <Link href="/">DevAI</Link>
             </div>
 
             <nav className="sidebar-nav">

@@ -20,8 +20,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Devia | Premium E-commerce",
-  description: "Experience the future of shopping with Devia.",
+  title: "DevAI | Premium E-commerce",
+  description: "Experience the future of shopping with DevAI.",
 };
 
 export default function RootLayout({

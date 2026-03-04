@@ -41,9 +41,6 @@ export function MobileMenu({ isOpen, onClose, isAdmin }: MobileMenuProps) {
                     <Link href="/" className="mobile-menu-link" onClick={handleNavigate}>
                         Início
                     </Link>
-                    <Link href="/products" className="mobile-menu-link" onClick={handleNavigate}>
-                        Produtos
-                    </Link>
                     <Link href="/cart" className="mobile-menu-link" onClick={handleNavigate}>
                         Carrinho
                     </Link>

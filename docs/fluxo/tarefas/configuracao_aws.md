@@ -69,5 +69,5 @@ Configure os MCP servers no seu cliente (ex: Cursor ou Claude Desktop) usando os
 
 - Execute o seguinte comando:
 ```bash
-Faça o deploy do frontend na aws. Utilize apenas serviços disponíveis no AWS Learner Lab.
+Faça o deploy do projeto na aws. Utilize apenas serviços disponíveis no AWS Learner Lab.
 ```
