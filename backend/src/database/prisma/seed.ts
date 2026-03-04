@@ -5,8 +5,8 @@ import 'dotenv/config';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-const prisma = new PrismaClient({ adapter } as any);
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const tenantId = '00000000-0000-0000-0000-000000000000';

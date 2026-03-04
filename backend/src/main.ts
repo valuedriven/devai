@@ -6,7 +6,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   (BigInt.prototype as any).toJSON = function (this: bigint) {
     return this.toString();
   };

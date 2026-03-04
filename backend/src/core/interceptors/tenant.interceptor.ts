@@ -26,7 +26,6 @@ export class TenantInterceptor implements NestInterceptor {
       request.tenantId = tenantId;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return next.handle() as any;
   }
 }

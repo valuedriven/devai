@@ -15,7 +15,7 @@ import { TenantId } from '../../../core/decorators/tenant-id.decorator';
 
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly customersService: CustomersService) { }
+  constructor(private readonly customersService: CustomersService) {}
 
   @Post()
   create(
@@ -60,11 +60,7 @@ export class CustomersController {
     @TenantId() tenantId: string,
   ) {
     const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
-    return this.customersService.update(
-      bigIntId,
-      updateCustomerDto,
-      tenantId,
-    );
+    return this.customersService.update(bigIntId, updateCustomerDto, tenantId);
   }
 
   @Delete(':id')
