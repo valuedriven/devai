@@ -39,7 +39,6 @@ model Product {
 
 model customers {
   id         BigInt   @id @default(autoincrement())
-  clerkId    String?  @unique @map("clerk_id")
   name       String
   email      String   @unique
   phone      String?

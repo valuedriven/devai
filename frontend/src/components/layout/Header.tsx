@@ -60,7 +60,7 @@ export function Header() {
                         <span className="sr-only">Carrinho</span>
                     </Link>
                     <SignedOut>
-                        <SignInButton mode="modal" fallbackRedirectUrl="/admin">
+                        <SignInButton mode="modal" fallbackRedirectUrl="/">
                             <button className="btn-icon-size btn-ghost rounded-md">
                                 <User className="icon-md" />
                                 <span className="sr-only">Login</span>

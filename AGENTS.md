@@ -17,7 +17,7 @@ Plataforma de e-commerce para microempreendedores: vitrine digital para clientes
 
 ### Serviços
 - Auth: Clerk (JWT, HttpOnly cookies, SameSite=strict)
-- DB: Supabase → AWS RDS (futuro)
+- DB: PostgreSQL → AWS RDS (futuro)
 - Deploy: Vercel → AWS EKS (futuro)
 - Notificações: Resend → AWS SES (futuro)
 - CI/CD: GitHub Actions

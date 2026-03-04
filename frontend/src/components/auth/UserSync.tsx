@@ -1,8 +1,8 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
-import { getCustomerByClerkId, createCustomer } from "@/lib/data";
+import { useEffect, useRef } from "react";
+import { syncCustomerApi } from "@/lib/data";
 
 /**
  * Componente invisível que garante que o usuário do Clerk 
@@ -10,27 +10,20 @@ import { getCustomerByClerkId, createCustomer } from "@/lib/data";
  */
 export function UserSync() {
     const { user, isLoaded, isSignedIn } = useUser();
+    const syncedRef = useRef(false);
 
     useEffect(() => {
         async function sync() {
-            if (isLoaded && isSignedIn && user) {
+            if (isLoaded && isSignedIn && user && !syncedRef.current) {
                 try {
-                    // Verifica se o cliente já existe no nosso banco (usando o ID do Clerk)
-                    const customer = await getCustomerByClerkId(user.id);
+                    const name = `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Novo Cliente";
+                    const email = user.emailAddresses[0]?.emailAddress;
 
-                    if (!customer) {
-                        console.log("Customer não encontrado no banco, sincronizando proativamente...");
-
-                        await createCustomer({
-                            clerkId: user.id,
-                            name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Novo Cliente",
-                            email: user.emailAddresses[0].emailAddress,
-                            phone: "",
-                            address: "",
-                            active: true
-                        });
-
-                        console.log("Sincronização frontend concluída com sucesso.");
+                    if (email) {
+                        console.log("Sincronizando usuário com o backend...");
+                        await syncCustomerApi({ email, name });
+                        console.log("Sincronização backend concluída com sucesso.");
+                        syncedRef.current = true;
                     }
                 } catch (error) {
                     console.error("Erro na sincronização proativa do usuário:", error);

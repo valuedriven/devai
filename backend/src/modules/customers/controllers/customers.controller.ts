@@ -10,6 +10,7 @@ import {
 import { CustomersService } from '../services/customers.service';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
+import { SyncCustomerDto } from '../dto/sync-customer.dto';
 import { TenantId } from '../../../core/decorators/tenant-id.decorator';
 
 @Controller('customers')
@@ -22,6 +23,18 @@ export class CustomersController {
         @TenantId() tenantId: string,
     ) {
         return this.customersService.create(createCustomerDto, tenantId);
+    }
+
+    @Post('sync')
+    syncCustomer(
+        @Body() syncCustomerDto: SyncCustomerDto,
+        @TenantId() tenantId: string,
+    ) {
+        return this.customersService.syncCustomer(
+            syncCustomerDto.email,
+            syncCustomerDto.name,
+            tenantId,
+        );
     }
 
     @Get()
@@ -39,10 +52,6 @@ export class CustomersController {
         return this.customersService.findOne(BigInt(id), tenantId);
     }
 
-    @Get('clerk/:clerkId')
-    findByClerkId(@Param('clerkId') clerkId: string, @TenantId() tenantId: string) {
-        return this.customersService.findByClerkId(clerkId, tenantId);
-    }
 
     @Patch(':id')
     update(

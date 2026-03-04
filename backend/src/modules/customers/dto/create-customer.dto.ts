@@ -1,9 +1,6 @@
 import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCustomerDto {
-    @IsString()
-    @IsOptional()
-    clerkId?: string;
 
     @IsString()
     @IsNotEmpty()

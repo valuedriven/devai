@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { LayoutDashboard, Package, Users, ShoppingBag, LogOut, Tags } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 import { AdminHeader } from "@/components/layout/AdminHeader";
+import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
     children,
@@ -10,6 +11,11 @@ export default async function AdminLayout({
     children: React.ReactNode;
 }) {
     const user = await currentUser();
+
+    if (user?.publicMetadata?.role !== "admin") {
+        redirect("/");
+    }
+
     const userName = user?.firstName || "Admin";
 
     return (

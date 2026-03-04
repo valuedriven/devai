@@ -92,7 +92,15 @@ Implemente a integração entre backend e frontend relativa ao módulo clientes
 - Cole o prompt a seguir:
 
 ```bash
-Implemente a sincronização entre clientes e usuários tanto no backend quanto no frontend. Quando um novo usuário se cadastrar no Clerk, um cliente deverá ser criado automaticamente no banco de dados
+Implemente a sincronização entre clientes e usuários.
+
+Toda lógica de sincronização deverá ficar apenas no backend.
+
+Não deverá ser usado o mecanismo de webhooks do clerk.
+
+O frontend passará ao backend as informações do usuário relevantes para o contexto como email e nome.
+
+O backend verificará se já existe um cliente com o email do usuário. Caso contrário, criará um novo cliente com os dados passados pelo frontend.
 ```
 
 - Interaja com o agente para ajustar o código gerado.

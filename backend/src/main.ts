@@ -8,9 +8,7 @@ async function bootstrap() {
   };
   const app = await NestFactory.create(AppModule, { rawBody: true });
   app.enableCors();
-  app.setGlobalPrefix('v1', {
-    exclude: ['webhooks/(.*)'],
-  });
+  app.setGlobalPrefix('v1');
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

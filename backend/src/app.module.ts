@@ -7,10 +7,9 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { DatabaseModule } from './database/database.module';
 import { TenantInterceptor } from './core/interceptors/tenant.interceptor';
-import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 @Module({
-  imports: [CatalogModule, CustomersModule, OrdersModule, DatabaseModule, WebhooksModule],
+  imports: [CatalogModule, CustomersModule, OrdersModule, DatabaseModule],
   controllers: [AppController],
   providers: [
     AppService,
