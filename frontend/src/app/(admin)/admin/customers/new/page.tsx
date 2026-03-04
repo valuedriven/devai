@@ -1,7 +1,7 @@
 import { CustomerForm } from "@/components/admin/CustomerForm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/Button";
+import { buttonVariants } from "@/components/ui/Button";
 
 export default function NewCustomerPage() {
     return (

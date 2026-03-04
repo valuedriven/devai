@@ -10,13 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Trash2, CheckCircle, LogIn } from "lucide-react";
 
-interface CartItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-}
+
 
 export default function CartPage() {
     const router = useRouter();

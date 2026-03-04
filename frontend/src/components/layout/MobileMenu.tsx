@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { X, LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -9,7 +9,7 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose, isAdmin }: MobileMenuProps) {
-    const router = useRouter();
+
 
     const handleNavigate = () => {
         onClose();

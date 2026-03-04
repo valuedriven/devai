@@ -4,8 +4,8 @@ import { CustomersController } from './controllers/customers.controller';
 import { DatabaseModule } from '../../database/database.module';
 
 @Module({
-    imports: [DatabaseModule],
-    controllers: [CustomersController],
-    providers: [CustomersService],
+  imports: [DatabaseModule],
+  controllers: [CustomersController],
+  providers: [CustomersService],
 })
-export class CustomersModule { }
+export class CustomersModule {}

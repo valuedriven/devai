@@ -19,4 +19,4 @@ import { TenantInterceptor } from './core/interceptors/tenant.interceptor';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

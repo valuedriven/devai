@@ -1,9 +1,7 @@
-"use client";
+import { currentUser } from "@clerk/nextjs/server";
 
-import { useUser } from "@clerk/nextjs";
-
-export function AdminHeader() {
-    const { user } = useUser();
+export async function AdminHeader() {
+    const user = await currentUser();
     const userName = user?.fullName || user?.firstName || "Admin";
 
     return (

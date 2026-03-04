@@ -1,0 +1,59 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/home/junilson/projetos/devai/frontend/src/app/(admin)/admin/customers/[id]/edit/page.tsx
+  4:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/app/(admin)/admin/customers/new/page.tsx
+  4:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/app/(admin)/layout.tsx
+  16:11  warning  'userName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/app/(shop)/cart/page.tsx
+  13:11  warning  'CartItem' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/app/(shop)/orders/page.tsx
+  2:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/app/(shop)/products/[id]/page.tsx
+  5:21  warning  'ShoppingCart' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/components/layout/Header.tsx
+  28:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/junilson/projetos/devai/frontend/src/components/layout/Header.tsx:28:9
+  26 |
+  27 |     useEffect(() => {
+> 28 |         setSearchValue(searchParams.get("search") || "");
+     |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  29 |     }, [searchParams]);
+  30 |
+  31 |     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {  react-hooks/set-state-in-effect
+
+/home/junilson/projetos/devai/frontend/src/components/layout/MobileMenu.tsx
+  12:11  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/lib/CartContext.tsx
+  3:54  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/junilson/projetos/devai/frontend/src/lib/data.ts
+  3:46  warning  'OrderItem' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 10 problems (1 error, 9 warnings)
+
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path /home/junilson/projetos/devai/frontend
+npm error workspace frontend@0.1.0
+npm error location /home/junilson/projetos/devai/frontend
+npm error command failed
+npm error command sh -c eslint

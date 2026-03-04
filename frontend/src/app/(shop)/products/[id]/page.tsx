@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import { getProduct } from "@/lib/data";
-import { ArrowLeft, ShoppingCart, Truck } from "lucide-react";
+import { ArrowLeft, Truck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/ui/Button";

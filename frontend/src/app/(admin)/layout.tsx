@@ -13,7 +13,7 @@ export default async function AdminLayout({
         redirect("/");
     }
 
-    const userName = user?.firstName || "Admin";
+
 
     return (
         <div className="flex-1 bg-slate-50 min-h-screen flex flex-col overflow-x-hidden">

@@ -5,77 +5,80 @@ import { PrismaService } from '../../../database/prisma.service';
 
 @Injectable()
 export class CustomersService {
-    constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-    async create(createCustomerDto: CreateCustomerDto, tenantId: string) {
-        return this.prisma.customers.create({
-            data: {
-                ...createCustomerDto,
-                tenantId,
-            },
-        });
+  async create(createCustomerDto: CreateCustomerDto, tenantId: string) {
+    return this.prisma.customers.create({
+      data: {
+        ...createCustomerDto,
+        tenantId,
+      },
+    });
+  }
+
+  async syncCustomer(email: string, name: string, tenantId: string) {
+    const existingCustomer = await this.prisma.customers.findFirst({
+      where: { email, tenantId },
+    });
+
+    if (existingCustomer) {
+      return existingCustomer;
     }
 
-    async syncCustomer(email: string, name: string, tenantId: string) {
-        const existingCustomer = await this.prisma.customers.findFirst({
-            where: { email, tenantId },
-        });
+    return this.prisma.customers.create({
+      data: {
+        email,
+        name,
+        tenantId,
+        active: true,
+      },
+    });
+  }
 
-        if (existingCustomer) {
-            return existingCustomer;
-        }
+  async findAll(tenantId: string) {
+    return this.prisma.customers.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 
-        return this.prisma.customers.create({
-            data: {
-                email,
-                name,
-                tenantId,
-                active: true,
-            },
-        });
+  async findAllActive(tenantId: string) {
+    return this.prisma.customers.findMany({
+      where: { tenantId, active: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async findOne(id: bigint, tenantId: string) {
+    const customer = await this.prisma.customers.findFirst({
+      where: { id, tenantId },
+    });
+
+    if (!customer) {
+      throw new NotFoundException(`Customer with ID ${id} not found`);
     }
 
-    async findAll(tenantId: string) {
-        return this.prisma.customers.findMany({
-            where: { tenantId },
-            orderBy: { createdAt: 'desc' },
-        });
-    }
+    return customer;
+  }
 
-    async findAllActive(tenantId: string) {
-        return this.prisma.customers.findMany({
-            where: { tenantId, active: true },
-            orderBy: { name: 'asc' },
-        });
-    }
+  async update(
+    id: bigint,
+    updateCustomerDto: UpdateCustomerDto,
+    tenantId: string,
+  ) {
+    await this.findOne(id, tenantId); // verify exists
 
-    async findOne(id: bigint, tenantId: string) {
-        const customer = await this.prisma.customers.findFirst({
-            where: { id, tenantId },
-        });
+    return this.prisma.customers.update({
+      where: { id },
+      data: updateCustomerDto,
+    });
+  }
 
-        if (!customer) {
-            throw new NotFoundException(`Customer with ID ${id} not found`);
-        }
+  async remove(id: bigint, tenantId: string) {
+    await this.findOne(id, tenantId); // verify exists
 
-        return customer;
-    }
-
-
-    async update(id: bigint, updateCustomerDto: UpdateCustomerDto, tenantId: string) {
-        await this.findOne(id, tenantId); // verify exists
-
-        return this.prisma.customers.update({
-            where: { id },
-            data: updateCustomerDto,
-        });
-    }
-
-    async remove(id: bigint, tenantId: string) {
-        await this.findOne(id, tenantId); // verify exists
-
-        return this.prisma.customers.delete({
-            where: { id },
-        });
-    }
+    return this.prisma.customers.delete({
+      where: { id },
+    });
+  }
 }

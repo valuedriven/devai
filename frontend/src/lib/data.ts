@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Category, Product, Customer, Order, OrderItem } from './types';
+import { Category, Product, Customer, Order } from './types';
 import { fetchApi } from './api';
 
 export async function getCategories(search?: string): Promise<Category[]> {
@@ -319,7 +319,11 @@ export async function getOrders(customerEmail?: string, search?: string): Promis
             id: String(o.id),
             date: o.createdAt,
             total: Number(o.totalAmount),
-            customerId: String(o.customerId)
+            customerId: String(o.customerId),
+            customer: o.customers ? {
+                ...o.customers,
+                id: String(o.customers.id)
+            } : undefined
         })) as Order[];
 
         if (search) {
@@ -349,6 +353,10 @@ export async function getOrder(id: string): Promise<Order | null> {
             date: data.createdAt,
             total: Number(data.totalAmount),
             customerId: String(data.customerId),
+            customer: data.customers ? {
+                ...data.customers,
+                id: String(data.customers.id)
+            } : undefined,
             items: (data.order_items || []).map((item: any) => ({
                 ...item,
                 id: String(item.id),

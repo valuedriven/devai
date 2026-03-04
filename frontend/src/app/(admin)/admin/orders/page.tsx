@@ -25,7 +25,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
         },
         {
             header: "Cliente",
-            cell: (order) => `Cliente ${order.customerId}`,
+            cell: (order) => order.customer?.name || `Cliente ${order.customerId}`,
         },
         {
             header: "Data",

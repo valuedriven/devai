@@ -1617,3 +1617,38 @@ a.btn-primary {
 .pl-9 {
   padding-left: 2.25rem;
 }
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.align-middle {
+  vertical-align: middle;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.border-collapse {
+  border-collapse: collapse;
+}
+
+.bg-muted\/50 {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+.hover\:bg-muted\/50:hover {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.caption-bottom {
+  caption-side: bottom;
+}

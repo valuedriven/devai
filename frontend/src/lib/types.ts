@@ -58,6 +58,7 @@ export interface Order {
     tenant_id?: string;
     // Nested structure for UI convenience
     items?: OrderItem[];
+    customer?: Customer;
     // Backwards compatibility with mock data fields
     date: string;
     total: number;

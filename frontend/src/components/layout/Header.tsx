@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ShoppingCart, User, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useCart } from "@/lib/CartContext";
@@ -23,10 +23,13 @@ export function Header() {
     const searchParams = useSearchParams();
 
     const [searchValue, setSearchValue] = useState(searchParams.get("search") || "");
+    const [prevSearch, setPrevSearch] = useState(searchParams.get("search") || "");
 
-    useEffect(() => {
-        setSearchValue(searchParams.get("search") || "");
-    }, [searchParams]);
+    const currentSearch = searchParams.get("search") || "";
+    if (currentSearch !== prevSearch) {
+        setPrevSearch(currentSearch);
+        setSearchValue(currentSearch);
+    }
 
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
