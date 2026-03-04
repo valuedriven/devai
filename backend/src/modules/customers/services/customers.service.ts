@@ -16,6 +16,25 @@ export class CustomersService {
         });
     }
 
+    async syncCustomer(email: string, name: string, tenantId: string) {
+        const existingCustomer = await this.prisma.customers.findFirst({
+            where: { email, tenantId },
+        });
+
+        if (existingCustomer) {
+            return existingCustomer;
+        }
+
+        return this.prisma.customers.create({
+            data: {
+                email,
+                name,
+                tenantId,
+                active: true,
+            },
+        });
+    }
+
     async findAll(tenantId: string) {
         return this.prisma.customers.findMany({
             where: { tenantId },
@@ -42,11 +61,6 @@ export class CustomersService {
         return customer;
     }
 
-    async findByClerkId(clerkId: string, tenantId: string) {
-        return this.prisma.customers.findFirst({
-            where: { clerkId, tenantId },
-        });
-    }
 
     async update(id: bigint, updateCustomerDto: UpdateCustomerDto, tenantId: string) {
         await this.findOne(id, tenantId); // verify exists

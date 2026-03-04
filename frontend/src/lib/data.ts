@@ -284,6 +284,23 @@ export async function deleteCustomer(id: string): Promise<boolean> {
     }
 }
 
+export async function syncCustomerApi(user: { email: string; name: string }): Promise<Customer | null> {
+    try {
+        const data = await fetchApi<any>('/customers/sync', {
+            method: 'POST',
+            body: JSON.stringify(user)
+        });
+        return {
+            ...data,
+            id: String(data.id)
+        } as Customer;
+    } catch (error) {
+        console.error('Error syncing customer:', error);
+        return null;
+    }
+}
+
+
 export async function getOrders(): Promise<Order[]> {
     try {
         const orders = await fetchApi<any[]>('/orders');

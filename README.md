@@ -79,8 +79,6 @@ O projeto é estruturado como um **Monorepo** utilizando npm workspaces, garanti
    ```env
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key
    CLERK_SECRET_KEY=your_secret
-   NEXT_PUBLIC_SUPABASE_URL=your_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
    ```
 
 4. **Prepare o Banco de Dados**
