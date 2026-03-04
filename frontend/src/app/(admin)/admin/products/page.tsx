@@ -10,6 +10,8 @@ import { AdminActions } from "@/components/admin/AdminActions";
 import { Product } from "@/lib/types";
 
 // No client hook needed – use server‑side searchParams
+export const dynamic = 'force-dynamic';
+
 export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
     const search = (await searchParams).search ?? '';
     const products = await getProducts(search);

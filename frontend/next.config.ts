@@ -6,9 +6,13 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'standalone',
   reactCompiler: true,
-  outputFileTracingRoot: path.resolve(__dirname, ".."),
+  // standalone não é necessário no Vercel e pode causar problemas de caminhos em monorepos
+  // output: 'standalone',
+  // outputFileTracingRoot só deve ser usado se houver dependências fora do frontend
+  // que precisam ser rastreadas para o runtime (e.g. em Docker)
+  // No Vercel, isso pode causar o erro de lstat com caminhos duplicados
+  outputFileTracingRoot: process.env.VERCEL ? undefined : path.resolve(__dirname, ".."),
   turbopack: {
     root: path.resolve(__dirname, ".."),
   },

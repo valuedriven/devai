@@ -9,6 +9,8 @@ import { AdminDataTable, Column } from "@/components/admin/AdminDataTable";
 import { AdminActions } from "@/components/admin/AdminActions";
 import { Customer } from "@/lib/types";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminCustomersPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
     const search = (await searchParams).search ?? '';
     const customers = await getCustomers(search);

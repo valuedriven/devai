@@ -3,6 +3,8 @@ import { getOrders } from "@/lib/data";
 import { Badge } from "@/components/ui/Badge";
 import { DollarSign, ShoppingBag, Clock } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
     const orders = await getOrders();
     const totalSales = orders
