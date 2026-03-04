@@ -3,7 +3,7 @@ export class CreateProductDto {
     description: string;
     price: number;
     imageUrl?: string;
-    categoryId: string;
+    categoryId: number;
     stock: number;
-    status?: 'active' | 'inactive';
+    active?: boolean;
 }

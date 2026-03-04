@@ -12,11 +12,12 @@ export class TenantInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const request = context.switchToHttp().getRequest();
         const tenantId = request.headers['x-tenant-id'];
+        const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
-        if (!tenantId) {
-            // No MVP, podemos permitir um default ou lançar erro se for obrigatório
-            // Por enquanto, vamos garantir que exista para fins de rastreabilidade
-            request['tenantId'] = 'default-tenant';
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        if (!tenantId || !uuidRegex.test(tenantId)) {
+            request['tenantId'] = DEFAULT_TENANT_ID;
         } else {
             request['tenantId'] = tenantId;
         }

@@ -4,7 +4,7 @@ export class Product {
     description: string;
     price: number;
     imageUrl?: string;
-    status: 'active' | 'inactive';
+    active: boolean;
     stock: number;
     categoryId: string;
     createdAt: Date;

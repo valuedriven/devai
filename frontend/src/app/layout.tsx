@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ptBR } from "@clerk/localizations";
 import { Inter, Outfit } from "next/font/google";
 import { CartProvider } from "@/lib/CartContext";
+import { UserSync } from "@/components/auth/UserSync";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,6 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider localization={ptBR}>
+      <UserSync />
       <CartProvider>
         <html lang="pt-BR" className={`${inter.variable} ${outfit.variable}`}>
           <body className="font-sans min-h-screen flex flex-col">{children}</body>

@@ -47,6 +47,6 @@ Plataforma de e-commerce para microempreendedores: vitrine digital para clientes
 
 ## Documentação não disponível
 
-- Pastas que não devem ser lidas: 
+- Não acesse o conteúdo das seguintes pastas:
   - `docs/fluxo`
   - `docs/diagramas`

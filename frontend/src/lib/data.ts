@@ -1,4 +1,5 @@
-import { supabase } from './supabase';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Category, Product, Customer, Order, OrderItem } from './types';
 import { fetchApi } from './api';
 
@@ -19,6 +20,8 @@ export async function getCategories(): Promise<Category[]> {
 export async function getCategory(id: string): Promise<Category | null> {
     try {
         const data = await fetchApi<any>(`/categories/${id}`);
+        if (!data) return null;
+
         return {
             ...data,
             id: String(data.id),
@@ -87,7 +90,7 @@ export async function getProducts(): Promise<Product[]> {
             categoryId: String(p.categoryId),
             image_url: p.imageUrl || p.image || '/placeholder.png',
             category_id: String(p.categoryId),
-            active: p.status === 'active'
+            active: p.active !== undefined ? p.active : true
         })) as Product[];
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -98,6 +101,8 @@ export async function getProducts(): Promise<Product[]> {
 export async function getProduct(id: string): Promise<Product | null> {
     try {
         const data = await fetchApi<any>(`/products/${id}`);
+        if (!data) return null;
+
         return {
             ...data,
             id: String(data.id),
@@ -105,7 +110,7 @@ export async function getProduct(id: string): Promise<Product | null> {
             categoryId: String(data.categoryId),
             image_url: data.imageUrl || data.image || '/placeholder.png',
             category_id: String(data.categoryId),
-            active: data.status === 'active'
+            active: data.active !== undefined ? data.active : true
         } as Product;
     } catch (error) {
         console.error('Error fetching product:', error);
@@ -122,7 +127,7 @@ export async function createProduct(product: Omit<Product, 'id'>): Promise<Produ
             imageUrl: product.image_url || product.image,
             categoryId: String(product.category_id || product.categoryId),
             stock: Number(product.stock),
-            status: product.active ? 'active' : 'inactive'
+            active: !!product.active
         };
 
         const data = await fetchApi<any>('/products', {
@@ -148,7 +153,7 @@ export async function updateProduct(id: string, product: Partial<Omit<Product, '
         if (product.image_url || product.image) dto.imageUrl = product.image_url || product.image;
         if (product.category_id || product.categoryId) dto.categoryId = String(product.category_id || product.categoryId);
         if (product.stock !== undefined) dto.stock = Number(product.stock);
-        if (product.active !== undefined) dto.status = product.active ? 'active' : 'inactive';
+        if (product.active !== undefined) dto.active = !!product.active;
 
         const data = await fetchApi<any>(`/products/${id}`, {
             method: 'PATCH',
@@ -178,16 +183,8 @@ export async function deleteProduct(id: string): Promise<boolean> {
 
 export async function getCustomers(): Promise<Customer[]> {
     try {
-        const { data, error } = await supabase
-            .from('customers')
-            .select('*')
-            .order('name');
-
-        if (error) {
-            console.error('Error fetching customers:', error);
-            return [];
-        }
-        return (data || []).map(c => ({
+        const customers = await fetchApi<any[]>('/customers');
+        return customers.map(c => ({
             ...c,
             id: String(c.id)
         })) as Customer[];
@@ -197,24 +194,106 @@ export async function getCustomers(): Promise<Customer[]> {
     }
 }
 
+export async function getCustomer(id: string): Promise<Customer | null> {
+    try {
+        const data = await fetchApi<any>(`/customers/${id}`);
+        if (!data) return null;
+
+        return {
+            ...data,
+            id: String(data.id)
+        } as Customer;
+    } catch (error) {
+        console.error('Error fetching customer:', error);
+        return null;
+    }
+}
+
+export async function getCustomerByClerkId(clerkId: string): Promise<Customer | null> {
+    try {
+        const data = await fetchApi<any>(`/customers/clerk/${clerkId}`);
+        if (!data) return null;
+
+        return {
+            ...data,
+            id: String(data.id)
+        } as Customer;
+    } catch (error) {
+        console.error('Error fetching customer by clerk ID:', error);
+        return null;
+    }
+}
+
+export async function createCustomer(customer: Omit<Customer, 'id' | 'created_at' | 'updated_at'> & { clerkId?: string }): Promise<Customer | null> {
+    try {
+        const dto = {
+            clerkId: customer.clerkId,
+            name: customer.name,
+            email: customer.email,
+            phone: customer.phone,
+            address: customer.address,
+            active: !!customer.active
+        };
+
+        const data = await fetchApi<any>('/customers', {
+            method: 'POST',
+            body: JSON.stringify(dto)
+        });
+        return {
+            ...data,
+            id: String(data.id)
+        } as Customer;
+    } catch (error) {
+        console.error('Error creating customer:', error);
+        return null;
+    }
+}
+
+export async function updateCustomer(id: string, customer: Partial<Omit<Customer, 'id'>>): Promise<Customer | null> {
+    try {
+        const dto: any = {};
+        if (customer.name) dto.name = customer.name;
+        if (customer.email) dto.email = customer.email;
+        if (customer.phone !== undefined) dto.phone = customer.phone;
+        if (customer.address !== undefined) dto.address = customer.address;
+        if (customer.active !== undefined) dto.active = !!customer.active;
+
+        const data = await fetchApi<any>(`/customers/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(dto)
+        });
+        return {
+            ...data,
+            id: String(data.id)
+        } as Customer;
+    } catch (error) {
+        console.error('Error updating customer:', error);
+        return null;
+    }
+}
+
+export async function deleteCustomer(id: string): Promise<boolean> {
+    try {
+        await fetchApi(`/customers/${id}`, {
+            method: 'DELETE'
+        });
+        return true;
+    } catch (error) {
+        console.error('Error deleting customer:', error);
+        return false;
+    }
+}
+
 export async function getOrders(): Promise<Order[]> {
     try {
-        const { data, error } = await supabase
-            .from('orders')
-            .select('*')
-            .order('created_at', { ascending: false });
+        const orders = await fetchApi<any[]>('/orders');
 
-        if (error) {
-            console.error('Error fetching orders:', error);
-            return [];
-        }
-
-        return (data || []).map(o => ({
+        return orders.map(o => ({
             ...o,
             id: String(o.id),
-            date: o.created_at,
-            total: Number(o.total_amount),
-            customerId: String(o.customer_id)
+            date: o.createdAt,
+            total: Number(o.totalAmount),
+            customerId: String(o.customerId)
         })) as Order[];
     } catch (error) {
         console.error('Error fetching orders:', error);
@@ -223,31 +302,63 @@ export async function getOrders(): Promise<Order[]> {
 }
 
 export async function getOrder(id: string): Promise<Order | null> {
-    const { data, error } = await supabase
-        .from('orders')
-        .select(`
-            *,
-            order_items(*)
-        `)
-        .eq('id', id)
-        .single();
+    try {
+        const data = await fetchApi<any>(`/orders/${id}`);
+        if (!data) return null;
 
-    if (error) {
+        return {
+            ...data,
+            id: String(data.id),
+            date: data.createdAt,
+            total: Number(data.totalAmount),
+            customerId: String(data.customerId),
+            items: (data.order_items || []).map((item: any) => ({
+                ...item,
+                id: String(item.id),
+                productId: String(item.productId),
+                unitPrice: Number(item.unitPrice),
+                product: item.products ? {
+                    ...item.products,
+                    id: String(item.products.id),
+                    image: item.products.imageUrl || item.products.image || '/placeholder.png',
+                    categoryId: String(item.products.categoryId),
+                    image_url: item.products.imageUrl || item.products.image || '/placeholder.png',
+                    category_id: String(item.products.categoryId),
+                    active: item.products.active !== undefined ? item.products.active : true
+                } : undefined
+            }))
+        } as Order;
+    } catch (error) {
         console.error('Error fetching order:', error);
         return null;
     }
+}
 
-    return {
-        ...data,
-        id: String(data.id),
-        date: data.created_at,
-        total: Number(data.total_amount),
-        customerId: String(data.customer_id),
-        items: (data.order_items || []).map((item: { id: number; product_id: number; unit_price: number }) => ({
-            ...item,
-            id: String(item.id),
-            productId: String(item.product_id),
-            unitPrice: Number(item.unit_price)
-        }))
-    } as Order;
+export async function updateOrderStatus(id: string, status: string): Promise<boolean> {
+    try {
+        await fetchApi(`/orders/${id}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status })
+        });
+        return true;
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        return false;
+    }
+}
+
+export async function createOrder(orderDto: any): Promise<Order | null> {
+    try {
+        const data = await fetchApi<any>('/orders', {
+            method: 'POST',
+            body: JSON.stringify(orderDto)
+        });
+        return {
+            ...data,
+            id: String(data.id),
+        } as Order;
+    } catch (error) {
+        console.error('Error creating order:', error);
+        return null;
+    }
 }

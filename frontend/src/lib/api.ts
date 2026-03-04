@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/v1';
-const DEFAULT_TENANT_ID = 'default-tenant';
+const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
 export async function fetchApi<T>(
     path: string,
@@ -20,5 +20,6 @@ export async function fetchApi<T>(
         throw new Error(error.message || 'API request failed');
     }
 
-    return response.json();
+    const text = await response.text();
+    return text ? JSON.parse(text) : (null as unknown as T);
 }
