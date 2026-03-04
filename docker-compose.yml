@@ -2,59 +2,61 @@ services:
   db:
     image: postgres:15-alpine
     container_name: devai-db
+    restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dbname
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-dbname}
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d dbname" ]
-      interval: 5s
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-dbname}" ]
+      interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - devai-network
+      - app-network
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: devai-backend
+    restart: always
     env_file:
-      - ./backend/.env.example
+      - ./backend/.env
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${PORT:-3001}:${PORT:-3001}"
     depends_on:
       db:
         condition: service_healthy
     networks:
-      - devai-network
+      - app-network
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=http://backend:${PORT:-3000}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:3001}
     container_name: devai-frontend
+    restart: always
     env_file:
-      - ./frontend/.env.example
-    environment:
-      - NEXT_PUBLIC_API_URL=http://backend:${PORT:-3000}
+      - ./frontend/.env
     ports:
-      - "${PORT:-3001}:${PORT:-3001}"
+      - "${PORT:-3000}:${PORT:-3000}"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     networks:
-      - devai-network
-
-volumes:
-  db-data:
-
+      - app-network
 
 networks:
-  devai-network:
+  app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
