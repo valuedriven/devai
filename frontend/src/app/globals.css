@@ -419,8 +419,8 @@ h6 {
   white-space: nowrap;
   border-radius: var(--radius);
   font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: 1px solid transparent;
   outline: none;
@@ -449,7 +449,7 @@ a.btn-primary {
 
 .btn-primary:hover {
   background-color: hsl(245, 58%, 45%);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
 }
 
@@ -834,14 +834,15 @@ a.btn-primary {
   height: 100%;
   background-color: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
 .product-image-wrapper {
@@ -849,6 +850,7 @@ a.btn-primary {
   aspect-ratio: 1 / 1;
   background-color: hsl(var(--muted));
   overflow: hidden;
+  padding: 8px;
 }
 
 .product-image-link {
@@ -861,6 +863,7 @@ a.btn-primary {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 12px;
   transition: transform 0.5s ease;
 }
 
@@ -934,10 +937,10 @@ a.btn-primary {
 
 /* Layout: Header */
 .header-root {
-  border-bottom: 1px solid hsl(var(--border));
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -945,7 +948,8 @@ a.btn-primary {
 }
 
 .dark .header-root {
-  background-color: rgba(15, 23, 42, 0.8);
+  background-color: rgba(15, 23, 42, 0.7);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
 }
 
 .header-container {
@@ -1086,8 +1090,8 @@ a.btn-primary {
 .mobile-menu-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
   z-index: 99;
   opacity: 0;
   visibility: hidden;
@@ -1097,6 +1101,34 @@ a.btn-primary {
 .mobile-menu-overlay.open {
   opacity: 1;
   visibility: visible;
+}
+
+/* Premium Menu Trigger Button */
+.menu-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+  border-radius: var(--radius);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.menu-trigger-btn:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.menu-trigger-btn:active {
+  transform: scale(0.95);
 }
 
 .mobile-menu-content {

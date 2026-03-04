@@ -29,7 +29,7 @@ export function Header() {
                     {/* Mobile Menu Trigger */}
                     {/* Menu Trigger - Visible on mobile ALWAYS, and on desktop for ADMINS as a 'Lateral Menu' */}
                     <button
-                        className={`${!isAdmin ? "hidden-desktop" : ""} btn-icon-size btn-ghost rounded-md`}
+                        className={`${!isAdmin ? "hidden-desktop" : ""} menu-trigger-btn`}
                         onClick={() => setIsMenuOpen(true)}
                     >
                         <Menu className="icon-md" />
@@ -73,7 +73,13 @@ export function Header() {
                                 Admin
                             </Link>
                         )}
-                        <UserButton />
+                        <UserButton
+                            appearance={{
+                                elements: {
+                                    userButtonAvatarBox: "border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all shadow-sm",
+                                }
+                            }}
+                        />
                     </SignedIn>
                 </div>
             </div>
