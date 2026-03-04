@@ -11,7 +11,7 @@ import { CategoryService } from '../services/category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { TenantId } from '../../../core/decorators/tenant-id.decorator';
 
-@Controller('v1/categories')
+@Controller('categories')
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) { }
 
@@ -30,7 +30,7 @@ export class CategoryController {
 
     @Get(':id')
     findOne(@Param('id') id: string, @TenantId() tenantId: string) {
-        return this.categoryService.findOne(id, tenantId);
+        return this.categoryService.findOne(+id, tenantId);
     }
 
     @Patch(':id')
@@ -39,11 +39,11 @@ export class CategoryController {
         @Body() updateCategoryDto: Partial<CreateCategoryDto>,
         @TenantId() tenantId: string,
     ) {
-        return this.categoryService.update(id, updateCategoryDto, tenantId);
+        return this.categoryService.update(+id, updateCategoryDto, tenantId);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string, @TenantId() tenantId: string) {
-        return this.categoryService.remove(id, tenantId);
+        return this.categoryService.remove(+id, tenantId);
     }
 }

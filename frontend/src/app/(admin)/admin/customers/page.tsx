@@ -3,8 +3,9 @@ import { Button, buttonVariants } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { getCustomers } from "@/lib/data";
-import { Plus, Edit, Trash, Search, Mail, Phone } from "lucide-react";
+import { Plus, Search, Mail, Phone } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import { CustomerActions } from "@/components/admin/CustomerActions";
 
 export default async function AdminCustomersPage() {
     const customers = await getCustomers();
@@ -61,14 +62,7 @@ export default async function AdminCustomersPage() {
                                             </Badge>
                                         </td>
                                         <td className="p-4 align-middle text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Link href={`/admin/customers/${customer.id}/edit`} className={buttonVariants({ variant: "ghost", size: "icon" })}>
-                                                    <Edit className="h-4 w-4" />
-                                                </Link>
-                                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-                                                    <Trash className="h-4 w-4" />
-                                                </Button>
-                                            </div>
+                                            <CustomerActions id={customer.id} />
                                         </td>
                                     </tr>
                                 ))}

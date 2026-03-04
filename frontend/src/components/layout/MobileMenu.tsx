@@ -1,12 +1,20 @@
 import Link from "next/link";
-import { X } from "lucide-react";
+import { X, LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface MobileMenuProps {
     isOpen: boolean;
     onClose: () => void;
+    isAdmin?: boolean;
 }
 
-export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose, isAdmin }: MobileMenuProps) {
+    const router = useRouter();
+
+    const handleNavigate = () => {
+        onClose();
+    };
+
     return (
         <>
             {/* Overlay */}
@@ -25,18 +33,57 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 </div>
 
                 <nav className="mobile-menu-nav">
-                    <Link href="/" className="mobile-menu-link" onClick={onClose}>
+                    <div className="pb-2 border-b mb-2">
+                        <span className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                            Loja
+                        </span>
+                    </div>
+                    <Link href="/" className="mobile-menu-link" onClick={handleNavigate}>
                         Início
                     </Link>
-                    <Link href="/products" className="mobile-menu-link" onClick={onClose}>
+                    <Link href="/products" className="mobile-menu-link" onClick={handleNavigate}>
                         Produtos
                     </Link>
-                    <Link href="/cart" className="mobile-menu-link" onClick={onClose}>
+                    <Link href="/cart" className="mobile-menu-link" onClick={handleNavigate}>
                         Carrinho
                     </Link>
-                    <Link href="/login" className="mobile-menu-link" onClick={onClose}>
-                        Minha Conta
-                    </Link>
+
+                    {isAdmin && (
+                        <div className="mt-6 pt-4 border-t">
+                            <div className="pb-2">
+                                <span className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Administração
+                                </span>
+                            </div>
+                            <Link href="/admin" className="mobile-menu-link" onClick={handleNavigate}>
+                                <LayoutDashboard className="mr-3 h-5 w-5" />
+                                Dashboard
+                            </Link>
+                            <Link href="/admin/products" className="mobile-menu-link" onClick={handleNavigate}>
+                                <Package className="mr-3 h-5 w-5" />
+                                Produtos
+                            </Link>
+                            <Link href="/admin/categories" className="mobile-menu-link" onClick={handleNavigate}>
+                                <Tags className="mr-3 h-5 w-5" />
+                                Categorias
+                            </Link>
+                            <Link href="/admin/customers" className="mobile-menu-link" onClick={handleNavigate}>
+                                <Users className="mr-3 h-5 w-5" />
+                                Clientes
+                            </Link>
+                            <Link href="/admin/orders" className="mobile-menu-link" onClick={handleNavigate}>
+                                <ShoppingBag className="mr-3 h-5 w-5" />
+                                Pedidos
+                            </Link>
+
+                            <div className="my-2 border-t border-slate-200"></div>
+
+                            <Link href="/" className="mobile-menu-link text-red-500 hover:text-red-600 hover:bg-red-50" onClick={handleNavigate}>
+                                <LogOut className="mr-3 h-5 w-5" />
+                                Sair da Loja
+                            </Link>
+                        </div>
+                    )}
                 </nav>
             </div>
         </>

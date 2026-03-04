@@ -1,16 +1,21 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { LayoutDashboard, Package, Users, ShoppingBag, LogOut, Tags } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
+import { AdminHeader } from "@/components/layout/AdminHeader";
 
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const user = await currentUser();
+    const userName = user?.firstName || "Admin";
+
     return (
         <div className="flex min-h-screen">
-            {/* Sidebar */}
-            <aside className="w-64 bg-slate-900 text-slate-50 flex flex-col fixed inset-y-0">
+            {/* Sidebar - Always visible fixed side menu */}
+            <aside className="w-64 bg-slate-900 text-slate-50 flex-col fixed inset-y-0 left-0 z-20 flex">
                 <div className="h-16 flex items-center px-6 font-bold text-xl border-b border-slate-800">
                     DEVIA Admin
                 </div>
@@ -58,13 +63,10 @@ export default function AdminLayout({
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 ml-64 bg-slate-50 min-h-screen">
-                <header className="h-16 bg-white border-b flex items-center px-8 justify-between sticky top-0 z-10">
-                    <h1 className="font-semibold text-lg">Painel Administrativo</h1>
-                    <div className="text-sm text-muted-foreground">Admin User</div>
-                </header>
-                <div className="p-8">
+            {/* Main Content - Always margined */}
+            <main className="flex-1 ml-64 bg-slate-50 min-h-screen flex flex-col overflow-x-hidden">
+                <AdminHeader />
+                <div className="p-4 md:p-8 flex-1">
                     {children}
                 </div>
             </main>

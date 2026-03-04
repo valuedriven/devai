@@ -31,7 +31,7 @@
 O projeto é estruturado como um **Monorepo** utilizando npm workspaces, garantindo consistência e facilidade no compartilhamento de tipos e configurações.
 
 ### Frontend (`/frontend`)
-- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 16+](https://nextjs.org/) (App Router)
 - **UI**: [React 19](https://react.dev/) com TypeScript
 - **Estilização**: Vanilla CSS com Design System (Tokens de cores, tipografia e espaçamento)
 - **Componentes**: Biblioteca customizada e modular

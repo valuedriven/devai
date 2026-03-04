@@ -11,7 +11,7 @@ import { ProductService } from '../services/product.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { TenantId } from '../../../core/decorators/tenant-id.decorator';
 
-@Controller('v1/products')
+@Controller('products')
 export class ProductController {
     constructor(private readonly productService: ProductService) { }
 
@@ -35,7 +35,7 @@ export class ProductController {
 
     @Get(':id')
     findOne(@Param('id') id: string, @TenantId() tenantId: string) {
-        return this.productService.findOne(id, tenantId);
+        return this.productService.findOne(+id, tenantId);
     }
 
     @Patch(':id')
@@ -44,11 +44,11 @@ export class ProductController {
         @Body() updateProductDto: Partial<CreateProductDto>,
         @TenantId() tenantId: string,
     ) {
-        return this.productService.update(id, updateProductDto, tenantId);
+        return this.productService.update(+id, updateProductDto, tenantId);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string, @TenantId() tenantId: string) {
-        return this.productService.remove(id, tenantId);
+        return this.productService.remove(+id, tenantId);
     }
 }

@@ -1,116 +1,188 @@
-# Sistema de Design
+# Design System
 
-## Contexto
+Este documento define os padrões de implementação para o projeto
+**DevAI**. O objetivo é garantir uma interface **premium, minimalista e
+com estética AI-driven**, assegurando consistência visual,
+previsibilidade e independência de framework.
 
-Construir o frontend do **DevAI (E-commerce Simples com IA)** --- uma
-plataforma de e-commerce para microempreendedores com foco em
-simplicidade radical.
+------------------------------------------------------------------------
 
----
+## 1. Core Tokens (Variáveis de Sistema)
 
-## Princípios de Engenharia
+### 1.1 Cores Semânticas
 
--   Simplicidade radical
--   Feedback visual claro
--   Transições de estado previsíveis
--   Estrutura de componentes atômica
--   Estilização orientada por tokens
+``` json
+{
+  "theme": "light",
+  "colors": {
+    "brand": {
+      "primary": "#4F46E5",
+      "primary-hover": "#4338CA",
+      "accent": "#06B6D4",
+      "glass-bg": "rgba(255, 255, 255, 0.7)"
+    },
+    "neutral": {
+      "surface": "#F8FAFC",
+      "canvas": "#FFFFFF",
+      "border": "#E2E8F0",
+      "text-strong": "#0F172A",
+      "text-muted": "#64748B"
+    },
+    "status": {
+      "success": "#10B981",
+      "error": "#EF4444",
+      "warning": "#F59E0B"
+    }
+  }
+}
+```
 
----
+#### Diretrizes
 
-## Stack Alvo
+-   Tokens são a única fonte de verdade para cores.
+-   Evitar valores hardcoded na implementação.
+-   Estados interativos devem derivar de tokens semânticos.
 
--   React ou Next.js
--   Design System baseado em tokens
--   Arquitetura modular de componentes
--   Pronto para integração com backend de estados
+------------------------------------------------------------------------
 
----
+### 1.2 Geometria e Elevação
 
-## Tokens de Design
+``` json
+{
+  "rounding": {
+    "standard": "12px",
+    "pill": "9999px",
+    "card": "20px"
+  },
+  "elevation": {
+    "soft": "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
+    "premium": "0 20px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)",
+    "hover": "0 25px 50px -12px rgba(0,0,0,0.15)"
+  }
+}
+```
 
-### Cores
+#### Diretrizes
 
--   brand.primary → #2563EB
--   feedback.success → #10B981
--   feedback.error → #EF4444
--   surface.bg → #F9FAFB
--   text.main → #111827
+-   Elevação comunica hierarquia.
+-   Hover deve sempre aumentar percepção de profundidade.
+-   Evitar sombras excessivas fora dos padrões definidos.
 
-### Tipografia
+------------------------------------------------------------------------
 
--   Fonte: Inter, Roboto, sans-serif
--   H1 → 24px / Negrito
--   Body → 16px / Regular
--   Badge → 12px / Semi-negrito
+## 2. Componentes de Alta Fidelidade
 
----
+### 2.1 Card de Produto (Refined)
 
-## Componentes Base
+#### Container
 
-### Botão Primário
+-   Background: `neutral.canvas`
+-   Borda: `1px solid neutral.border`
+-   Border-radius: `rounding.card`
+-   Sombra padrão: `elevation.premium`
 
--   Raio: 8px
--   Fundo: brand.primary
--   Texto: branco
--   Estados: padrão / hover (escurecer 5%) / desabilitado (opacidade
-    0.6)
+#### Hover
 
-### Badge de Status
+-   Transição para `elevation.hover`
+-   Duração recomendada: `300ms`
+-   Transição suave e não abrupta
 
--   Formato pílula (raio 999px)
--   Variações: neutral, success, error
--   Success → Pago/Entregue
--   Error → Cancelado
+#### Imagem
 
-### Card de Produto
+-   Padding interno: `8px`
+-   Border-radius interno: `rounding.standard`
+-   A imagem nunca deve tocar diretamente as bordas externas
 
--   Proporção da imagem: 1:1
--   Padding: 16px
--   Título com no máximo 2 linhas
--   Preço com destaque visual
+#### Badges
 
-### Form
+Exemplo: "Indisponível" - Fundo: `neutral.surface` - Texto:
+`neutral.text-muted` - Opacidade: `80%` - Sempre utilizar tokens de
+status quando aplicável
 
--   Layout vertical padrão
--   Espaçamento entre campos: 16px
--   Labels sempre visíveis (não usar apenas placeholder)
--   Mensagens de erro abaixo do campo, usando feedback.error
--   Botão primário alinhado à direita no desktop e full-width no mobile
+------------------------------------------------------------------------
 
-### Input
+### 2.2 Botões (Actions)
 
--   Altura mínima: 40px
--   Border-radius: 8px
--   Border padrão: 1px solid #E5E7EB
--   Focus: outline com brand.primary
--   Estados: default / focus / error / disabled
--   Placeholder com opacidade reduzida (não substituir label)
+#### Estilo Primário
 
-### Header
+-   Background: `brand.primary`
+-   Sem borda
+-   Texto branco
+-   Peso tipográfico: `600`
 
--   Altura mínima: 64px
--   Fundo: surface.bg ou branco
--   Título da página alinhado à esquerda
--   Área de ações (ex: logout, perfil) alinhada à direita
--   Deve permanecer fixo no topo em telas administrativas
+#### Interação
 
-### Footer
+-   Hover com leve deslocamento vertical (`translateY(-2px)`)
+-   Transição suave entre 200ms e 300ms
+-   Estados obrigatórios: hover, focus, disabled
 
--   Padding vertical: 24px
--   Texto secundário em menor destaque
--   Pode conter:
-    -   Informações institucionais
-    -   Links úteis
-    -   Contato do microempreendedor
--   Layout centralizado no mobile e distribuído no desktop
+------------------------------------------------------------------------
 
----
+### 2.3 Header (Glassmorphism)
 
-## Layout
+#### Efeito Visual
 
--   Largura máxima: 1200px
--   Espaçamento do grid: 16px
--   Escala de espaçamento: 4, 8, 12, 16, 24, 32
+-   Aplicar `backdrop-filter: blur(10px)`
+-   Fundo derivado de `brand.glass-bg`
 
-----
+#### Borda
+
+-   Apenas borda inferior
+-   Cor baseada em `neutral.border` com opacidade reduzida
+
+------------------------------------------------------------------------
+
+## 3. Regras de Layout e UX
+
+### Grid
+
+-   Espaçamento fixo de `32px` entre itens principais.
+
+### Container
+
+-   Centralizado.
+-   Largura máxima recomendada: `1280px`.
+
+### Empty States
+
+-   Ícones lineares leves.
+-   Cor: `#94A3B8`
+-   Texto centralizado.
+-   Linguagem clara, orientada à ação.
+
+### Loading
+
+-   Utilizar Skeleton Screens.
+-   Gradiente pulsante discreto.
+-   Estrutura deve refletir layout final do componente.
+
+------------------------------------------------------------------------
+
+## 4. Tipografia
+
+### Font Family
+
+`'Inter', system-ui, -apple-system, sans-serif`
+
+### Headings
+
+-   Peso: `700`
+-   Letter-spacing: `-0.02em`
+
+### Body
+
+-   Peso: `400`
+-   Line-height: `1.6`
+
+------------------------------------------------------------------------
+
+## 5. Princípios Estruturais
+
+1.  Tokens são obrigatórios e centralizados.
+2.  Componentes devem ser semanticamente nomeados.
+3.  Estados visuais são obrigatórios (hover, focus, loading, disabled).
+4.  Consistência visual supera customizações isoladas.
+5.  O sistema deve ser independente de frameworks ou bibliotecas
+    específicas.
+
+------------------------------------------------------------------------

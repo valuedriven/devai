@@ -54,13 +54,86 @@ Antes de gerar o código, apresente uma árvore de diretórios proposta para val
 ```
 
 - Analise o plano de implementação.
-- Solicite a criação incremental, focando apenas na implementação do core, database e no módulo catalog:
+- Solicite a criação incremental.
 
+### Configuração do core e database no backend
+
+- Acesse o painel Agent.
+- Acione o comando "+", Start a New Conversation.
+- Cole o prompt a seguir:
 
 ```bash
-Inicie a implementação do plano de forma incremental criando apenas as estruturas core e database, além do módulo de catálogo
+Implemente o core do projeto a ser desenvolvido no diretório backend. Inicie a implementação do plano de forma incremental criando apenas as estruturas core e database
+```
+
+- Interaja com o agente para ajustar o código gerado.
+
+### Configuração do módulo de clientes 
+
+- Acesse o painel Agent.
+- Acione o comando "+", Start a New Conversation.
+- Cole o prompt a seguir:
+
+```bash
+Implemente o módulo de clientes no backend
+```
+
+- Interaja com o agente para ajustar o código gerado.
+- Solicite a integração entre backend e frontend:
+
+```bash
+Implemente a integração entre backend e frontend relativa ao módulo clientes
+```
+
+### Configuração da sincronização entre clientes e usuários
+
+- Acesse o painel Agent.
+- Acione o comando "+", Start a New Conversation.
+- Cole o prompt a seguir:
+
+```bash
+Implemente a sincronização entre clientes e usuários tanto no backend quanto no frontend. Quando um novo usuário se cadastrar no Clerk, um cliente deverá ser criado automaticamente no banco de dados
+```
+
+- Interaja com o agente para ajustar o código gerado.
+
+
+### Configuração do módulo de catálogo 
+
+- Acesse o painel Agent.
+- Acione o comando "+", Start a New Conversation.
+- Cole o prompt a seguir:
+
+```bash
+Implemente o módulo de catálogo no backend
+```
+
+- Interaja com o agente para ajustar o código gerado.
+- Solicite a integração entre backend e frontend:
+
+```bash
+Implemente a integração entre backend e frontend relativa ao módulo catálogo
+```
+
+
+### Configuração do módulo de pedidos 
+
+- Acesse o painel Agent.
+- Acione o comando "+", Start a New Conversation.
+- Cole o prompt a seguir:
+
+```bash
+Implemente o módulo de pedidos no backend
+```
+
+- Solicite a integração entre backend e frontend:
+
+```bash
+Implemente a integração entre backend e frontend relativa ao módulo pedidos
 ```
 
 
 
-Implemente a integração do backend, módulo catálogo com o frontend
+
+
+

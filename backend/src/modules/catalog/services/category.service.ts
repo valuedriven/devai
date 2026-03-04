@@ -21,28 +21,29 @@ export class CategoryService {
         });
     }
 
-    async findOne(id: string, tenantId: string) {
+    async findOne(id: number, tenantId: string) {
         return this.prisma.category.findFirst({
-            where: { id, tenantId },
+            where: { id: BigInt(id), tenantId },
         });
     }
 
     async update(
-        id: string,
+        id: number,
         updateCategoryDto: Partial<CreateCategoryDto>,
         tenantId: string,
     ) {
         return this.prisma.category.update({
-            where: { id },
+            where: { id: BigInt(id) },
             data: updateCategoryDto,
         });
     }
 
-    async remove(id: string, tenantId: string) {
-        const item = await this.prisma.category.findFirst({ where: { id, tenantId } });
+    async remove(id: number, tenantId: string) {
+        const bigIntId = BigInt(id);
+        const item = await this.prisma.category.findFirst({ where: { id: bigIntId, tenantId } });
         if (!item) return false;
 
-        await this.prisma.category.delete({ where: { id } });
+        await this.prisma.category.delete({ where: { id: bigIntId } });
         return true;
     }
 }

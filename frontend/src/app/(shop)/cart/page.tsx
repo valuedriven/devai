@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { useCart } from "@/lib/CartContext";
+import { createOrder, getCustomerByClerkId } from "@/lib/data";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Trash2, CheckCircle, LogIn } from "lucide-react";
@@ -19,7 +20,7 @@ interface CartItem {
 
 export default function CartPage() {
     const router = useRouter();
-    const { isSignedIn } = useUser();
+    const { isSignedIn, user } = useUser();
     const { items: cartItems, updateQuantity, removeItem, clearCart, totalAmount: total } = useCart();
     const [isConfirming, setIsConfirming] = useState(false);
     const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -30,13 +31,41 @@ export default function CartPage() {
 
     const handleConfirmOrder = async () => {
         setIsConfirming(true);
-        // Simula processamento do pedido
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        const newOrderId = `${1000 + Math.floor(Math.random() * 9000)}`;
-        setOrderId(newOrderId);
-        setOrderConfirmed(true);
-        setIsConfirming(false);
-        clearCart();
+        try {
+            let customerId = undefined;
+            if (user?.id) {
+                const customer = await getCustomerByClerkId(user.id);
+                if (customer?.id) {
+                    customerId = Number(customer.id);
+                }
+            }
+
+            const orderDto = {
+                customerId,
+                totalAmount: total,
+                order_items: cartItems.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity,
+                    unitPrice: item.price
+                })),
+                status: "Novo"
+            };
+
+            const order = await createOrder(orderDto);
+
+            if (order) {
+                setOrderId(String(order.id));
+                setOrderConfirmed(true);
+                clearCart();
+            } else {
+                alert("Ocorreu um erro ao processar seu pedido. Tente novamente.");
+            }
+        } catch (error) {
+            console.error("Erro ao confirmar pedido", error);
+            alert("Ocorreu um erro ao processar seu pedido.");
+        } finally {
+            setIsConfirming(false);
+        }
     };
 
     if (orderConfirmed) {

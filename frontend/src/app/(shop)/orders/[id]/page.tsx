@@ -15,7 +15,7 @@ export default async function OrderDetailsPage({ params }: { params: { id: strin
     }
 
     const orderProducts = (order.items || []).map(item => {
-        const product = allProducts.find(p => String(p.id) === String(item.product_id));
+        const product = item.product || allProducts.find(p => String(p.id) === String(item.productId));
         return { ...item, product };
     });
 

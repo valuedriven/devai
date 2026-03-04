@@ -1,0 +1,57 @@
+
+> backend@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m21:21:30[0m] Starting compilation in watch mode...
+
+[[90m21:21:32[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDatabaseModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCustomersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOrdersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mWebhooksModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCatalogModule dependencies initialized[39m[38;5;3m +0ms[39m
+[33m[Nest] 134247  - [39m03/03/2026, 21:21:32 [33m   WARN[39m [38;5;3m[LegacyRouteConverter] [39m[33mUnsupported route path: "webhooks/(.*)". In previous versions, the symbols ?, *, and + were used to denote optional or repeating path parameters. The latest version of "path-to-regexp" now requires the use of named parameters. For example, instead of using a route like /users/* to capture all routes starting with "/users", you should use /users/*path. For more details, refer to the migration guide. Attempting to auto-convert...[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/v1}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mProductController {/v1/products}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/products, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/products, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/products/active, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/products/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/products/:id, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/products/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCategoryController {/v1/categories}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/categories, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/categories, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/categories/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/categories/:id, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/categories/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCustomersController {/v1/customers}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers/active, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers/clerk/:clerkId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers/:id, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/customers/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOrdersController {/v1/orders}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/orders, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/orders, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/orders/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/orders/:id/status, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/orders/:id, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/v1/orders/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWebhooksController {/v1/webhooks}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/webhooks/clerk, POST} route[39m[38;5;3m +0ms[39m
+Connecting to database with driver adapter...
+Database connection established successfully.
+[32m[Nest] 134247  - [39m03/03/2026, 21:21:32 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +47ms[39m
+[31m[Nest] 134247  - [39m03/03/2026, 21:25:19 [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39mSyntaxError: Cannot convert undefined to a BigInt
+    at BigInt (<anonymous>)
+    at CustomersController.findOne [90m(/home/junilson/projetos/devai/backend/[39msrc/modules/customers/controllers/customers.controller.ts:39:46[90m)[39m
+    at /home/junilson/projetos/devai/node_modules/[4m@nestjs/core[24m/router/router-execution-context.js:38:29
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+Killed

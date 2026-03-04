@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { getOrder, getProducts } from "@/lib/data";
+import { getOrder, getProducts, updateOrderStatus } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
+import { revalidatePath } from "next/cache";
 
 export default async function AdminOrderDetailsPage({ params }: { params: { id: string } }) {
     const { id } = await params;
@@ -15,7 +16,7 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
     }
 
     const orderProducts = (order.items || []).map(item => {
-        const product = allProducts.find(p => String(p.id) === String(item.product_id));
+        const product = item.product || allProducts.find(p => String(p.id) === String(item.productId));
         return { ...item, product };
     });
 
@@ -28,6 +29,17 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
         "Entregue": "success",
         "Cancelado": "error",
     };
+
+    async function handleUpdateStatus(formData: FormData) {
+        "use server";
+        if (!order) return;
+        const newStatus = formData.get("status") as string;
+        if (newStatus && newStatus !== order.status) {
+            await updateOrderStatus(id, newStatus);
+            revalidatePath(`/admin/orders/${id}`);
+            revalidatePath(`/admin/orders`);
+        }
+    }
 
     return (
         <div className="space-y-6">
@@ -53,11 +65,24 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
                         <div><strong>Cliente ID:</strong> {order.customerId}</div>
                         <div><strong>Total:</strong> {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.total)}</div>
                     </CardContent>
-                    <CardFooter>
-                        <div className="flex gap-2">
-                            <Button variant="outline">Cancelar Pedido</Button>
-                            <Button>Atualizar Status</Button>
-                        </div>
+                    <CardFooter className="flex flex-wrap gap-4">
+                        <form action={handleUpdateStatus}>
+                            <input type="hidden" name="status" value="Cancelado" />
+                            <Button type="submit" variant="outline" disabled={order.status === "Cancelado"}>
+                                Cancelar Pedido
+                            </Button>
+                        </form>
+                        <form action={handleUpdateStatus} className="flex gap-2 ml-auto">
+                            <select name="status" className="border rounded-md px-3 text-sm bg-background" defaultValue={order.status}>
+                                <option value="Novo">Novo</option>
+                                <option value="Pago">Pago</option>
+                                <option value="Preparação">Preparação</option>
+                                <option value="Faturado">Faturado</option>
+                                <option value="Despachado">Despachado</option>
+                                <option value="Entregue">Entregue</option>
+                            </select>
+                            <Button type="submit">Atualizar Status</Button>
+                        </form>
                     </CardFooter>
                 </Card>
 

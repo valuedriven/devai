@@ -1,0 +1,27 @@
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export class CreateCustomerDto {
+    @IsString()
+    @IsOptional()
+    clerkId?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
+
+    @IsString()
+    @IsOptional()
+    phone?: string;
+
+    @IsString()
+    @IsOptional()
+    address?: string;
+
+    @IsBoolean()
+    @IsOptional()
+    active?: boolean;
+}
