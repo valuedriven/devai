@@ -21,10 +21,17 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 
 ### Stack Base
 
-- **Frontend:** Next.js 16+ (App Router).
-- **Backend:** NestJS 11+; Node 24; API RESTful.
+- **Frontend:** Next.js 16+ (App Router); Vanila CSS; TypeScript.
+- **Backend:** NestJS 11+; Node 24+; TypeScript.
 - **Persistência:** PostgreSQL 15+.
-- **ORM:** Prisma 5+.
+- **ORM:** Prisma 6+.
+
+### Stack de Desenvolvimento
+
+- **Ferramentas de IA:** Google Antigravity.
+- **Gerenciamento de pacotes:** npm 10+.
+- **Ambiente de desenvolvimento local:** Docker; Docker Compose.
+- **Infraestrutura como Código (IaC):** Terraform.
 
 ### Integrações
 
@@ -37,9 +44,9 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 ### Integrações - Stack Futura
 
 - **Persistência:** AWS RDS PostgreSQL.
-- **Deployment:** AWS EKS (Kubernetes) com Terraform.
+- **Deployment:** AWS EKS.
 - **Segurança (autenticação e autorização):** AWS Cognito.
-- **Mensagens:** AWS SQS.
+- **Mensageria:** AWS SQS.
 - **Notificações:** AWS SES.
 - **Observabilidade:** AWS Cloudwatch.
 

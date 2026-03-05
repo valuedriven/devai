@@ -2,17 +2,17 @@
 
 ## Pré-requisitos: Instalação do `uv`
 
-Os servidores MCP da AWS são baseados em Python e requerem o gerenciador de pacotes `uv`. Instale-o com o comando abaixo:
+Os servidores MCP da AWS são baseados em Python e requerem o gerenciador de pacotes `uv`. 
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-Após a instalação, reinicie o terminal ou execute `source $HOME/.cargo/env` para garantir que o comando `uv` esteja disponível.
+- Instale-o seguindo as instruções disponíveis em: <https://docs.astral.sh/uv/getting-started/installation/>.
+- Execute o comando `uv --version` para verificar se a instalação foi bem sucedida.
 
 ## Configuração de variáveis de ambiente
 
-Para interagir com a AWS, é necessário configurar as seguintes variáveis de ambiente:
+Para interagir com a AWS, é necessário configurar as credenciais.
+- Obtenha as credenciais a partir de uma sessão do AWS Learner Lab.
+- Configure as variáveis de ambiente com as credenciais obtidas:
+
 
 ```bash
 export AWS_ACCESS_KEY_ID=[colocar a chave de acesso]
@@ -23,7 +23,7 @@ export AWS_DEFAULT_REGION=[colocar a região]
 
 ## Configuração de MCP servers
 
-Configure os MCP servers no seu cliente (ex: Cursor ou Claude Desktop) usando os comandos abaixo. 
+Configure os MCP servers no seu cliente incluindo o seguinte conteúdo no arquivo de configuração do seu cliente.
 
 
 ```json
@@ -65,7 +65,273 @@ Configure os MCP servers no seu cliente (ex: Cursor ou Claude Desktop) usando os
 
 ## Faça o deploy na AWS
 
+- Acesse o Google Antigravity.
+- Acesse o painel Agent
+- Acione a opção Start a new conversation.
 - Execute o seguinte comando:
+
 ```bash
-Faça o deploy do projeto na aws. Utilize apenas serviços disponíveis no AWS Learner Lab.
+# AWS Architecture Decision Prompt (ADP)
+
+## Contexto
+
+Você é um **Arquiteto de Cloud Sênior especializado em AWS e arquiteturas cloud-native**.
+
+Sua tarefa é realizar uma **análise de decisão arquitetural (Architecture Decision Analysis)** para implantar uma aplicação full-stack na AWS.
+
+A proposta deve considerar **restrições educacionais e de custo**, garantindo que a arquitetura seja **compatível com os serviços disponíveis no AWS Learner Labs**.
+
+A resposta deve produzir **três cenários arquiteturais progressivos**, permitindo evolução incremental da infraestrutura.
+
+------------------------------------------------------------------------
+
+## Documentação de referência
+
+- `docs/prod.md`
+- `docs/spec_tech.md`
+- `docs/spec_ui.md`
+
+## Objetivo da Arquitetura
+
+Projetar uma arquitetura AWS que:
+
+-   suporte aplicações **containerizadas**
+-   permita **evolução incremental**
+-   minimize **complexidade operacional**
+-   seja **compatível com Terraform**
+-   utilize **boas práticas do AWS Well-Architected Framework**
+
+------------------------------------------------------------------------
+
+## Restrições Técnicas
+
+A arquitetura proposta deve:
+
+-   utilizar **serviços disponíveis em AWS Learner Labs**
+-   suportar **containers Docker**
+-   permitir **deploy automatizado**
+-   suportar **infraestrutura como código com Terraform**
+-   operar inicialmente com **baixo tráfego**
+-   ser adequada para **equipes pequenas**
+
+------------------------------------------------------------------------
+
+## Cenários Arquiteturais Esperados
+
+Forneça **três cenários distintos**:
+
+### 1 --- Arquitetura Básica (Low Cost / Minimal)
+
+Objetivo:
+
+-   menor custo possível
+-   simplicidade operacional
+-   deploy rápido
+-   adequada para MVP ou ambiente educacional
+
+------------------------------------------------------------------------
+
+### 2 --- Arquitetura Intermediária (Production Ready)
+
+Objetivo:
+
+-   maior confiabilidade
+-   separação clara de camadas
+-   capacidade de escalar moderadamente
+-   práticas recomendadas de cloud
+
+------------------------------------------------------------------------
+
+### 3 --- Arquitetura Avançada (Cloud Native)
+
+Objetivo:
+
+-   escalabilidade
+-   alta disponibilidade
+-   desacoplamento de serviços
+-   arquitetura preparada para crescimento
+
+------------------------------------------------------------------------
+
+## Estrutura de Resposta Esperada
+
+Para **cada cenário arquitetural**, apresente:
+
+------------------------------------------------------------------------
+
+### 1. Visão Geral da Arquitetura
+
+Explique:
+
+-   objetivos
+-   princípios arquiteturais
+-   trade-offs
+
+------------------------------------------------------------------------
+
+### 2. Diagrama Arquitetural (C4 - Container Level)
+
+Descreva o fluxo de componentes:
+
+Cliente\
+→ CDN\
+→ Load Balancer\
+→ Compute Layer\
+→ Database\
+→ Observability
+
+------------------------------------------------------------------------
+
+### 3. Serviços AWS Utilizados
+
+Exemplos possíveis:
+
+-   EC2
+-   ECS
+-   ECR
+-   S3
+-   CloudFront
+-   RDS PostgreSQL
+-   Application Load Balancer
+-   CloudWatch
+-   IAM
+-   VPC
+
+Use apenas serviços normalmente disponíveis no Learner Labs.
+
+------------------------------------------------------------------------
+
+### 4. Fluxo de Deploy
+
+Explique o pipeline completo:
+
+1.  build de containers
+2.  push para registry
+3.  provisionamento da infraestrutura
+4.  deploy da aplicação
+
+Integração esperada:
+
+GitHub Actions\
+Terraform\
+AWS
+
+------------------------------------------------------------------------
+
+### 5. Estrutura Recomendada de Terraform
+
+Forneça uma estrutura de diretórios como exemplo:
+
+infra/
+
+modules/
+
+network/\
+compute/\
+database/\
+registry/
+
+environments/
+
+dev/\
+prod/
+
+------------------------------------------------------------------------
+
+### 6. Estratégia de Observabilidade
+
+Descreva:
+
+-   logs
+-   métricas
+-   alertas
+
+Utilizando:
+
+CloudWatch ou integração externa.
+
+------------------------------------------------------------------------
+
+### 7. Estratégia de Segurança
+
+Considere:
+
+-   IAM
+-   isolamento de rede
+-   gerenciamento de segredos
+-   proteção de endpoints
+
+------------------------------------------------------------------------
+
+### 8. Estimativa de Custos
+
+Forneça uma **estimativa mensal aproximada** com base em:
+
+-   baixo tráfego
+-   uma região AWS
+-   ambiente educacional
+
+Inclua custos de:
+
+-   computação
+-   banco de dados
+-   armazenamento
+-   transferência de dados
+
+------------------------------------------------------------------------
+
+### 9. Vantagens e Trade-offs
+
+Inclua:
+
+-   complexidade operacional
+-   custo
+-   escalabilidade
+-   facilidade de manutenção
+
+------------------------------------------------------------------------
+
+## Comparação Entre Arquiteturas
+
+Forneça uma tabela comparando:
+
+  Arquitetura   Custo   Complexidade   Escalabilidade   Operação
+  ------------- ------- -------------- ---------------- ----------
+
+------------------------------------------------------------------------
+
+## Plano de Evolução Incremental
+
+Explique como evoluir entre arquiteturas:
+
+Arquitetura Básica\
+→ Intermediária\
+→ Avançada
+
+Inclua:
+
+-   mudanças de serviços
+-   migração de banco de dados
+-   mudanças de CI/CD
+-   impactos operacionais
+
+------------------------------------------------------------------------
+
+## Regras de Projeto
+
+Priorize:
+
+-   simplicidade
+-   baixo custo
+-   serviços gerenciados
+-   infraestrutura reproduzível
+
+Evite:
+
+-   serviços desnecessários
+-   arquiteturas excessivamente complexas
+-   dependências externas não essenciais
 ```
+
+- Analise o planejamento de implementação.
+- Registre sua decisão arquitetural em `docs/spec_tech.md`.

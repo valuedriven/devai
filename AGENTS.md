@@ -41,12 +41,14 @@ Plataforma de e-commerce para microempreendedores: vitrine digital para clientes
 
 ## Documentação de Referência
 
-- docs/prd.md — Requisitos e critérios de aceitação
-- docs/spec_tech.md — Arquitetura detalhada
-- docs/spec_ui.md — Interfaces e fluxos de navegação
+- `docs/prd.md` — Requisitos e critérios de aceitação
+- `docs/spec_tech.md` — Arquitetura detalhada
+- `docs/spec_ui.md` — Interfaces e fluxos de navegação
 
 ## Documentação não disponível
 
 - Não acesse o conteúdo das seguintes pastas:
-  - docs/fluxo
-  - docs/diagramas
+  - `docs/fluxo`
+  - `docs/diagramas`
+
+  

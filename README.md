@@ -1,181 +1,99 @@
-# DevAI
+# DevAI - Gestão Simples para Microempreendedores
 
-> **Plataforma de e-commerce para microempreendedores** — Controle total de pedidos e pagamentos com uma vitrine digital profissional.
+O **DevAI** é uma plataforma de fluxo duplo projetada para resolver a falta de controle em pedidos e pagamentos que gera prejuízos diários para o microempreendedor. A solução oferece uma vitrine digital simples para clientes e um painel de gestão completo para o empreendedor.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.x-black?logo=next.js)](https://nextjs.org/)
-[![NestJS](https://img.shields.io/badge/NestJS-11.x-red?logo=nestjs)](https://nestjs.com/)
-[![React](https://img.shields.io/badge/React-19.x-blue?logo=react)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?logo=prisma)](https://www.prisma.io/)
-[![Clerk](https://img.shields.io/badge/Clerk-Authentication-6C47FF?logo=clerk)](https://clerk.com/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
----
-
-## 📋 Sobre o Projeto
-
-**DevAI** é uma solução completa para microempreendedores que buscam profissionalizar sua presença digital e simplificar a gestão de pedidos. Focada na facilidade de uso e eficiência, a plataforma permite que negócios locais cresçam com organização e credibilidade.
-
-### ✨ Funcionalidades em Destaque
-
-- 🏪 **Vitrine Digital**: Catálogo online intuitivo e otimizado para conversão.
-- 📦 **Gestão de Catálogo**: Controle total de produtos e categorias via painel administrativo.
-- 👥 **Gestão de Clientes**: Cadastro e acompanhamento de base de clientes.
-- 💰 **Controle de Pedidos**: Fluxo completo do carrinho à finalização da venda.
-- 🏢 **Multi-tenancy**: Isolamento de dados robusto entre diferentes lojistas.
-- 🔒 **Segurança Nativa**: Autenticação moderna via Clerk com controle de acesso.
+## 🚀 Diferenciais
+- **Simplicidade Radical:** Foco em adoção imediata sem complexidade técnica.
+- **Vitrine Profissional:** Credibilidade instantânea para o catálogo de produtos.
+- **Controle Financeiro:** Gestão eficiente de recebíveis e pendências.
 
 ---
 
 ## 🛠️ Stack Tecnológica
 
-O projeto é estruturado como um **Monorepo** utilizando npm workspaces, garantindo consistência e facilidade no compartilhamento de tipos e configurações.
+### Core
+- **Frontend:** [Next.js 16+](https://nextjs.org/) (App Router), TypeScript, Vanilla CSS.
+- **Backend:** [NestJS 11+](https://nestjs.com/), Node 24+, TypeScript.
+- **Banco de Dados:** PostgreSQL 15+.
+- **ORM:** [Prisma 6+](https://www.prisma.io/).
 
-### Frontend (`/frontend`)
-- **Framework**: [Next.js 16.x](https://nextjs.org/) (App Router)
-- **UI**: [React 19](https://react.dev/) com TypeScript
-- **Estilização**: CSS Modules & Vanilla CSS
-- **Componentes**: Biblioteca customizada e modular baseada em Design System
-- **Autenticação**: [Clerk](https://clerk.com/)
-
-### Backend (`/backend`)
-- **Framework**: [NestJS 11.x](https://nestjs.com/)
-- **ORM**: [Prisma 6.x](https://www.prisma.io/)
-- **Banco de Dados**: PostgreSQL (via Supabase)
-- **Arquitetura**: Modular com foco em isolamento de domínios e multi-tenancy nativo
-- **Testes**: Jest (Unitários, Integração e E2E)
+### Serviços e Integrações
+- **Autenticação:** [Clerk](https://clerk.com/) (OpenID Connect / OAuth 2.0).
+- **Infraestrutura/DB:** [Supabase](https://supabase.com/).
+- **Deployment:** [Vercel](https://vercel.com/).
+- **IaC:** Terraform.
+- **Pipeline:** GitHub Actions.
+- **Observabilidade:** Grafana Cloud (OpenTelemetry).
 
 ---
 
-## 🚀 Começando
+## 📋 Funcionalidades Principais
+
+### Para o Cliente
+- **Vitrine de Produtos:** Visualização de catálogo organizado.
+- **Gestão de Carrinho:** Seleção de itens e cálculo automático de totais.
+- **Pedidos:** Criação e acompanhamento de histórico de pedidos.
+
+### Para o Administrador
+- **Dashboard:** Métricas de desempenho (Vendas totais, Recebidos vs Pendentes).
+- **Gestão de Produtos/Categorias:** Cadastro completo e controle de visibilidade.
+- **Gestão de Clientes:** Base de dados de clientes associada a pedidos.
+- **Controle de Pedidos:** Acompanhamento de status (Novo, Pago, Preparação, etc.) e registro manual de pagamentos.
+
+---
+
+## 🏗️ Estrutura do Repositório
+
+O projeto utiliza uma estrutura de monorepo:
+
+```text
+devai/
+├── backend/            # API NestJS (Lógica de negócio, Repositórios, DTOs)
+├── frontend/           # Aplicação Next.js (Vitrine, Admin e Auth)
+│   ├── src/app/
+│   │   ├── (admin)/    # Rotas de gestão administrativa
+│   │   ├── (auth)/     # Fluxos de login e cadastro
+│   │   └── (shop)/     # Vitrine e experiência do cliente
+│   └── components/     # Componentes React (Admin, Shop, UI)
+├── docs/               # Documentação técnica e de produto (PRD, Spec)
+├── terraform/          # Definições de Infraestrutura como Código
+└── package.json        # Configuração de workspaces do monorepo
+```
+
+---
+
+## 🚦 Começando
 
 ### Pré-requisitos
+- Node.js 24+
+- Docker & Docker Compose
+- Conta no Clerk e Supabase (para variáveis de ambiente)
 
-- **Node.js** 20.x ou superior
-- **npm** 10.x ou superior
-- **Docker** (opcional, para DB local)
-
-### Instalação e Configuração
-
-1. **Clone o repositório**
+### Instalação
+1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/devai.git
+   git clone <repo-url>
    cd devai
    ```
-
-2. **Instale as dependências (Monorepo)**
+2. Instale as dependências:
    ```bash
    npm install
    ```
+3. Configure as variáveis de ambiente baseadas no arquivo `.env.example` no diretório raiz.
 
-3. **Configure as variáveis de ambiente**
-
-   **No Backend (`/backend/.env`):**
-   ```env
-   DATABASE_URL="postgresql://user:pass@host:port/db?schema=public"
-   # Adicione outras variáveis necessárias para Clerk/Supabase
-   ```
-
-   **No Frontend (`/frontend/.env.local`):**
-   ```env
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key
-   CLERK_SECRET_KEY=your_secret
-   ```
-
-4. **Prepare o Banco de Dados**
-   ```bash
-   cd backend
-   npx prisma generate
-   npx prisma db push # ou migrate dev
-   ```
-
-### Execução em Desenvolvimento
-
-Você pode rodar ambos os serviços a partir da raiz do projeto:
-
+### Desenvolvimento Local
+Para rodar ambos os serviços simultaneamente:
 ```bash
-# Rodar Frontend
-npm run dev:frontend
-
-# Rodar Backend
+npm install
 npm run dev:backend
+
+Abra outro terminal e execute:
+npm run dev:frontend
 ```
 
 ---
 
-## 📁 Estrutura do Projeto
-
-```
-devai/
-├── backend/               # API NestJS
-│   ├── src/
-│   │   ├── core/         # Interceptors, Decorators, Guards
-│   │   ├── database/     # Prisma e Seeders
-│   │   └── modules/      # Catalog, Orders, Customers
-│   └── test/             # Testes Automatizados
-├── frontend/              # App Next.js
-│   ├── src/
-│   │   ├── app/          # App Router (shop, admin, auth)
-│   │   ├── components/   # UI Library
-│   │   └── lib/          # API Clients
-├── docs/                  # Documentação Técnica
-└── package.json           # Scripts Globais e Workspaces
-```
-
----
-
-## 🔒 Multi-tenancy
-
-O sistema utiliza uma abordagem de **Isolamento via Identificador (`tenantId`)** em nível de registro. No backend, isso é gerenciado automaticamente por meio de decoradores e interceptores que extraem o contexto do lojista a partir de headers de requisição ou tokens JWT.
-
-Consulte [`docs/spec_tech.md`](docs/spec_tech.md) para detalhes da implementação.
-
----
-
-## 🧪 Qualidade de Código
-
-Para manter a consistência e confiabilidade:
-
-```bash
-# Rodar todos os testes do backend
-cd backend
-npm test
-
-# Cobertura de testes
-npm run test:cov
-
-# Linter
-npm run lint
-```
-
----
-
-## 🚢 Roadmap
-
-- [x] Inicialização do Monorepo
-- [x] Estrutura Base de Multi-tenancy
-- [x] Módulo de Catálogo e Produtos
-- [x] Gestão de Clientes e Pedidos (Backend)
-- [x] Integração de Checkout e Carrinho (Frontend)
-- [x] Pipeline de CI/CD via GitHub Actions
-- [x] Deploy Automatizado na Vercel
-- [ ] Dashboards Administrativos Avançados
-- [ ] Notificações Push/WhatsApp
-
----
-
-## 🤝 Contribuindo
-
-Siga os padrões de **SOLID** e **Clean Architecture**. Commits devem seguir a especificação [Conventional Commits](https://www.conventionalcommits.org/).
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-<div align="center">
-  Feito com ❤️ para microempreendedores
-</div>
+## 📄 Documentação Adicional
+- [Product Requirements Document (PRD)](./docs/prd.md)
+- [Especificação Técnica](./docs/spec_tech.md)
+- [Especificação de UI](./docs/spec_ui.md)
