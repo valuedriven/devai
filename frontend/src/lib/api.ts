@@ -27,12 +27,12 @@ export async function fetchApi<T>(
 
         const text = await response.text();
         return text ? JSON.parse(text) : (null as unknown as T);
-    } catch (error: any) {
-        if (error.code === 'ECONNREFUSED' || error.message?.includes('fetch failed')) {
+    } catch (error: unknown) {
+        const err = error as { code?: string; message?: string };
+        if (err.code === 'ECONNREFUSED' || err.message?.includes('fetch failed')) {
             // Em ambiente de build, não queremos que isso trave o processo,
             // mas queremos logs claros.
             console.warn(`[API] Warning: Could not connect to API at ${url}. ${isServer ? 'Build' : 'Client'} environment.`);
-            throw error;
         }
         throw error;
     }
