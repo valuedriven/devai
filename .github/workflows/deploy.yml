@@ -61,7 +61,7 @@ jobs:
         working-directory: frontend
 
   build-deploy-frontend:
-    name: Build & Deploy (Vercel)
+    name: Build & Deploy Frontend(Vercel)
     needs: [quality-backend, quality-frontend]
     runs-on: ubuntu-latest
     permissions:
@@ -114,7 +114,7 @@ jobs:
           echo "URL: ${{ steps.deploy.outputs.DEPLOYMENT_URL }}"
      
   build-deploy-backend:
-    name: Build & Deploy (Vercel)
+    name: Build & Deploy Backend (Vercel)
     needs: [quality-backend, quality-frontend]
     runs-on: ubuntu-latest
     permissions:
