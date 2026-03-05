@@ -126,7 +126,7 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ENV: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'production' || 'preview' }}
       VERCEL_BUILD_ARG: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '--prod' || '' }}
-  
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
