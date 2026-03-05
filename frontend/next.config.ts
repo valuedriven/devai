@@ -7,14 +7,15 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
-  // standalone não é necessário no Vercel e pode causar problemas de caminhos em monorepos
-  // output: 'standalone',
-  // outputFileTracingRoot só deve ser usado se houver dependências fora do frontend
-  // que precisam ser rastreadas para o runtime (e.g. em Docker)
-  // No Vercel, isso pode causar o erro de lstat com caminhos duplicados
+  // No Vercel, o standalone não é necessário e o tracing é gerenciado pela plataforma.
+  // No Docker, o standalone é obrigatório (veja Dockerfile).
+  output: process.env.VERCEL ? undefined : 'standalone',
+
+  // No monorepo, o root do workspace é o diretório pai.
+  // Mantemos consistência entre outputFileTracingRoot e turbopack.root para evitar avisos.
   outputFileTracingRoot: process.env.VERCEL ? undefined : path.resolve(__dirname, ".."),
   turbopack: {
-    root: path.resolve(__dirname, ".."),
+    root: process.env.VERCEL ? undefined : path.resolve(__dirname, ".."),
   },
 };
 
