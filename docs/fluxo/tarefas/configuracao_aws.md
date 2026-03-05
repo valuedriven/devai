@@ -68,6 +68,7 @@ Configure os MCP servers no seu cliente incluindo o seguinte conteúdo no arquiv
 - Acesse o Google Antigravity.
 - Acesse o painel Agent
 - Acione a opção Start a new conversation.
+- Priorize modelos com maior capacidade de processamento.
 - Execute o seguinte comando:
 
 ```bash
@@ -83,6 +84,7 @@ A proposta deve considerar **restrições educacionais e de custo**, garantindo 
 
 A resposta deve produzir **três cenários arquiteturais progressivos**, permitindo evolução incremental da infraestrutura.
 
+
 ------------------------------------------------------------------------
 
 ## Documentação de referência
@@ -90,6 +92,9 @@ A resposta deve produzir **três cenários arquiteturais progressivos**, permiti
 - `docs/prod.md`
 - `docs/spec_tech.md`
 - `docs/spec_ui.md`
+
+Resultado
+- `docs/ada.md`
 
 ## Objetivo da Arquitetura
 
@@ -110,6 +115,7 @@ A arquitetura proposta deve:
 -   utilizar **serviços disponíveis em AWS Learner Labs**
 -   suportar **containers Docker**
 -   permitir **deploy automatizado**
+-   utilizar **registry de imagens** em todos cenários de implementação
 -   suportar **infraestrutura como código com Terraform**
 -   operar inicialmente com **baixo tráfego**
 -   ser adequada para **equipes pequenas**
@@ -333,5 +339,6 @@ Evite:
 -   dependências externas não essenciais
 ```
 
-- Analise o planejamento de implementação.
-- Registre sua decisão arquitetural em `docs/spec_tech.md`.
+- Analise o documento gerado.
+- Registre a decisão arquitetural no documento gerado.
+- Crie um plano de implementação no documento gerado.
