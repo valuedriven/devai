@@ -6,6 +6,7 @@ dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const nextConfig: NextConfig = {
   /* config options here */
+  distDir: process.env.VERCEL ? '../.next' : undefined,
   reactCompiler: true,
   // No Vercel, o standalone não é necessário e o tracing é gerenciado pela plataforma.
   // No Docker, o standalone é obrigatório (veja Dockerfile).
