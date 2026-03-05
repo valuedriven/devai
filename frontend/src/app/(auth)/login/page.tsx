@@ -1,9 +1,11 @@
-import { SignIn } from "@clerk/nextjs";
+import { SignIn, SignedOut } from "@clerk/nextjs";
 
 export default function LoginPage() {
     return (
         <div className="auth-page">
-            <SignIn fallbackRedirectUrl="/" />
+            <SignedOut>
+                <SignIn fallbackRedirectUrl="/" />
+            </SignedOut>
         </div>
     );
 }

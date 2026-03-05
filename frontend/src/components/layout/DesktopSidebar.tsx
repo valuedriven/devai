@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut, Home, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 
 export function DesktopSidebar() {
     const pathname = usePathname();
@@ -89,12 +89,12 @@ export function DesktopSidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                <Link href="/">
+                <SignOutButton>
                     <Button variant="ghost" className="sidebar-logout-btn">
                         <LogOut className="mr-3 h-5 w-5" />
                         Sair da Loja
                     </Button>
-                </Link>
+                </SignOutButton>
             </div>
         </aside>
     );
