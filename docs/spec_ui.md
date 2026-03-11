@@ -151,29 +151,6 @@ Para garantir consistência visual, semântica e acessibilidade na representaç�
 
 ---
 
-## Entidades
-
-### Principais Entidades
-
-- Categoria: Nome da Categoria, Ativo.
-- Produto: Nome do Produto, Categoria, Imagem, Descrição, Estoque, Ativo.
-- Cliente: Nome do cliente, Endereço, e-mail, Telefone, Ativo.
-- Pedido: Número do Pedido, Valor Total, Identificação do Cliente, Endereço de entrega, Status do Pedido, Data de pagamento, Método de pagamento.
-- Item de Pedido: Identificação do Pedido, Identificação do Produto, Preço Unitário, Quantidade.
-
-### Domínios
-
-- Status do Pedido: Novo, Pago, Preparação, Faturado, Despachado, Entregue, Cancelado.
-- Métodos de Pagamento: Cartão de Crédito, Cartão de Débito, Pix, Dinheiro.
-
-**Regras de Transição do Status do Pedido:**
-
-- `Novo` → `Cancelado` (permitido)
-- `Novo` → `Pago` → `Preparação` → `Faturado` → `Despachado` → `Entregue` (sequencial)
-- Qualquer estado (exceto `Entregue` e `Cancelado`) → `Cancelado` (permitido)
-
----
-
 ## Diretrizes para IA
 
 - Este documento será utilizado para criar protótipos e wireframes em ferramentas como o Google Stitch

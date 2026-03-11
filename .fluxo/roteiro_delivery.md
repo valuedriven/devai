@@ -5,10 +5,12 @@
 - Google Antigravity <https://antigravity.google> instalado localmente.
 - Node.js <https://nodejs.org/> instalado localmente.
 - Git <https://git-scm.com/> instalado localmente.
+- Docker e Docker Compose <https://docker.com> instalados localmente.
 - Conta GitHub <https://github.com/>.
 - Conta Vercel <https://vercel.com/>.
 - Conta Supabase <https://www.supabase.com/>.
 - Conta Clerk <https://clerk.com/>.
+- Conta Context7 <https://context7.com/>.
 
 Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
@@ -142,6 +144,12 @@ Transparente sempre.
 - No painel Agent, acione o comando Back to agent.
 - Verifique no diretório .agents se a rule foi configurada.
 
+- Crie uma nova rule para ser executada sempre e com o seguinte conteúdo:
+
+```
+Sempre use o mcp server Context7 quando precisar de documentação de bibliotecas/APIs para geração de código, setups e demais configurações necessárias.
+```
+
 ---
 
 #### Configuração de skills
@@ -163,6 +171,7 @@ https://github.com/vercel-labs/next-skills
 https://github.com/supabase/agent-skills
 https://github.com/clerk/skills
 https://playbooks.com/skills/markpitt/claude-skills/github-api
+https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/nestjs-expert
 
 
 Manutenção do Ambiente
@@ -189,41 +198,54 @@ Diretórios para Exclusão:
 
 **Obtenção de credenciais**
 
-- No diretório raiz do projeto crie o arquivo .env.local (atente para o ponto no início do nome do arquivo)
+- No diretório raiz do projeto crie uma cópiado arquivo .env.example com o nome .env
 - Crie ou atualize o arquivo .gitignore e inclua nele o seguinte conteúdo:
   
 ```
 .env.local
 ```
-- Acesse os endereços informados junto a cada credencia.
+
+- Edite o arquivo .env
+- Acesse os endereços informados junto a cada credencial.
 - Navegue em cada aplicação e obtenha os valores solicitados.
 
 ```
 PROJECT_NAME=<nome do projeto>
 
-# GITHUB
+# GitHub
 # https://github.com/settings/tokens/new
 GITHUB_PERSONAL_ACCESS_TOKEN=
 
-# STITCH
+# Stitch
 # https://stitch.withgoogle.com/settings
 STITCH_API_KEY=
 
-# VERCEL
+# Vercel
 # https://vercel.com/account/settings/tokens
 VERCEL_API_TOKEN=
 
-# SUPABASE
+# Supabase
 # https://supabase.com/dashboard/account/tokens
 SUPABASE_ACCESS_TOKEN=
 #NEXT_PUBLIC_SUPABASE_URL=(será preenchida posteriormente)
 #NEXT_PUBLIC_SUPABASE_ANON_KEY=(será preenchida posteriormente)
 
-# CLERK
+# Clerk
 # https://dashboard.clerk.com/apps/
 # Criar uma aplicação e copiar as chaves de API
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+
+# Context7
+# https://context7.com/dashboard
+CONTEXT7_API_KEY=
+
+#Backend para Frontend
+NEXT_PUBLIC_API_URL=
+
+#Portas
+FRONTEND_PORT=
+BACKEND_PORT=
 
 ```
 
@@ -284,6 +306,12 @@ CLERK_SECRET_KEY=
       "env": {
         "CLERK_SECRET_KEY": "<CLERK_SECRET_KEY>"
       }
+    },
+    "context7": {
+      "serverUrl": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "<CONTEXT7_API_KEY>"
+      }
     }
   }
 }
@@ -312,7 +340,7 @@ Use o mcp server do Supabase para listar as organizações e projetos
 Use o mcp server do Vercel para listar os times e projetos
 ```
 
-### 2.1.2 Criação do projeto web
+### 2.1.2 Criação do projeto
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Copie o conteúdo a seguir e proceda os seguintes ajustes antes de comandar a execução:
@@ -333,9 +361,10 @@ Criar um projeto **web frontend** seguindo estritamente as definições fornecid
   - design-systems
 
 - Seguir integralmente os documentos:
-  - <@docs/spec_ui.md>
-  - <@docs/spec_tech.md>
-  - <@docs/design_system.md>
+  - `docs/prd.md`
+  - `docs/spec_ui.md`
+  - `docs/spec_tech.md`
+  - `docs/design_system.md`
 
 - Utilizar as imagens disponíveis no projeto Stitch:
   - <nome do projeto>
