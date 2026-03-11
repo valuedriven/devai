@@ -302,12 +302,12 @@ Estrutura limpa e otimizada para execução do Antigravity Agent Runtime.
 
 #### Configuração de MCP Servers
 
-**Obtenção de credenciais**
+**Configuração de credenciais**
 
 - No diretório raiz do projeto crie uma cópiado arquivo .env.example com o nome .env
 - Edite o arquivo .env
-- Acesse os endereços informados junto a cada credencial.
-- Navegue em cada aplicação e obtenha os valores solicitados.
+- Acesse os endereços informados junto a cada credencial
+- Navegue em cada aplicação e obtenha os valores solicitados
 
 ```
 PROJECT_NAME=<nome do projeto>
@@ -363,7 +363,7 @@ BACKEND_PORT=
 - Na seção MCP Store, acione o comando Manage MCP Servers.
 - No painel Manage MCP servers, acione o comando View raw config.
 - Substitua o conteúdo existente pelo seguinte:
-- Substitua o valor de cada chave pelo valor obtido no arquivo .env.local
+- Substitua o valor de cada chave pelo valor obtido no arquivo .env
 
 ```json
 {
@@ -429,6 +429,7 @@ BACKEND_PORT=
 
 #### Teste de MCP Servers
 
+- No painel Agent, selecione a opção Start a new conversation.
 - Solicite listar os projetos disponíveis no Stitch:
 
 ```
@@ -447,11 +448,17 @@ Use o mcp server do Supabase para listar as organizações e projetos
 Use o mcp server do Vercel para listar os times e projetos
 ```
 
+- Solicite listar as aplicações disponíveis no Clerk:
+
+```
+Use o mcp server do Clerk para listar os times e projetos
+```
+
 ### 2.1.2 Criação do projeto
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Copie o conteúdo a seguir e proceda os seguintes ajustes antes de comandar a execução:
-- Troque o <projeto stitch> pelo nome do projeto criado no Stitch.
+- Troque o [projeto stitch] pelo nome do projeto criado no Stitch.
 - Priorize a escolha do modo Planning.
 - Priorize a escolha de modelos com maior capacidade de reasoning.
   
@@ -554,7 +561,7 @@ Os documentos definem:
 
 O projeto possui imagens e protótipos disponíveis no Stitch:
 
-`<projeto stitch>`
+`[projeto stitch]`
 
 Utilizar as skills disponíveis em:
 
@@ -639,8 +646,17 @@ Não incluir:
 ```
 
 - Revise o plano de implementação proposto.
+- Verifique se o agente conseguiu identificar corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.
 - Solicite ao agente que faça os eventuais ajustes.
 - Solicite a execução do plano.
+- Siga as instruções apresentadas e acesse a aplicação.
+- Solicite ao agente a criação do arquivo README.md.
+
+```
+Crie o arquivo README.md para o repositório, seguindo as boas práticas recomendadas pelo GitHub disponíveis em: <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes>
+```
+
+- Analise o arquivo gerado.s
 
 
 ## 2.2 Testes
@@ -657,7 +673,6 @@ Ferramentas:
 
 ---
 
-- Acesse a aplicação por meio do navegador web (padrão: <http://localhost:3000>).
 - Navegue pela aplicação para verificar as páginas criadas.
 - Caso sejam encontrados erros ou funcionalidades não implementadas, copie a tela e mensagem com o comportamento atual e descreva o comportamento esperado.
 - Cole as informações no agent e solicite os ajustes.
@@ -682,7 +697,9 @@ Ferramentas:
 ### 2.3.1 Criação dos projetos no Vercel
 
 - No painel Agent, selecione a opção Start a new conversation.
-- Solicite a criação dos projetos Vercel (substitua <nome do time> pelo valor correspondente configurado no vercel):
+- Informe o conteúdo a seguir.
+- Substitua [time] pelo valor correspondente configurado no vercel.
+- Substitua [projeto] pelo nome do projeto.
 
 ```
 # Criação de projetos Vercel
@@ -698,17 +715,16 @@ Criar os projetos backend e frontend no Vercel para um monorepo existente.
 - Utilize as skills disponíveis em :
 `.agent/skills/`
 
-Crie dois projetos distintos no Vercel:
-- backend
-- frontend
-
 Os projetos devem ser criados no seguinte time da Vercel:
-`<nome do time>`
+`[time]`
 
-Configure cada projeto apontando para os respectivos diretórios do monorepo:
-Projeto	-> Diretório
-backend	-> apps/backend
-frontend -> apps/frontend
+Crie dois projetos distintos no Vercel. Aponte para os respectivos diretórios no monorepo:
+- Mapeamento backend:
+  - Projeto: `[projeto]-backend`
+  - Diretório: `apps/backend`
+- Mapeamento frontend:
+  - Projeto: `[projeto]`
+  - Diretório: `apps/frontend`
 
 Importante:
 - Não executar deploy
@@ -725,7 +741,9 @@ O objetivo desta tarefa é somente registrar os projetos no Vercel.
 
 ```
 
-- Caso tenha ocorrido algum erro, copie a mensagem de erro e cole no chat do agente para correção.
+- Verifique o plano de implementação e se o agente conseguiu identificar corretamente o time.
+- Faça os devidos ajustes e solicite a execução do plano.
+- Verifique os projetos criados na Vercel.
 
 
 ### 2.3.2 Configuração do pipeline CI/CD
@@ -738,7 +756,7 @@ O objetivo desta tarefa é somente registrar os projetos no Vercel.
 Atue como um Engenheiro de DevOps sênior e Arquiteto de Software, especializado em Ecossistemas JavaScript e Automação de Infraestrutura.
 
 # Objetivo
-Crie um arquivo de workflow do GitHub Actions (`.github/workflows/deploy.yml`) para um projeto **Next.js** que automatize o ciclo de vida de integração e entrega contínua (CI/CD).
+Crie um arquivo de workflow do GitHub Actions (`.github/workflows/deploy.yml`) que automatize o ciclo de vida de integração e entrega contínua (CI/CD).
 
 # Contexto Técnico
 
@@ -748,10 +766,10 @@ Utilize:
 - especificação técnica disponível em `docs/spec_tech.md`
 
 # Etapas do Workflow
-1. **Trigger:** O workflow deve ser acionado em cada `push` na branch `main` e em todos os `pull_requests`.
+1. **Trigger:** O workflow deve ser acionado em cada `push` na branch `main`.
 2. **Setup:** Utilizar a versão LTS do Node.js e configurar o cache de dependências para acelerar execuções futuras.
 3. **Qualidade:** Executar passos de `lint` e `test` (unitários/integração). O pipeline deve ser interrompido se houver falhas.
-4. **Build & Deploy:** realizar o **Production Deploy** na Vercel.
+4. **Build & Deploy:** realizar o **Production Deploy** na Vercel, tanto do projeto backend quanto do frontend
 5. **Segurança:** Utilizar as Secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
 
 # Resultado Esperado
@@ -769,7 +787,9 @@ Utilize:
   - VERCEL_PROJECT_ID no endereço: <https://vercel.com/[team]/[project]/settings>, campo Project ID.
 - Configure as secrets no repositório do GitHub, no endereço: <https://github.com/[usuário]/[projeto]/settings/secrets/actions>.
 - Verifique se as secrets foram configuradas com sucesso.
-- Ao final do processo, acesse a aplicação por meio do navegador web (O endereço é disponibilizado no formato https://<projeto>.vercel.app/).
+- Faça o commit no repositório local e o push para o GitHub.
+- Verifique a execução do pipeline na aba Actions: <https://github.com/[usuário]/[projeto]/actions>
+- Ao final do processo, acesse a aplicação por meio do navegador web. O endereço é disponibilizado no formato <https://[projeto].vercel.app/>.
 
 
 ### 2.3.3 Configuração de segurança com Clerk
