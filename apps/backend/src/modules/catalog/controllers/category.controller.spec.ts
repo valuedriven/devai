@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CategoryController } from './category.controller';
 import { CategoryService } from '../services/category.service';
 
+import { AuthGuard } from '../../../core/guards/auth.guard';
+
 describe('CategoryController', () => {
   let controller: CategoryController;
 
@@ -22,7 +24,10 @@ describe('CategoryController', () => {
           useValue: mockCategoryService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<CategoryController>(CategoryController);
   });

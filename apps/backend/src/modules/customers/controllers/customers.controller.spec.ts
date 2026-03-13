@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CustomersController } from './customers.controller';
 import { CustomersService } from '../services/customers.service';
 
+import { AuthGuard } from '../../../core/guards/auth.guard';
+
 describe('CustomersController', () => {
   let controller: CustomersController;
 
@@ -23,7 +25,10 @@ describe('CustomersController', () => {
           useValue: mockCustomersService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<CustomersController>(CustomersController);
   });
