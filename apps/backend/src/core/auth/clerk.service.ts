@@ -32,7 +32,9 @@ export class ClerkService {
     try {
       const user = await this.getUser(userId);
       const email = user.emailAddresses[0]?.emailAddress;
-      const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Anonymous';
+      const name =
+        [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+        'Anonymous';
 
       if (!email) {
         this.logger.warn(`User ${userId} has no email address. Skipping sync.`);
