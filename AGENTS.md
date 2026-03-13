@@ -48,7 +48,7 @@ Plataforma de e-commerce para microempreendedores: vitrine digital para clientes
 ## Documentação não disponível
 
 - Não acesse o conteúdo das seguintes pastas:
-  - `docs/fluxo`
-  - `docs/diagramas`
+  - `.fluxo`
+
 
   

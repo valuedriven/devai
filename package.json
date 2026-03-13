@@ -2,8 +2,7 @@
   "name": "devai",
   "private": true,
   "workspaces": [
-    "frontend",
-    "backend"
+    "apps/*"
   ],
   "scripts": {
     "vercel-build": "npm run build --workspace=frontend",

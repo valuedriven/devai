@@ -27,11 +27,11 @@ jobs:
               
       - name: Executar Linter
         run: npm run lint
-        working-directory: backend
+        working-directory: apps/backend
 
       - name: Executar Testes
         run: npm run test
-        working-directory: backend
+        working-directory: apps/backend
 
   quality-frontend:
     name: Qualidade frontend (Lint & Test)
@@ -54,11 +54,11 @@ jobs:
       
       - name: Executar Linter
         run: npm run lint
-        working-directory: frontend
+        working-directory: apps/frontend
       
       - name: Executar Testes
         run: npm run test
-        working-directory: frontend
+        working-directory: apps/frontend
 
   build-deploy-frontend:
     name: Build & Deploy Frontend(Vercel)
