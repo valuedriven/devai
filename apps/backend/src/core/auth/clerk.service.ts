@@ -8,15 +8,26 @@ export class ClerkService {
   private readonly logger = new Logger(ClerkService.name);
 
   constructor(private readonly customersService: CustomersService) {
+    const secretKey = process.env.CLERK_SECRET_KEY;
+    const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+    if (!secretKey) {
+      this.logger.warn(
+        'CLERK_SECRET_KEY is not defined. Token verification will likely fail.',
+      );
+    }
+
     this.clerkClient = createClerkClient({
-      secretKey: process.env.CLERK_SECRET_KEY,
-      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+      secretKey,
+      publishableKey,
     });
   }
 
   async verifyToken(token: string): Promise<any> {
     try {
-      const session = await this.clerkClient.verifyToken(token);
+      const session = await this.clerkClient.verifyToken(token, {
+        jwtKey: process.env.CLERK_JWT_KEY,
+      });
       return session;
     } catch (error) {
       this.logger.error('Token verification failed', error);

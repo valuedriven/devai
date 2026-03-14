@@ -41,7 +41,11 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid token. Details: ' + error);
+      console.error('AuthGuard verification error:', error);
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new UnauthorizedException(
+        `Invalid token. ${detail.includes('JWK') ? 'Failed to resolve verification keys. Check CLERK_SECRET_KEY/CLERK_JWT_KEY.' : 'Details: ' + detail}`,
+      );
     }
   }
 }
