@@ -10,7 +10,7 @@ interface AdminActionsProps {
     id: string;
     editHref?: string;
     viewHref?: string;
-    deleteAction?: (id: string) => Promise<boolean>;
+    deleteAction?: (id: string, token?: string) => Promise<boolean>;
     deleteConfirmMessage?: string;
 }
 

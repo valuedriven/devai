@@ -26,11 +26,16 @@ services:
     container_name: backend
     restart: always
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-dbname}
+      BACKEND_PORT: ${BACKEND_PORT:-3001}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-dbname}
+      #DATABASE_URL: postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-dbname}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@db:5432/dbname}
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
+      CLERK_JWT_KEY: ${CLERK_JWT_KEY}
+      JWT_SECRET: ${JWT_SECRET}
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-    env_file:
-      - ./.env
     ports:
       - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
     depends_on:
@@ -44,14 +49,14 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
       args:
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001/v1}
     container_name: frontend
     restart: always
     environment:
+      - BACKEND_PORT=${BACKEND_PORT:-3001}
+      - FRONTEND_PORT=${FRONTEND_PORT:-3000}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3001/v1}
       - INTERNAL_API_URL=http://backend:${BACKEND_PORT:-3001}/v1
-    env_file:
-      - ./.env
     ports:
       - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     depends_on:

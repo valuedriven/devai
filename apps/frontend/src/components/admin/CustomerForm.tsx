@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Customer } from "@/lib/types";
 import { createCustomer, updateCustomer } from "@/lib/data";
-import { useAuth } from "@clerk/nextjs";
+import { useInternalAuth } from "@/hooks/AuthContext";
 
 interface CustomerFormProps {
     initialData?: Customer;
@@ -16,7 +16,7 @@ interface CustomerFormProps {
 
 export function CustomerForm({ initialData }: CustomerFormProps) {
     const router = useRouter();
-    const { getToken } = useAuth();
+    const { token } = useInternalAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: initialData?.name || "",
@@ -30,7 +30,6 @@ export function CustomerForm({ initialData }: CustomerFormProps) {
         e.preventDefault();
         setLoading(true);
         try {
-            const token = await getToken();
             if (initialData) {
                 await updateCustomer(initialData.id, formData, token ?? undefined);
             } else {

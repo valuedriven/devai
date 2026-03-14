@@ -9,7 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Loader2 } from "lucide-react";
 import { Category } from "@/lib/types";
 import { createCategory, updateCategory } from "@/lib/data";
-import { useAuth } from "@clerk/nextjs";
+import { useInternalAuth } from "@/hooks/AuthContext";
 
 interface CategoryFormProps {
     initialData?: Category | null;
@@ -17,7 +17,7 @@ interface CategoryFormProps {
 
 export function CategoryForm({ initialData }: CategoryFormProps) {
     const router = useRouter();
-    const { getToken } = useAuth();
+    const { token } = useInternalAuth();
     const [name, setName] = useState(initialData?.name || "");
     const [isActive, setIsActive] = useState(initialData?.active ?? true);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +29,6 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
 
         setIsLoading(true);
         try {
-            const token = await getToken();
             let result;
             if (isEditing && initialData?.id) {
                 result = await updateCategory(initialData.id, {

@@ -64,7 +64,7 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - **Runtime**: Node 24+
 - **Framework**: NestJS 11+
 - **Persistência**: PostgreSQL 15+
-- **ORM**: Prisma 6+
+- **ORM**: Prisma 7+
 
 ### Stack de Desenvolvimento
 

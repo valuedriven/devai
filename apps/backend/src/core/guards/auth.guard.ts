@@ -25,9 +25,6 @@ export class AuthGuard implements CanActivate {
     try {
       const decodedToken = await this.clerkService.verifyToken(token);
 
-      // Attach user info to request
-      request.user = decodedToken;
-
       // Sync user with local database (Requirement: RFN-05 / Sync without webhooks)
       // Note: In a production app with high traffic, this should be optimized
       // to avoid calling sync on EVERY request. For now, it meets the "pós-auth" requirement.
@@ -35,9 +32,13 @@ export class AuthGuard implements CanActivate {
       const tenantId =
         request.tenantId || '00000000-0000-0000-0000-000000000000';
 
-      // We can do this asynchronously to not block the request
-      // but the requirement says "garantir a sincronização".
-      await this.clerkService.syncUser(userId, tenantId);
+      // Attach the full user info to request (from Clerk API)
+      // This ensures RolesGuard has access to publicMetadata even if not in JWT
+      const clerkUser = await this.clerkService.getUser(userId);
+      request.user = clerkUser;
+
+      // Sync user with local database
+      await this.clerkService.syncUserWithData(clerkUser, tenantId);
 
       return true;
     } catch (error) {

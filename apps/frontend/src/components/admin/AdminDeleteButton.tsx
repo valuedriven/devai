@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useInternalAuth } from "@/hooks/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Trash, Loader2 } from "lucide-react";
 
@@ -8,7 +9,7 @@ interface AdminDeleteButtonProps {
     id: string;
     label?: string;
     confirmMessage?: string;
-    onDelete: (id: string) => Promise<boolean>;
+    onDelete: (id: string, token?: string) => Promise<boolean>;
     onSuccess?: () => void;
 }
 
@@ -19,6 +20,7 @@ export function AdminDeleteButton({
     onDelete,
     onSuccess
 }: AdminDeleteButtonProps) {
+    const { token } = useInternalAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleDelete = async () => {
@@ -26,7 +28,7 @@ export function AdminDeleteButton({
 
         setIsLoading(true);
         try {
-            const success = await onDelete(id);
+            const success = await onDelete(id, token ?? undefined);
             if (success && onSuccess) {
                 onSuccess();
             }

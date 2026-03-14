@@ -9,20 +9,21 @@ import { AdminDataTable, Column } from "@/components/admin/AdminDataTable";
 import { AdminActions } from "@/components/admin/AdminActions";
 import { Customer } from "@/lib/types";
 
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCustomersPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
-    const { userId, getToken } = await auth();
-    if (!userId) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+ 
+    if (!token) {
         redirect("/login");
     }
 
-    const token = await getToken();
     const search = (await searchParams).search ?? '';
-    const customers = await getCustomers(search, token ?? undefined);
+    const customers = await getCustomers(search, token);
 
     const columns: Column<Customer>[] = [
         {

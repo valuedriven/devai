@@ -407,3 +407,11 @@ export async function createOrder(orderDto: any, token?: string): Promise<Order 
         return null;
     }
 }
+export async function getMe(token: string): Promise<any> {
+    try {
+        return await fetchApi<any>('/auth/me', {}, token);
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
+    }
+}

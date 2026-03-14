@@ -7,18 +7,14 @@ import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useCart } from "@/lib/CartContext";
-import {
-    SignedIn,
-    SignedOut,
-    SignInButton,
-    UserButton,
-    useUser,
-} from "@clerk/nextjs";
+import { useAuthMe } from "@/hooks/useAuthMe";
+import { useInternalAuth } from "@/hooks/AuthContext";
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { itemCount } = useCart();
-    const { user } = useUser();
+    const { isAdmin, isLoggedIn, authMe } = useAuthMe();
+    const { logout } = useInternalAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -43,7 +39,6 @@ export function Header() {
         }
     };
 
-    const isAdmin = user?.publicMetadata?.role === "admin";
 
     return (
         <header className="header-root">
@@ -86,28 +81,34 @@ export function Header() {
                         {itemCount > 0 && <span className="cart-badge">{itemCount}</span>}
                         <span className="sr-only">Carrinho</span>
                     </Link>
-                    <SignedOut>
-                        <SignInButton mode="modal" fallbackRedirectUrl="/">
-                            <button className="btn-icon-size btn-ghost rounded-md">
-                                <User className="icon-md" />
-                                <span className="sr-only">Login</span>
+                    
+                    {!isLoggedIn ? (
+                        <Link href="/login" className="btn-icon-size btn-ghost rounded-md">
+                            <User className="icon-md" />
+                            <span className="sr-only">Login</span>
+                        </Link>
+                    ) : (
+                        <div className="flex items-center gap-4">
+                            {isAdmin && (
+                                <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors">
+                                    Admin
+                                </Link>
+                            )}
+                            <button 
+                                onClick={() => logout()}
+                                className="text-sm font-medium text-slate-500 hover:text-red-500 transition-colors"
+                            >
+                                Sair
                             </button>
-                        </SignInButton>
-                    </SignedOut>
-                    <SignedIn>
-                        {isAdmin && (
-                            <Link href="/admin" className="text-sm font-medium mr-4 hover:text-primary transition-colors">
-                                Admin
-                            </Link>
-                        )}
-                        <UserButton
-                            appearance={{
-                                elements: {
-                                    userButtonAvatarBox: "border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all shadow-sm",
-                                }
-                            }}
-                        />
-                    </SignedIn>
+                            {authMe?.imageUrl ? (
+                                <img src={authMe.imageUrl} alt="User" className="w-8 h-8 rounded-full border border-slate-200" />
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
+                                    <User className="w-4 h-4 text-slate-500" />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 

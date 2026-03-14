@@ -10,14 +10,12 @@
     "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
-    "@clerk/localizations": "^3.35.4",
-    "@clerk/nextjs": "^6.37.4",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
     "lucide-react": "^0.564.0",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "dotenv": "^16.4.7"
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@types/node": "^20",

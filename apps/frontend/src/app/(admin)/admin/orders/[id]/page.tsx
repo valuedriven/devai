@@ -5,13 +5,19 @@ import { Badge } from "@/components/ui/Badge";
 import { getOrder, getProducts, updateOrderStatus } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function AdminOrderDetailsPage({ params }: { params: { id: string } }) {
     const { id } = await params;
-    const { getToken } = await auth();
-    const token = await getToken();
-    const order = await getOrder(id, token ?? undefined);
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+    
+    if (!token) {
+        redirect("/login");
+    }
+
+    const order = await getOrder(id, token);
     const allProducts = await getProducts(); // Usually public
 
     if (!order) {
@@ -36,8 +42,8 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
     async function handleUpdateStatus(formData: FormData) {
         "use server";
         if (!order) return;
-        const { getToken: getActionToken } = await auth();
-        const actionToken = await getActionToken();
+        const cookieStoreAction = await cookies();
+        const actionToken = cookieStoreAction.get("devai_auth_token")?.value;
         const newStatus = formData.get("status") as string;
         if (newStatus && newStatus !== order.status) {
             await updateOrderStatus(id, newStatus, actionToken ?? undefined);
