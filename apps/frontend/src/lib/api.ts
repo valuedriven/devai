@@ -4,6 +4,10 @@ const API_BASE_URL = isServer
     : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/v1');
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
+/**
+ * Wrapper for fetch that handles API base URL, content types, and auth tokens.
+ * All logic sensitive to auth should be handled in the backend.
+ */
 export async function fetchApi<T>(
     path: string,
     options: RequestInit = {},

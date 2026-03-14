@@ -803,6 +803,10 @@ Utilize:
 ## Objetivo
 Configurar a autenticação e autorização do projeto utilizando o Clerk e garantir a sincronização de dados com o banco de dados local através de um serviço dedicado no backend.
 
+Garanta que toda a lógica de implementação de autenticação e autorização sejam feitas pelo backend, que deverá expor serviços a serem consumidos pelo frontend.
+
+Garanta também que o frontend não dependa de nenhum componente ou biblioteca do clerk. O frontend deve apenas consumir os serviços do backend.
+
 ## Referências e Ferramentas
 * **Aplicação:** [Nome da Aplicação]
 * **Documentação Base:** `docs/spec_tech.md`

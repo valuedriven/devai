@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Category, Product } from "@/lib/types";
 import { createProduct, updateProduct } from "@/lib/data";
-import { useAuth } from "@clerk/nextjs";
+import { useInternalAuth } from "@/hooks/AuthContext";
 
 interface ProductFormProps {
     categories: Category[];
@@ -17,7 +17,7 @@ interface ProductFormProps {
 
 export function ProductForm({ categories, initialData }: ProductFormProps) {
     const router = useRouter();
-    const { getToken } = useAuth();
+    const { token } = useInternalAuth();
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -35,7 +35,6 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
         setLoading(true);
 
         try {
-            const token = await getToken();
             const productData = {
                 name: formData.name,
                 description: formData.description,

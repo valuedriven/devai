@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUser, SignInButton, useAuth } from "@clerk/nextjs";
+import { useAuthMe } from "@/hooks/useAuthMe";
+import { useInternalAuth } from "@/hooks/AuthContext";
 import { useCart } from "@/lib/CartContext";
 import { createOrder, syncCustomerApi } from "@/lib/data";
 import { Button } from "@/components/ui/Button";
@@ -14,8 +15,8 @@ import { Trash2, CheckCircle, LogIn } from "lucide-react";
 
 export default function CartPage() {
     const router = useRouter();
-    const { isSignedIn, user } = useUser();
-    const { getToken } = useAuth();
+    const { isLoggedIn, authMe } = useAuthMe();
+    const { token } = useInternalAuth();
     const { items: cartItems, updateQuantity, removeItem, clearCart, totalAmount: total } = useCart();
     const [isConfirming, setIsConfirming] = useState(false);
     const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -27,11 +28,10 @@ export default function CartPage() {
     const handleConfirmOrder = async () => {
         setIsConfirming(true);
         try {
-            const token = await getToken();
             let customerId = undefined;
-            if (user?.id) {
-                const email = user.primaryEmailAddress?.emailAddress;
-                const name = user.fullName || email || "Cliente";
+            if (authMe?.id) {
+                const email = authMe.email;
+                const name = authMe.firstName ? `${authMe.firstName} ${authMe.lastName || ""}` : email;
 
                 if (email) {
                     const customer = await syncCustomerApi({ email, name }, token ?? undefined);
@@ -182,7 +182,7 @@ export default function CartPage() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            {isSignedIn ? (
+                            {isLoggedIn ? (
                                 <Button
                                     className="w-full"
                                     size="lg"
@@ -193,12 +193,12 @@ export default function CartPage() {
                                     {isConfirming ? 'Processando...' : 'Confirmar Pedido'}
                                 </Button>
                             ) : (
-                                <SignInButton mode="modal">
+                                <Link href="/login" className="w-full">
                                     <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
                                         <LogIn className="icon-sm" style={{ marginRight: '0.5rem' }} />
                                         Faça login para confirmar
                                     </Button>
-                                </SignInButton>
+                                </Link>
                             )}
                         </CardFooter>
                     </Card>

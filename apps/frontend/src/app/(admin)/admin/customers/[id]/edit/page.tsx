@@ -5,18 +5,19 @@ import { buttonVariants } from "@/components/ui/Button";
 import { getCustomer } from "@/lib/data";
 import { notFound } from "next/navigation";
 
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function EditCustomerPage({ params }: { params: Promise<{ id: string }> }) {
-    const { userId, getToken } = await auth();
-    if (!userId) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+ 
+    if (!token) {
         redirect("/login");
     }
 
     const { id } = await params;
-    const token = await getToken();
-    const customer = await getCustomer(id, token ?? undefined);
+    const customer = await getCustomer(id, token);
 
     if (!customer) {
         notFound();

@@ -4,20 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { getOrder, getProducts } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
-
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function OrderDetailsPage({ params }: { params: { id: string } }) {
     const { id } = await params;
-    const { userId, getToken } = await auth();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
 
-    if (!userId) {
+    if (!token) {
         redirect("/login");
     }
 
-    const token = await getToken();
-    const order = await getOrder(id, token ?? undefined);
+    const order = await getOrder(id, token);
     const allProducts = await getProducts();
 
     if (!order) {

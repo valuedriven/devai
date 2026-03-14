@@ -1,6 +1,7 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { AdminHeader } from "@/components/layout/AdminHeader";
 import { redirect } from "next/navigation";
+import { getMe } from "@/lib/data";
 
 export const dynamic = 'force-dynamic';
 
@@ -9,9 +10,16 @@ export default async function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const user = await currentUser();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+    
+    if (!token) {
+        redirect("/login");
+    }
 
-    if (user?.publicMetadata?.role !== "admin") {
+    const userProfile = await getMe(token);
+
+    if (!userProfile?.roles?.includes("admin")) {
         redirect("/");
     }
 

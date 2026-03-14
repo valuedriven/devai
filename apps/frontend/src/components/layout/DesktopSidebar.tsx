@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut, Home, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { useUser, SignOutButton } from "@clerk/nextjs";
+import { useInternalAuth } from "@/hooks/AuthContext";
 
 export function DesktopSidebar() {
     const pathname = usePathname();
-    const { user } = useUser();
-    const isAdmin = user?.publicMetadata?.role === "admin";
-    const isLoggedIn = !!user;
+    const { user, isAuthenticated, logout } = useInternalAuth();
+    const isAdmin = user?.roles?.includes('admin');
+    const isLoggedIn = isAuthenticated;
 
     return (
         <aside className="sidebar-desktop">
@@ -89,12 +89,10 @@ export function DesktopSidebar() {
             </nav>
 
             <div className="sidebar-footer">
-                <SignOutButton>
-                    <Button variant="ghost" className="sidebar-logout-btn">
-                        <LogOut className="mr-3 h-5 w-5" />
-                        Sair da Loja
-                    </Button>
-                </SignOutButton>
+                <Button variant="ghost" className="sidebar-logout-btn" onClick={logout}>
+                    <LogOut className="mr-3 h-5 w-5" />
+                    Sair da Loja
+                </Button>
             </div>
         </aside>
     );

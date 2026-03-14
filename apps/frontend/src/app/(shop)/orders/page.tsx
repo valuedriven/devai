@@ -4,20 +4,18 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { getOrders } from "@/lib/data";
 
-import { currentUser, auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default async function OrdersPage() {
-    const { userId, getToken } = await auth();
-    const user = await currentUser();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
     
-    if (!userId || !user) {
+    if (!token) {
         redirect("/login");
     }
 
-    const token = await getToken();
-    const email = user.primaryEmailAddress?.emailAddress;
-    const orders = await getOrders(email, undefined, token ?? undefined);
+    const orders = await getOrders(undefined, undefined, token);
     const statusToneMap: Record<string, "neutral" | "success" | "info" | "error" | "warning"> = {
         "Novo": "neutral",
         "Pago": "success",
