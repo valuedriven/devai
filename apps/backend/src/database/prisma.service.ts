@@ -6,7 +6,12 @@ import { Pool } from 'pg';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_URL?.includes('supabase.com') || process.env.DATABASE_URL?.includes('neon.tech') 
+        ? { rejectUnauthorized: false } 
+        : false,
+    });
     const adapter = new PrismaPg(pool);
 
     super({ adapter } as any);
@@ -20,9 +25,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     } catch (error) {
       const err = error as Error;
       console.error('Failed to connect to the database:', err.message);
-      if (err.message.includes('tenant or user not found')) {
+      if (err.message.toLowerCase().includes('tenant or user not found')) {
         console.error(
-          'HINT: Check if your DATABASE_URL uses the correct database password (not the Anon Key).',
+          'CRITICAL: Supabase/Neon Pooler error "Tenant or user not found".',
+        );
+        console.error(
+          'HINT 1: Ensure your DATABASE_URL username follows the format "postgres.[project-ref]".',
+        );
+        console.error(
+          'HINT 2: If using the pooler (port 6543), verify the project reference in the Supabase Dashboard.',
+        );
+        console.error(
+          'HINT 3: Check if DATABASE_URL is correctly set in Vercel Environment Variables.',
         );
       }
       throw error;
