@@ -56,7 +56,7 @@ devai/
 │   │   └── (shop)/     # Vitrine e experiência do cliente
 │   └── components/     # Componentes React (Admin, Shop, UI)
 ├── docs/               # Documentação técnica e de produto (PRD, Spec)
-├── terraform/          # Definições de Infraestrutura como Código
+├── infra/              # Definições de Infraestrutura como Código
 └── package.json        # Configuração de workspaces do monorepo
 ```
 
