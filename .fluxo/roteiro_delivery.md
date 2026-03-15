@@ -335,6 +335,8 @@ SUPABASE_ACCESS_TOKEN=
 # Criar uma aplicação e copiar as chaves de API
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+CLERK_JWT_KEY=
+JWT_SECRET
 
 # Context7
 # https://context7.com/dashboard

@@ -22,31 +22,33 @@ export class AuthGuard implements CanActivate {
 
     const token = authHeader.split(' ')[1];
 
+    let decodedToken;
     try {
-      const decodedToken = await this.clerkService.verifyToken(token);
-
-      // Sync user with local database (Requirement: RFN-05 / Sync without webhooks)
-      // Note: In a production app with high traffic, this should be optimized
-      // to avoid calling sync on EVERY request. For now, it meets the "pós-auth" requirement.
-      const userId = decodedToken.sub;
-      const tenantId =
-        request.tenantId || '00000000-0000-0000-0000-000000000000';
-
-      // Attach the full user info to request (from Clerk API)
-      // This ensures RolesGuard has access to publicMetadata even if not in JWT
-      const clerkUser = await this.clerkService.getUser(userId);
-      request.user = clerkUser;
-
-      // Sync user with local database
-      await this.clerkService.syncUserWithData(clerkUser, tenantId);
-
-      return true;
+      decodedToken = await this.clerkService.verifyToken(token);
     } catch (error) {
-      console.error('AuthGuard verification error:', error);
+      this.loggingVerificationError(token, error);
       const detail = error instanceof Error ? error.message : String(error);
       throw new UnauthorizedException(
         `Invalid token. ${detail.includes('JWK') ? 'Failed to resolve verification keys. Check CLERK_SECRET_KEY/CLERK_JWT_KEY.' : 'Details: ' + detail}`,
       );
     }
+
+    // After token is verified, any further errors (DB connection, etc) should be 500, not 401.
+    const userId = decodedToken.sub;
+    const tenantId =
+      request.tenantId || '00000000-0000-0000-0000-000000000000';
+
+    // Attach the full user info to request (from Clerk API)
+    const clerkUser = await this.clerkService.getUser(userId);
+    request.user = clerkUser;
+
+    // Sync user with local database
+    await this.clerkService.syncUserWithData(clerkUser, tenantId);
+
+    return true;
+  }
+
+  private loggingVerificationError(token: string, error: any) {
+    console.error('AuthGuard verification error:', error);
   }
 }
