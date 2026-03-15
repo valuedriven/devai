@@ -366,15 +366,7 @@ Ajustes
 | **IAM** | Roles e policies granulares por serviço |
 | **VPC** | Isolamento com subnets públicas, privadas e de dados |
 | **ALB** | Load balancer com roteamento por path, health checks |
-
-## Serviço a ser substituído
-
-### Serviço proposto
 | **RDS PostgreSQL t3.small** | Banco relacional Multi-AZ com failover automático |
-
-### Serviço a ser usado
-
-| **Amazon Aurora** | 
 
 ## Serviços AWS que não devem ser usados nesta primeira versão
 
@@ -389,6 +381,11 @@ Ajustes
 ## Resultado
 - Scripts Terraform
 - Ajustes no Github Actions
+
+## Restrição
+
+Atentar que no AWS Learner Labs não é permitido criar roles.
+Deve ser usada sempre a role `LabRole.
 ```
 
 - Avalie o plano resultante e solicite os ajustes necessários.

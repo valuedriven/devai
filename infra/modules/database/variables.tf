@@ -31,22 +31,23 @@ variable "master_password" {
 }
 
 variable "engine_version" {
-  description = "Versão do Aurora PostgreSQL"
+  description = "Versão do PostgreSQL"
   type        = string
-  default     = "16.6"
+  default     = "15.7"
 }
 
-variable "min_capacity" {
-  description = "Capacidade mínima (ACU)"
-  type        = number
-  default     = 0.5
+variable "instance_class" {
+  description = "Classe da instância RDS"
+  type        = string
+  default     = "db.t3.micro"
 }
 
-variable "max_capacity" {
-  description = "Capacidade máxima (ACU)"
+variable "allocated_storage" {
+  description = "Espaço em disco (GB)"
   type        = number
-  default     = 4.0
+  default     = 20
 }
+
 
 variable "tags" {
   description = "Tags globais"

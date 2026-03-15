@@ -10,6 +10,7 @@ output "ecr_backend_url" {
   value = module.registry.backend_repository_url
 }
 
-output "aurora_endpoint" {
-  value = module.database.cluster_endpoint
+output "rds_endpoint" {
+  value = module.database.db_instance_endpoint
 }
+

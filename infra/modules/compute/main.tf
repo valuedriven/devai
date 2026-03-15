@@ -33,42 +33,13 @@ resource "aws_cloudwatch_log_group" "backend" {
 }
 
 # ------------------------------------------------------------
-# IAM Roles para ECS
+# IAM Roles para ECS (Usando LabRole fixa)
 # ------------------------------------------------------------
 
-# Execution Role (Permite que o ECS baixe imagens e pegue segredos)
-resource "aws_iam_role" "ecs_execution_role" {
-  name = "${var.project}-ecs-execution-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = { Service = "ecs-tasks.amazonaws.com" }
-    }]
-  })
+data "aws_iam_role" "labrole" {
+  name = "LabRole"
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
-  role       = aws_iam_role.ecs_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Permissao adicional para Secrets Manager
-resource "aws_iam_role_policy" "ecs_secrets_policy" {
-  name = "${var.project}-ecs-secrets-policy"
-  role = aws_iam_role.ecs_execution_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action   = "secretsmanager:GetSecretValue"
-      Effect   = "Allow"
-      Resource = "*" # Ajustar para ARNs especificos em prod
-    }]
-  })
-}
 
 # ------------------------------------------------------------
 # Task Definition: Backend (NestJS)
@@ -79,7 +50,8 @@ resource "aws_ecs_task_definition" "backend" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.backend_cpu
   memory                   = var.backend_memory
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  execution_role_arn       = data.aws_iam_role.labrole.arn
+  task_role_arn            = data.aws_iam_role.labrole.arn
 
   container_definitions = jsonencode([{
     name      = "backend"
@@ -117,7 +89,8 @@ resource "aws_ecs_task_definition" "frontend" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.frontend_cpu
   memory                   = var.frontend_memory
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  execution_role_arn       = data.aws_iam_role.labrole.arn
+  task_role_arn            = data.aws_iam_role.labrole.arn
 
   container_definitions = jsonencode([{
     name      = "frontend"
@@ -158,8 +131,8 @@ resource "aws_ecs_service" "backend" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = var.private_subnet_ids
-    security_groups = [var.security_group_id]
+    subnets          = var.private_subnet_ids
+    security_groups  = [var.security_group_id]
     assign_public_ip = false
   }
 
@@ -178,8 +151,8 @@ resource "aws_ecs_service" "frontend" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = var.private_subnet_ids
-    security_groups = [var.security_group_id]
+    subnets          = var.private_subnet_ids
+    security_groups  = [var.security_group_id]
     assign_public_ip = false
   }
 
