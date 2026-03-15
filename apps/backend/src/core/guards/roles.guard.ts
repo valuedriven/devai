@@ -27,8 +27,19 @@ export class RolesGuard implements CanActivate {
       return false;
     }
 
-    // Clerk roles are usually stored in publicMetadata
-    const userRoles = user.publicMetadata?.roles || [];
+    // Normalizing roles from publicMetadata
+    let userRoles: string[] = [];
+    const metadata = user.publicMetadata || {};
+
+    if (Array.isArray(metadata.roles)) {
+      userRoles = metadata.roles;
+    } else if (typeof metadata.roles === 'string') {
+      userRoles = [metadata.roles];
+    } else if (Array.isArray(metadata.role)) {
+      userRoles = metadata.role;
+    } else if (typeof metadata.role === 'string') {
+      userRoles = [metadata.role];
+    }
 
     const hasRole = requiredRoles.some((role) => userRoles.includes(role));
 

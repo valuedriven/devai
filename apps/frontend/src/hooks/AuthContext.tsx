@@ -18,6 +18,12 @@ interface AuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
+  register: (data: {
+    email: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+  }) => Promise<void>
   logout: () => Promise<void>
   refreshSession: () => Promise<void>
 }
@@ -98,6 +104,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const register = async (data: {
+    email: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+  }) => {
+    setIsLoading(true)
+    try {
+      const response = await fetchApi<{ token: string; user: unknown }>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(TOKEN_KEY, response.token)
+      }
+      setToken(response.token)
+      setAuthCookie(response.token)
+      
+      await refreshSession()
+    } catch (error) {
+      setIsLoading(false)
+      throw error
+    }
+  }
+
   const logout = async () => {
     setIsLoading(true)
     try {
@@ -120,6 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         login,
+        register,
         logout,
         refreshSession,
       }}

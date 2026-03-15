@@ -134,6 +134,35 @@ export class ClerkService {
     }
   }
 
+  async createUser(data: {
+    email: string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    role?: string;
+    tenantId: string;
+  }): Promise<any> {
+    try {
+      const newUser = await this.clerkClient.users.createUser({
+        emailAddress: [data.email],
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        publicMetadata: {
+          roles: data.role ? [data.role] : ['customer'],
+        },
+      });
+
+      // Sync with local database
+      await this.syncUserWithData(newUser, data.tenantId);
+
+      return newUser;
+    } catch (error) {
+      this.logger.error(`Failed to create user ${data.email}`, error);
+      throw error;
+    }
+  }
+
   async createSignInToken(userId: string): Promise<string> {
     try {
       const tokenResponse =
