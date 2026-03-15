@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useInternalAuth } from '@/hooks/AuthContext'
 import './LoginForm.css'
@@ -59,7 +60,7 @@ export function LoginForm() {
           <div className="form-group">
             <div className="label-row">
               <label htmlFor="password">Senha</label>
-              <a href="#" className="forgot-password">Esqueceu a senha?</a>
+              <Link href="#" className="forgot-password">Esqueceu a senha?</Link>
             </div>
             <input
               id="password"
@@ -78,7 +79,7 @@ export function LoginForm() {
         </form>
 
         <div className="login-footer">
-          <p>Não tem uma conta? <a href="#">Cadastre-se</a></p>
+          <p>Não tem uma conta? <Link href="/register">Registre-se</Link></p>
         </div>
       </div>
     </div>
