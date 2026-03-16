@@ -11,6 +11,7 @@ env:
   ENVIRONMENT: dev
   BACKEND_BUCKET: ${{ vars.BACKEND_BUCKET }}
   AUTOMATION: true
+  AWS_EC2_METADATA_DISABLED: true
   TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
   NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -58,40 +59,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-        # with:
-        #   aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-        #   aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-        #   aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
-        #   aws-region: ${{ env.AWS_REGION }}
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Ensure Terraform State Bucket
         run: |
           BUCKET_NAME="${{ env.BACKEND_BUCKET }}"
-          if ! aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
-            echo "Bucket $BUCKET_NAME not found. Creating in us-east-1..."
-            aws s3api create-bucket --bucket "$BUCKET_NAME" --region us-east-1
-            aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --versioning-configuration Status=Enabled
-            aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
+          REGION="${{ env.AWS_REGION }}"
+          if ! aws s3api head-bucket --bucket "$BUCKET_NAME" --region "$REGION" 2>/dev/null; then
+            echo "Bucket $BUCKET_NAME not found. Creating in $REGION..."
+            aws s3api create-bucket --bucket "$BUCKET_NAME" --region "$REGION"
+            aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --region "$REGION" --versioning-configuration Status=Enabled
+            aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --region "$REGION" --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
           else
-            echo "Bucket $BUCKET_NAME already exists."
+            echo "Bucket $BUCKET_NAME already exists in $REGION."
           fi
 
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=${{ env.BACKEND_BUCKET }}"
+        run: terraform init -input=false -backend-config="bucket=${{ env.BACKEND_BUCKET }}"
 
       - name: Terraform Validate
-        run: terraform validate
+        run: terraform validate -no-color
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        run: terraform plan -input=false -no-color
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -no-color
+        run: terraform apply -input=false -auto-approve -no-color
 
   build-and-push:
     name: Build and Push to ECR
@@ -100,14 +94,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-      #     aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
-      #     aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -137,14 +123,6 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-      #     aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
-      #     aws-region: ${{ env.AWS_REGION }}
-
       - name: Update ECS Backend Service
         run: |
           aws ecs update-service --cluster ${{ env.PROJECT_NAME }}-cluster --service ${{ env.PROJECT_NAME }}-backend-service --force-new-deployment --region ${{ env.AWS_REGION }}
