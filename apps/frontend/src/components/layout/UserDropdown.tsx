@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { User, LogOut, LayoutDashboard, ChevronRight } from "lucide-react";
 import { AuthMe } from "@/hooks/useAuthMe";
 import "./UserDropdown.css";
@@ -39,7 +40,13 @@ export function UserDropdown({ user, isAdmin, onLogout }: UserDropdownProps) {
     <div className="user-dropdown-container" ref={dropdownRef}>
       <div className="user-dropdown-trigger" onClick={toggleDropdown}>
         {user?.imageUrl ? (
-          <img src={user.imageUrl} alt="User" />
+          <Image 
+            src={user.imageUrl} 
+            alt="User avatar" 
+            width={32} 
+            height={32} 
+            className="rounded-full object-cover"
+          />
         ) : (
           <div className="avatar-placeholder">
             <User className="icon-sm" />

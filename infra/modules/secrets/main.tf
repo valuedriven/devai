@@ -8,3 +8,20 @@ resource "aws_secretsmanager_secret" "app_secrets" {
     Environment = var.environment
   }
 }
+
+resource "aws_secretsmanager_secret_version" "app_secrets_initial" {
+  secret_id     = aws_secretsmanager_secret.app_secrets.id
+  secret_string = jsonencode({
+    DATABASE_URL                      = "placeholder"
+    DIRECT_URL                        = "placeholder"
+    CLERK_SECRET_KEY                  = "placeholder"
+    CLERK_JWT_KEY                     = "placeholder"
+    JWT_SECRET                        = "placeholder"
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "placeholder"
+    NEXT_PUBLIC_API_URL               = "placeholder"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}

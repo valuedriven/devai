@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAuthMe } from "@/hooks/useAuthMe";
+import Image from "next/image";
 import { User, Mail, Shield } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 
@@ -37,7 +38,13 @@ export default function ProfilePage() {
             <div className="max-w-2xl mx-auto">
                 <div className="mb-8 flex items-center gap-6">
                     {authMe?.imageUrl ? (
-                        <img src={authMe.imageUrl} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white shadow-lg" />
+                        <Image 
+                            src={authMe.imageUrl} 
+                            alt="Profile" 
+                            width={96} 
+                            height={96} 
+                            className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover" 
+                        />
                     ) : (
                         <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-4 border-white shadow-lg">
                             <User className="w-12 h-12 text-primary" />
