@@ -209,25 +209,34 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE: ${{ env.PROJECT_NAME }}-backend
+        # run: |
+        #   docker build \
+        #     -t $REGISTRY/$IMAGE:${{ github.sha }} \
+        #     -t $REGISTRY/$IMAGE:latest \
+        #     -f apps/backend/Dockerfile .
+        #   docker push --all-tags $REGISTRY/$IMAGE
         run: |
           docker build \
-            -t $REGISTRY/$IMAGE:${{ github.sha }} \
             -t $REGISTRY/$IMAGE:latest \
             -f apps/backend/Dockerfile .
-          docker push --all-tags $REGISTRY/$IMAGE
+          docker push --all-tags $REGISTRY/$IMAGE          
 
       # Frontend Build & Push
       - name: Build and push Frontend image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE: ${{ env.PROJECT_NAME }}-frontend
+        # run: |
+        #   docker build \
+        #     -t $REGISTRY/$IMAGE:${{ github.sha }} \
+        #     -t $REGISTRY/$IMAGE:latest \
+        #     -f apps/frontend/Dockerfile .
+        #   docker push --all-tags $REGISTRY/$IMAGE
         run: |
           docker build \
-            -t $REGISTRY/$IMAGE:${{ github.sha }} \
             -t $REGISTRY/$IMAGE:latest \
             -f apps/frontend/Dockerfile .
           docker push --all-tags $REGISTRY/$IMAGE
-
   deploy:
     name: Deploy to ECS
     #needs: [changes, build-and-push, terraform]
