@@ -38,7 +38,7 @@ resource "aws_alb_target_group" "backend" {
   target_type = "ip"
 
   health_check {
-    path                = "/health"
+    path                = "/api/v1"
     healthy_threshold   = 2
     unhealthy_threshold = 10
   }

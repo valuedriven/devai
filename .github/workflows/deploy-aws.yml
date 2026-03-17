@@ -100,6 +100,40 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve -no-color
 
+      - name: Update AWS Secrets
+        run: |
+          # Obter outputs do Terraform
+          DB_ADDRESS=$(terraform output -raw db_instance_address)
+          ALB_DNS=$(terraform output -raw alb_dns_name)
+          
+          # Construir variáveis
+          DATABASE_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/devai?schema=public"
+          DIRECT_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/devai?schema=public"
+          NEXT_PUBLIC_API_URL="http://${ALB_DNS}"
+          
+          echo "Updating secrets for DATABASE_URL, DIRECT_URL and NEXT_PUBLIC_API_URL..."
+          
+          # Obter segredos atuais para não sobrescrever outros (como Clerk)
+          CURRENT_SECRETS=$(aws secretsmanager get-secret-value --secret-id "${{ env.PROJECT_NAME }}-app-secrets" --region "${{ env.AWS_REGION }}" --query SecretString --output text 2>/dev/null || echo "{}")
+          
+          # Tratar caso o segredo exista mas ainda não tenha valor inicializado
+          if [ -z "$CURRENT_SECRETS" ] || [ "$CURRENT_SECRETS" == "None" ]; then
+            CURRENT_SECRETS="{}"
+          fi
+
+          # Mesclar com os novos valores
+          UPDATED_SECRETS=$(echo "$CURRENT_SECRETS" | jq \
+            --arg db_url "$DATABASE_URL" \
+            --arg direct_url "$DIRECT_URL" \
+            --arg api_url "$NEXT_PUBLIC_API_URL" \
+            '. + {DATABASE_URL: $db_url, DIRECT_URL: $direct_url, NEXT_PUBLIC_API_URL: $api_url}')
+          
+          # Atualizar no AWS Secrets Manager
+          aws secretsmanager put-secret-value \
+            --secret-id "${{ env.PROJECT_NAME }}-app-secrets" \
+            --secret-string "$UPDATED_SECRETS" \
+            --region "${{ env.AWS_REGION }}"
+
   build-and-push:
     name: Build and Push to ECR
     needs: [quality, terraform]

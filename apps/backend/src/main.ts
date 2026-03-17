@@ -33,7 +33,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { rawBody: true });
   app.enableCors();
-  app.setGlobalPrefix('v1');
+  app.setGlobalPrefix('api/v1');
   await app.listen(process.env.BACKEND_PORT ?? 3001);
 }
 void bootstrap();
