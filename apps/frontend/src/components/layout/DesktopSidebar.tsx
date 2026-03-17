@@ -88,12 +88,14 @@ export function DesktopSidebar() {
                 )}
             </nav>
 
-            <div className="sidebar-footer">
-                <Button variant="ghost" className="sidebar-logout-btn" onClick={logout}>
-                    <LogOut className="mr-3 h-5 w-5" />
-                    Sair da Loja
-                </Button>
-            </div>
+            {isLoggedIn && (
+                <div className="sidebar-footer">
+                    <Button variant="ghost" className="sidebar-logout-btn" onClick={logout}>
+                        <LogOut className="icon-md mr-3" />
+                        Sair da Loja
+                    </Button>
+                </div>
+            )}
         </aside>
     );
 }

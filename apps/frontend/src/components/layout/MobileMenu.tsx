@@ -1,5 +1,6 @@
+import { X, LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut, Home, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { X, LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut } from "lucide-react";
+import { useInternalAuth } from "@/hooks/AuthContext";
 
 
 interface MobileMenuProps {
@@ -9,6 +10,8 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose, isAdmin }: MobileMenuProps) {
+    const { isAuthenticated, logout } = useInternalAuth();
+    const isLoggedIn = isAuthenticated;
 
 
     const handleNavigate = () => {
@@ -39,9 +42,11 @@ export function MobileMenu({ isOpen, onClose, isAdmin }: MobileMenuProps) {
                         </span>
                     </div>
                     <Link href="/" className="mobile-menu-link" onClick={handleNavigate}>
+                        <Home className="icon-md mr-3" />
                         Início
                     </Link>
                     <Link href="/cart" className="mobile-menu-link" onClick={handleNavigate}>
+                        <ShoppingCart className="icon-md mr-3" />
                         Carrinho
                     </Link>
 
@@ -53,32 +58,40 @@ export function MobileMenu({ isOpen, onClose, isAdmin }: MobileMenuProps) {
                                 </span>
                             </div>
                             <Link href="/admin" className="mobile-menu-link" onClick={handleNavigate}>
-                                <LayoutDashboard className="mr-3 h-5 w-5" />
+                                <LayoutDashboard className="icon-md mr-3" />
                                 Dashboard
                             </Link>
                             <Link href="/admin/products" className="mobile-menu-link" onClick={handleNavigate}>
-                                <Package className="mr-3 h-5 w-5" />
+                                <Package className="icon-md mr-3" />
                                 Produtos
                             </Link>
                             <Link href="/admin/categories" className="mobile-menu-link" onClick={handleNavigate}>
-                                <Tags className="mr-3 h-5 w-5" />
+                                <Tags className="icon-md mr-3" />
                                 Categorias
                             </Link>
                             <Link href="/admin/customers" className="mobile-menu-link" onClick={handleNavigate}>
-                                <Users className="mr-3 h-5 w-5" />
+                                <Users className="icon-md mr-3" />
                                 Clientes
                             </Link>
                             <Link href="/admin/orders" className="mobile-menu-link" onClick={handleNavigate}>
-                                <ShoppingBag className="mr-3 h-5 w-5" />
+                                <ShoppingBag className="icon-md mr-3" />
                                 Pedidos
                             </Link>
+                        </div>
+                    )}
 
-                            <div className="my-2 border-t border-slate-200"></div>
-
-                            <Link href="/" className="mobile-menu-link text-red-500 hover:text-red-600 hover:bg-red-50" onClick={handleNavigate}>
-                                <LogOut className="mr-3 h-5 w-5" />
+                    {isLoggedIn && (
+                        <div className="my-2 border-t mt-4 pt-4">
+                            <button 
+                                className="mobile-menu-link text-red-500 w-full text-left bg-transparent border-none cursor-pointer" 
+                                onClick={() => {
+                                    logout();
+                                    handleNavigate();
+                                }}
+                            >
+                                <LogOut className="icon-md mr-3" />
                                 Sair da Loja
-                            </Link>
+                            </button>
                         </div>
                     )}
                 </nav>

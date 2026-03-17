@@ -39,10 +39,10 @@ export function UserDropdown({ user, isAdmin, onLogout }: UserDropdownProps) {
     <div className="user-dropdown-container" ref={dropdownRef}>
       <div className="user-dropdown-trigger" onClick={toggleDropdown}>
         {user?.imageUrl ? (
-          <img src={user.imageUrl} alt="User" className="w-8 h-8 rounded-full border border-slate-200" />
+          <img src={user.imageUrl} alt="User" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
-            <User className="w-4 h-4 text-slate-500" />
+          <div className="avatar-placeholder">
+            <User className="icon-sm" />
           </div>
         )}
       </div>
