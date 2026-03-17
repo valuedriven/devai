@@ -52,3 +52,15 @@ variable "aws_region" {
   description = "AWS Region"
   type        = string
 }
+
+variable "frontend_image_tag" {
+  description = "Tag for the frontend ECR image"
+  type        = string
+  default     = "latest"
+}
+
+variable "backend_image_tag" {
+  description = "Tag for the backend ECR image"
+  type        = string
+  default     = "latest"
+}

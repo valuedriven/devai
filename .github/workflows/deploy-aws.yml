@@ -127,10 +127,10 @@ jobs:
         run: terraform validate -no-color
 
       - name: Terraform Plan
-        run: terraform plan -input=false -no-color
+        run: terraform plan -input=false -no-color -var="frontend_image_tag=${{ github.sha }}" -var="backend_image_tag=${{ github.sha }}"
 
       - name: Terraform Apply
-        run: terraform apply -input=false -auto-approve -no-color
+        run: terraform apply -input=false -auto-approve -no-color -var="frontend_image_tag=${{ github.sha }}" -var="backend_image_tag=${{ github.sha }}"
 
       - name: Update AWS Secrets
         run: |
@@ -139,23 +139,27 @@ jobs:
           ALB_DNS=$(terraform output -raw alb_dns_name)
           SECRET_ARN=$(terraform output -raw secret_arn)
           
+          if [ -z "$SECRET_ARN" ] || [ "$SECRET_ARN" == "null" ]; then
+            echo "Error: secret_arn output not found from Terraform."
+            exit 1
+          fi
+
           # Construir variáveis
           DATABASE_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/devai?schema=public"
           DIRECT_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/devai?schema=public"
           NEXT_PUBLIC_API_URL="http://${ALB_DNS}"
           
-          echo "Updating secrets for DATABASE_URL, DIRECT_URL, NEXT_PUBLIC_API_URL, CLERK_SECRET_KEY, CLERK_JWT_KEY and JWT_SECRET..."
-          echo "Using Secret ARN: $SECRET_ARN"
+          echo "Updating secrets in Secrets Manager..."
+          echo "Secret ARN: $SECRET_ARN"
           
-          # Obter segredos atuais para não sobrescrever outros
+          # Obter segredos atuais - falha graciosamente se não houver versão atual
           CURRENT_SECRETS=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ARN" --region "${{ env.AWS_REGION }}" --query SecretString --output text 2>/dev/null || echo "{}")
           
-          # Tratar caso o segredo exista mas ainda não tenha valor inicializado
-          if [ -z "$CURRENT_SECRETS" ] || [ "$CURRENT_SECRETS" == "None" ]; then
+          if [ -z "$CURRENT_SECRETS" ] || [ "$CURRENT_SECRETS" == "None" ] || [ "$CURRENT_SECRETS" == "null" ]; then
             CURRENT_SECRETS="{}"
           fi
 
-          # Mesclar com os novos valores
+          # Mesclar com os novos valores usando jq de forma robusta
           UPDATED_SECRETS=$(echo "$CURRENT_SECRETS" | jq \
             --arg db_url "$DATABASE_URL" \
             --arg direct_url "$DIRECT_URL" \
@@ -174,14 +178,19 @@ jobs:
               NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: $clerk_publishable_key
             }')
           
+          # Validar se o JSON gerado é válido antes de enviar
+          if ! echo "$UPDATED_SECRETS" | jq empty; then
+            echo "Error: Generated secrets JSON is invalid."
+            exit 1
+          fi
+
           # Atualizar no AWS Secrets Manager
           aws secretsmanager put-secret-value \
             --secret-id "$SECRET_ARN" \
             --secret-string "$UPDATED_SECRETS" \
             --region "${{ env.AWS_REGION }}"
           
-          # Verificação (opcional, apenas para debug se necessário, omitindo valores sensíveis)
-          echo "Secrets updated successfully."
+          echo "Secrets updated successfully in AWS Secrets Manager."
 
   build-and-push:
     name: Build and Push to ECR

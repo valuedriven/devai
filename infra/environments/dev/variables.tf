@@ -33,3 +33,15 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "frontend_image_tag" {
+  description = "Tag for the frontend ECR image"
+  type        = string
+  default     = "latest"
+}
+
+variable "backend_image_tag" {
+  description = "Tag for the backend ECR image"
+  type        = string
+  default     = "latest"
+}
