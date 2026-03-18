@@ -58,14 +58,16 @@ module "secrets" {
 }
 
 module "compute" {
-  source                    = "../../modules/compute"
-  project_name              = var.project_name
-  environment               = var.environment
-  vpc_id                    = module.network.vpc_id
-  private_subnets           = module.network.private_subnets
-  security_group_id         = module.network.ecs_tasks_security_group_id
-  frontend_image            = "${module.registry.frontend_repository_url}:${var.frontend_image_tag}"
-  backend_image             = "${module.registry.backend_repository_url}:${var.backend_image_tag}"
+  source            = "../../modules/compute"
+  project_name      = var.project_name
+  environment       = var.environment
+  vpc_id            = module.network.vpc_id
+  private_subnets   = module.network.private_subnets
+  security_group_id = module.network.ecs_tasks_security_group_id
+  #frontend_image            = "${module.registry.frontend_repository_url}:${var.frontend_image_tag}"
+  frontend_image = "${module.registry.frontend_repository_url}:latest"
+  #backend_image             = "${module.registry.backend_repository_url}:${var.backend_image_tag}"
+  backend_image             = "${module.registry.backend_repository_url}:latest"
   frontend_target_group_arn = module.loadbalancer.frontend_target_group_arn
   backend_target_group_arn  = module.loadbalancer.backend_target_group_arn
   secret_arn                = module.secrets.secret_arn
