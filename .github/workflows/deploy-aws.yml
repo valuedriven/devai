@@ -252,10 +252,6 @@ jobs:
         run: |
           aws ecs update-service --cluster ${{ env.PROJECT_NAME }}-cluster --service ${{ env.PROJECT_NAME }}-backend-service --force-new-deployment --region ${{ env.AWS_REGION }}
 
-      - name: Describe ECS Backend Service
-        run: |
-          aws ecs describe-services --cluster ${{ env.PROJECT_NAME }}-cluster --services ${{ env.PROJECT_NAME }}-backend-service --region ${{ env.AWS_REGION }}
-
       - name: Update ECS Frontend Service
         run: |
           aws ecs update-service --cluster ${{ env.PROJECT_NAME }}-cluster --service ${{ env.PROJECT_NAME }}-frontend-service --force-new-deployment --region ${{ env.AWS_REGION }}
