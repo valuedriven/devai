@@ -16,6 +16,9 @@ jobs:
   terraform-destroy:
     name: "Terraform Destroy"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra/environments/dev
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,7 +27,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        working-directory: ./infra/terraform
         run: |
           # Captura Account ID para unicidade do estado
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -33,9 +35,7 @@ jobs:
             -backend-config="key=state/terraform.tfstate.events.${ACCOUNT_ID}"
 
       - name: Terraform Plan Destroy
-        working-directory: ./infra/terraform
         run: terraform plan -destroy
 
       - name: Terraform Destroy
-        working-directory: ./infra/terraform
         run: terraform destroy -auto-approve
