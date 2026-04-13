@@ -21,6 +21,9 @@ export AWS_SESSION_TOKEN=[colocar o token de sessão]
 export AWS_DEFAULT_REGION=[colocar a região]
 ```
 
+- Inclua as variáveis também no arquivo .env, de forma que o agente consiga acessá-las.
+
+
 ## Configuração de MCP servers
 
 Configure os MCP servers no seu cliente incluindo o seguinte conteúdo no arquivo de configuração do seu cliente.
@@ -63,7 +66,7 @@ Configure os MCP servers no seu cliente incluindo o seguinte conteúdo no arquiv
 
 
 
-## Faça o deploy na AWS
+## Análise de decisão arquitetural
 
 - Acesse o Google Antigravity.
 - Acesse o painel Agent
@@ -228,19 +231,16 @@ AWS
 
 Forneça uma estrutura de diretórios como exemplo:
 
-infra/
-
-modules/
-
-network/\
-compute/\
-database/\
-registry/
-
-environments/
-
-dev/\
-prod/
+| monorepo
+|  infra/
+|    modules/
+|    network/\
+|    compute/\
+|    database/\
+|    registry/
+|    environments/
+|     dev/\
+|     prod/
 
 ------------------------------------------------------------------------
 
@@ -342,3 +342,60 @@ Evite:
 - Analise o documento gerado.
 - Registre a decisão arquitetural no documento gerado.
 - Crie um plano de implementação no documento gerado.
+
+
+## Faça o deploy na AWS
+
+
+- Acesse o Google Antigravity.
+- Acesse o painel Agent
+- Acione a opção Start a new conversation.
+- Priorize modelos com maior capacidade de processamento.
+- Execute o seguinte comando:
+
+```bash
+Crie os artefatos para uma primeira versão de migração para AWS, prioritariamente baseada no cenário 2.
+
+Ajustes
+
+## Serviços AWS a serem mantidos
+
+| Serviço | Uso |
+|---------|-----|
+| **ECS Fargate** | Orquestração de containers sem gerenciar EC2 |
+| **ECR** | Registry de imagens Docker |
+| **Secrets Manager** | Gerenciamento seguro de credenciais |
+| **CloudWatch** | Logs, métricas, alarmes e dashboards |
+| **IAM** | Roles e policies granulares por serviço |
+| **VPC** | Isolamento com subnets públicas, privadas e de dados |
+| **ALB** | Load balancer com roteamento por path, health checks |
+| **RDS PostgreSQL t3.small** | Banco relacional Single-AZ |
+
+## Serviços AWS que não devem ser usados nesta primeira versão
+
+| **CloudFront** | CDN para assets estáticos e cache de páginas |
+| **Route 53** | DNS com health checks |
+| **ACM** | Certificados SSL/TLS gerenciados (auto-renovação) |
+
+
+
+## Resultado
+- Scripts Terraform
+- Ajustes no Github Actions
+
+## Restrição
+
+Use sempre a role `LabRole`. Não criar novas roles.
+Garanta que o RDS provisionado tenha uma versão de banco compatível com as versões disponíveis na região.
+Use o AWS S3 com backend para controle de versões habilitado para gerenciar o estado no Terraform.
+Garanta que o bucket do S3 de backend seja criado antes da execução do Terraform.
+Garanta que o bucket do S3 de backend seja criado na região padrão para os demais recursos.
+```
+
+- Avalie o plano resultante e solicite os ajustes necessários.
+- Execute o plano.
+
+
+
+
+

@@ -335,6 +335,8 @@ SUPABASE_ACCESS_TOKEN=
 # Criar uma aplicação e copiar as chaves de API
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+CLERK_JWT_KEY=
+JWT_SECRET
 
 # Context7
 # https://context7.com/dashboard
@@ -505,7 +507,7 @@ monorepo
 │
 ├─ apps
 │  ├─ frontend
-│     ├─ Dockerfile
+│  │  ├─ Dockerfile
 │  │  └─ src
 │  │     ├─ app
 │  │     ├─ components
@@ -798,7 +800,38 @@ Utilize:
 - Solicite a criação de uma nova aplicação no Clerk (substitua <nome do projeto> pelo nome do projeto):
 
 ```
-Use o mcp server clerk e a skill .agent/skills/clerk para criar uma aplicação com o nome <nome do projeto>
+# Prompt de Configuração: Clerk e Sincronização de Clientes
+
+## Objetivo
+Configurar a autenticação e autorização do projeto utilizando o Clerk e garantir a sincronização de dados com o banco de dados local através de um serviço dedicado no backend.
+
+Garanta que toda a lógica de implementação de autenticação e autorização sejam feitas pelo backend, que deverá expor serviços a serem consumidos pelo frontend.
+
+Garanta também que o frontend não dependa de nenhum componente ou biblioteca do clerk. O frontend deve apenas consumir os serviços do backend.
+
+## Referências e Ferramentas
+* **Aplicação:** [Nome da Aplicação]
+* **Documentação Base:** `docs/spec_tech.md`
+* **Ferramentas:**
+    * MCP Server: `clerk`
+    * Skill: `.agent/skills/clerk`
+* **Versão:** Utilizar a versão estável mais recente do SDK do Clerk.
+
+## Instruções de Implementação
+
+### 1. Autenticação e Autorização
+- Implementar o fluxo completo de autenticação e controle de acesso para a aplicação utilizando as capacidades do Clerk.
+- Seguir rigorosamente as definições técnicas e de segurança descritas em `docs/spec_tech.md`.
+
+### 2. Sincronização de Dados (Serviço de Backend)
+- Configurar a lógica para que, uma vez que um usuário esteja registrado no Clerk, o backend realize a sincronização dos dados na tabela de clientes.
+- **Tarefa:** O backend deve criar ou atualizar um registro de **Cliente** no banco de dados local sempre que houver uma alteração ou novo registro no Clerk.
+- **Chave de Integração:** O atributo principal para o mapeamento entre o Clerk e o banco de dados é o **e-mail** do usuário.
+- **Restrição de Implementação:** A sincronização **não** deve utilizar Webhooks. O processo deve ser gerido inteiramente por um serviço implementado no backend (ex: via polling, execução pós-auth no cliente ou tarefa agendada).
+
+## Diretrizes Adicionais
+- Priorizar comandos locais para a configuração e interação com o MCP server.
+- Garantir a integridade dos dados, tratando possíveis erros de comunicação entre o serviço de backend e as APIs do Clerk.
 ```
 
 - Após a conclusão, navegue na aplicação localmente e verifique se tanto o botão Login quanto o Finalizar compra apontam para a página de login.
@@ -812,7 +845,26 @@ Use o mcp server clerk e a skill .agent/skills/clerk para criar uma aplicação 
 - Solicite a criação do projeto Vercel (substitua <nome do projeto> pelo nome do projeto e <nome da organização> pelo valor correspondente configurado no supabase):
 
 ```
-Use o mcp server supabase e skill .agent/skills/supabase para criar um projeto de banco de dados com o nome <nome do projeto> e as respectivas tabelas na organização <nome da organização>. Inclua alguns dados para permitir o teste da aplicação. Remova os dados simulados.
+# Prompt: Setup de Projeto e Banco de Dados via Supabase MCP
+
+## Contexto
+Este prompt deve ser utilizado pelo **Google Antigravity** para automatizar a criação de infraestrutura de banco de dados no Supabase, garantindo que o schema siga rigorosamente a documentação técnica do projeto.
+
+---
+
+## Instruções de Execução
+
+**Atue como um Engenheiro de Dados utilizando o MCP server do Supabase e a skill `.agent/skills/supabase`. Realize as seguintes tarefas em ordem:**
+
+1.  **Análise de Contexto:** * Leia o arquivo `docs/spec_tech.md` para extrair a definição completa do schema (tabelas, colunas, tipos, chaves estrangeiras e constraints).
+2.  **Criação do Projeto:** * Crie um novo projeto de banco de dados chamado `<nome do projeto>` dentro da organização `<nome da organização>`.
+3.  **Provisionamento de Tabelas:** * Implemente o banco de dados seguindo rigorosamente as especificações extraídas no passo 1.
+4.  **Massa de Teste:** * Insira dados fictícios coerentes para permitir a validação imediata da aplicação.
+5.  **Limpeza de Resíduos:** * Certifique-se de que o ambiente final esteja limpo de quaisquer dados de exemplo ou configurações temporárias que não constem na especificação original, mantendo apenas os dados de teste solicitados para a aplicação.
+
+---
+
+> **Nota:** Certifique-se de que as orientações necessárias mencionadas em `docs/spec_tech.md` sejam aplicadas durante o provisionamento.
 ```
 
 - Caso tenha ocorrido algum erro, copie a mensagem de erro e cole no chat do agente para correção.
