@@ -658,7 +658,7 @@ Não incluir:
 Crie o arquivo README.md para o repositório, seguindo as boas práticas recomendadas pelo GitHub disponíveis em: <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes>
 ```
 
-- Analise o arquivo gerado.s
+- Analise o arquivo gerado.
 
 
 ## 2.2 Testes
