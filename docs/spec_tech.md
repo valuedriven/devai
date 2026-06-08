@@ -100,21 +100,35 @@ Este documento define os padrões de implementação para os módulos de seguran
 
 ## Segurança e Autenticação
 
-### Gestão de Sessão (JWT & Cookies)
+### Autenticação
 
-- **Mecanismo:** JSON Web Token (JWT) com fluxo de **Refresh Token Rotation**.
-- **Algoritmo de Assinatura:** Obrigatório o uso de **RS256** (RSA Signature with SHA-256) ou **ES256** (ECDSA). Chaves privadas devem ser armazenadas em variáveis de ambiente seguras (KMS/Vault).
-- **Configuração de Tokens:**
-    * `access_token`: Expiração em **15 minutos**.
-    * `refresh_token`: Expiração em **7 dias**. A cada uso, um novo par de tokens deve ser emitido e o anterior invalidado no backend (Blacklist/Whitelist).
-- **Armazenamento (Client-side):** * Uso mandatório de **HttpOnly Cookies**.
-    * Flags obrigatórias: `Secure=true`, `SameSite=Strict`.
-- **Validação de Middleware:** Todo request para rotas protegidas deve validar:
-    * `sig`: Integridade da assinatura.
-    * `exp`: Validade temporal (Expiration).
-    * `iss`: Emissor confiável (Issuer).
-    * `aud`: Destinatário pretendido (Audience).
+- O sistema utiliza um provedor externo de identidade (Clerk).
+- Todo processo de login, logout, recuperação de senha, MFA e gestão de sessão é responsabilidade exclusiva do provedor de identidade.
+- O frontend não implementa lógica de autenticação.
+- O frontend apenas encaminha credenciais para o provedor de identidade.
+- O backend valida tokens emitidos pelo provedor utilizando OpenID Connect (OIDC).
+- Não é permitido implementar autenticação própria baseada em JWT customizado.
 
+### Autorização
+
+- A autorização é responsabilidade exclusiva do backend.
+- Roles são armazenadas localmente na aplicação.
+- O token de identidade é utilizado apenas para autenticação.
+- Permissões de negócio são avaliadas pelo backend através de Guards.
+
+## Sincronização de Usuários
+
+- O backend é responsável pela sincronização dos usuários do provedor de identidade.
+- Eventos de criação, atualização e exclusão devem ser analisados pela lógica do backend, sem uso de Webhooks.
+- O usuário local deve manter referência ao identificador externo do provedor.
+- O frontend não acessa diretamente informações de usuários do provedor.
+
+### Diretriz Arquitetural
+
+- É proibida a utilizaão de componentes de autenticação providos pelo serviço de autenticação.
+- É proibida a replicação de fluxos de login, logout, recuperação de senha ou cadastro no frontend.
+- Devem ser utilizados exclusivamente os componentes oficiais disponibilizados pelo provedor de identidade.
+- O frontend não possui regras de autenticação ou autorização.
 
 
 ### Proteção de Dados e Infraestrutura
@@ -176,7 +190,7 @@ Toda operação de mutação (Create, Update, Delete) em entidades críticas dev
 
 - **Estratégia:** Banco de dados compartilhado com schema separado por tenant.
 - **Isolamento:** Cada tenant possui schema próprio (ex: `tenant_abc123`).
-- **Identificação:** Tenant ID extraído do subdomain (`tenant.dominio.com`) ou header `X-Tenant-ID`.
+- **Identificação:** Tenant ID extraído exclusivamente do contexto autenticado do usuário ou do subdomínio. O sistema não deve confiar em headers enviados pelo cliente para definição de tenant..
 - **Migrações:** Prisma migrations devem ser executadas para todos os schemas ativos.
 
 MVP mono-tenant com evolução planejada
@@ -205,3 +219,4 @@ MVP mono-tenant com evolução planejada
 - Relatórios avançados (exportação PDF/Excel).
 - Importação em massa de produtos (CSV/Excel).
 - Sistema de cupons e descontos..
+

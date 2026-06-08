@@ -3,6 +3,7 @@
 ## Pré-requisitos
 
 - Google Antigravity <https://antigravity.google> instalado localmente.
+- Opencode <https://opencode.ai/> instalado localmente (como alternativa/complemento ao Google Antigravity). 
 - Node.js <https://nodejs.org/> instalado localmente.
 - Git <https://git-scm.com/> instalado localmente.
 - Docker e Docker Compose <https://docker.com> instalados localmente.
@@ -11,6 +12,7 @@
 - Conta Supabase <https://www.supabase.com/>.
 - Conta Clerk <https://clerk.com/>.
 - Conta Context7 <https://context7.com/>.
+- Openspec <https://openspec.dev/> instalado localmente.
 
 Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
@@ -39,253 +41,591 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 Resultados:
 - Scaffold
 - Incremento de Produto
+- Infraestrutura do projeto:
+  - Vercel
+  - Supabase
+  - Clerk
 
 Participantes:
 - Designer UX
 - Desenvolvedor
 
 Ferramentas:
-- Ambientes de desenvolvimento (Google Antigravity, Claude Code, etc.)
+- Ambientes de desenvolvimento (Google Antigravity, Claude Code, Opencode etc.)
 
 ---
 
-### 2.1.1 Preparação do Antigravity
+## 2.2 Configuração do Antigravity
 
-#### Configuração de rules
+### Configuração de variáveis de ambiente
 
-- Acesse o Antigravity.
-- Selecione o painel Agent.
-- Selecione os três pontos (...).
-- Selecione a opção "Customizations".
-- Na seção Rule, acione o comando +Workspace.
-- Para Enter rule name, informe "terminal-execution" (sem aspas).
-- Pressione enter.
-- Para Activation Mode, mantenha a opção Always On.
-- Para Content, cole o conteúdo a seguir:
-   
-```
-# Rule: Terminal Governance — Engineering Constitution
-
-## Persona
-Atue como Engenheiro Sênior de Plataforma com mentalidade DevSecOps.
-Princípio norte: **Automação máxima com risco mínimo controlado.**
-
----
-
-## 1. Classificação Obrigatória
-
-Antes de qualquer comando, classifique:
-
-- `[EXPLORAÇÃO]` → leitura / sem alteração de estado  
-- `[BUILD]` → instalação / build / setup  
-- `[CRÍTICO]` → remoção / sobrescrita / alteração irreversível  
-
-Sempre exiba a categoria antes da execução.
-
----
-
-## 2. Automação por Padrão
-
-Execute automaticamente (sem confirmação):
-
-- Setup e configurações
-- Instalação de ferramentas/skills
-- Configuração de MCPs
-- Comandos de exploração seguros (`ls`, `cat`, `grep`, etc.)
-
----
-
-## 3. Validações Obrigatórias
-
-Antes de comandos operacionais:
-
-- Use `npm` como padrão (salvo lockfile diferente).
-- Verifique Docker antes de usá-lo.
-- Use `--dry-run` quando disponível em migrações/deleções.
-
-Se a validação falhar, interrompa e informe.
-
----
-
-## 4. Política para Ações Críticas
-
-Para `[CRÍTICO]`:
-
-1. Explique impacto exato.
-2. Solicite confirmação explícita.
-
-Para deleções massivas (`rm -rf`, curingas amplos):
-- Exigir confirmação dupla.
-- Nunca executar sem consentimento claro.
-
----
-
-## 5. Tratamento de Erros
-
-Se exit code ≠ 0:
-
-1. Analise o erro.
-2. Explique a causa provável.
-3. Proponha correção.
-4. Só então sugira reexecução.
-
-Reexecução automática é proibida.
-
----
-
-## Resultado Esperado
-
-Agente eficiente por padrão.  
-Rigoroso sob risco.  
-Transparente sempre.
-```
-
-- Salve o conteúdo, pressionando Ctrl+S, simultaneamente.
-- No painel Agent, acione o comando Back to agent.
-- Verifique no diretório .agents se a rule foi configurada.
-
-- Crie uma nova rule para ser executada sempre e com o seguinte conteúdo:
+- No diretório raiz do projeto crie arquivo .env com o conteúdo a seguir (os endereços correspondem aos locais onde os dados podem ser obtidos).
+- Acesse os endereços informados junto a cada credencial
+- Navegue em cada endereço e obtenha os valores solicitados
 
 ```
-Sempre use o mcp server Context7 quando precisar de documentação de bibliotecas/APIs para geração de código, setups e demais configurações necessárias.
+PROJECT_NAME=<nome do projeto>
+GLOBAL_PREFIX=api/v1
+
+# Context7
+# https://context7.com/dashboard
+# Seção API Keys, comando Create API Key
+CONTEXT7_API_KEY=
+
+# Stitch
+# https://stitch.withgoogle.com/settings
+# Seção Chave de API, comando Criar chave
+STITCH_API_KEY=
+
+# Vercel
+# https://vercel.com/account/settings/tokens
+# Seção Create token, comando Create
+VERCEL_API_TOKEN=
+
+# Supabase
+# https://supabase.com/dashboard/account/tokens
+# Seção Classic Tokens, comando Generate new token
+SUPABASE_ACCESS_TOKEN=
+# [deixar os itens a seguir em branco inicialmente]
+NEXT_PUBLIC_SUPABASE_URL=[deixar em branco inicialmente]
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[deixar em branco inicialmente]
+DATABASE_URL=[deixar em branco inicialmente]
+DIRECT_URL=[deixar em branco inicialmente]
+
+# Clerk
+# https://dashboard.clerk.com/apps/
+# Seção Applications, comando Create application
+# Selecionar a aplicação criada, menu Configure, seção API Keys, comando Quick copy
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+# Seção API Keys, item JWKS Public Key (usar aspas duplas para envolver conteúdo)
+CLERK_JWT_KEY=
+
+# Aplicação
+FRONTEND_PORT=3000
+BACKEND_PORT=3001
+NEXT_PUBLIC_API_URL=http://localhost:3005/v1
+```
+
+- Crie ou atualize o arquivo .gitignore e inclua nele o seguinte conteúdo:
+  
+```
+.env
 ```
 
 ---
 
-#### Configuração de skills
+# Configuração de regras no arquivo AGENTS.md
 
+- Crie uma nova sessão no agente.
+- Informe o prompt a seguir:
+
+```
+Configure o arquivo AGENTS.md para o projeto.
+
+Use como referência os arquivos @docs/prd.md @docs/spec_tech.md @docs/spec_ui.md e @docs/design_system.md.
+
+Inclua regras de comportamento para o agente baseadas nas diretrizes disponíveis em: https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md
+
+Inclua uma regra para sempre utilizar o mcp server do Context7 quando for feita uma busca por documentação atualizada.
+```
+- Verifique o resultado
+
+### Configuração de skills
+
+
+Uma skill pode ser configurada de forma iterativa ao criar um prompt para o agente:
 - Acesse o Antigravity.
 - Selecione o painel Agent.
 - Acione o comando "+", Start a New Conversation (repita esse procedimento em todo início de seção, pelo menos).
-- Cole o texto a seguir no prompt, solicitando a instalação das skills:
+- Solicite a criação da skill com uma instrução similar a: "Crie uma skill com o seguinte conteúdo...".
+
+Alternativamente, pode ser configurada forma manual, por meio da criação da seguinte estrutura no diretório raiz do projeto:
 
 ```
-# Antigravity Skill Installation Prompt
+.agents/
+├── skills/
+    <nome da skill>/
+    ├── SKILL.md          # Required: metadata + instructions
+    ├── scripts/          # Optional: executable code
+    ├── references/       # Optional: documentation
+    ├── assets/           # Optional: templates, resources
+    └── ...               # Any additional files or directories
+- 
+```
 
+#### Skill para gerenciamento do uso do terminal
+
+Crie a seguinte skill para gerenciamento do uso do terminal:
+
+```
+---
+name: terminal-rules
+description: Executa comandos de terminal de forma segura e não destrutiva nos ambientes
+---
+
+# Skill: Terminal Governance
+
+## Purpose
+
+Provide a governance layer for terminal operations that maximizes automation while minimizing operational risk.
+
+Core principle:
+
+> Automate by default. Require consent only when risk becomes material.
+
+---
+
+# Operating Role
+
+Assume the role of a Senior Platform Engineer with DevSecOps practices.
+
+Objectives:
+
+1. Execute safely.
+2. Minimize unnecessary user interruptions.
+3. Prevent irreversible mistakes.
+4. Maintain complete execution transparency.
+5. Prefer deterministic and reproducible operations.
+
+---
+
+# Decision Workflow
+
+Before executing any terminal command:
+
+1. Classify the operation.
+2. Validate prerequisites.
+3. Evaluate risk.
+4. Execute or request approval.
+5. Validate results.
+6. Report outcome.
+
+This workflow is mandatory.
+
+---
+
+# Operation Classification
+
+Every command must be assigned exactly one category.
+
+## EXPLORATION
+
+Read-only operations.
+
+Examples:
+
+* ls
+* find
+* grep
+* cat
+* head
+* tail
+* tree
+* git status
+* git log
+* docker ps
+
+Characteristics:
+
+* No state modification.
+* No user approval required.
+
+Output format:
+
+[EXPLORATION]
+
+---
+
+## BUILD
+
+Operations that create, install, configure, compile or provision resources.
+
+Examples:
+
+* npm install
+* npm ci
+* pnpm install
+* docker build
+* terraform init
+* project scaffolding
+* MCP configuration
+* skill installation
+
+Characteristics:
+
+* Expected state change.
+* Low operational risk.
+* Execute automatically.
+
+Output format:
+
+[BUILD]
+
+---
+
+## CRITICAL
+
+Operations that may cause irreversible changes, data loss, downtime, or security impact.
+
+Examples:
+
+* rm
+* rm -rf
+* mv overwriting files
+* database migrations
+* terraform apply
+* terraform destroy
+* git reset --hard
+* git clean -fd
+* force push
+* chmod recursive
+* credential rotation
+
+Characteristics:
+
+* Requires impact assessment.
+* Requires explicit approval.
+
+Output format:
+
+[CRITICAL]
+
+---
+
+# Automation Policy
+
+Execute automatically when:
+
+* Operation is EXPLORATION.
+* Operation is BUILD.
+* Risk level is LOW.
+* No destructive action is involved.
+
+Do not request confirmation for:
+
+* Environment setup.
+* Dependency installation.
+* Tool installation.
+* MCP configuration.
+* Project inspection.
+* Read-only diagnostics.
+
+Default behavior:
+
+> Execute first, ask only when risk justifies interruption.
+
+---
+
+# Mandatory Validation Rules
+
+Perform validations before execution whenever applicable.
+
+## Package Manager
+
+Priority:
+
+1. Existing lockfile manager.
+2. npm as default.
+
+Rules:
+
+package-lock.json → npm
+
+pnpm-lock.yaml → pnpm
+
+yarn.lock → yarn
+
+bun.lockb → bun
+
+If no lockfile exists:
+
+Use npm.
+
+---
+
+## Docker Validation
+
+Before Docker operations:
+
+Verify:
+
+* Docker installed
+* Docker daemon running
+* Required permissions available
+
+If validation fails:
+
+Stop execution and explain the issue.
+
+---
+
+## Destructive Command Validation
+
+When supported by the tool:
+
+Use:
+
+* --dry-run
+* --plan
+* preview mode
+* diff mode
+
+before execution.
+
+If preview is unavailable:
+
+Inform the user.
+
+---
+
+# Critical Action Policy
+
+For CRITICAL operations:
+
+## Step 1 — Impact Analysis
+
+Explain:
+
+* What will change.
+* What may be deleted.
+* Scope affected.
+* Whether rollback exists.
+
+Example:
+
+Impact:
+
+* 24 files will be removed.
+* Operation is irreversible.
+* No automatic rollback available.
+
+---
+
+## Step 2 — Approval Request
+
+Require explicit user consent.
+
+Accepted approvals:
+
+* yes
+* approve
+* proceed
+* execute
+* confirm
+
+Anything else is treated as rejection.
+
+---
+
+# High-Risk Deletion Protection
+
+The following operations require double confirmation:
+
+* rm -rf
+* recursive deletion
+* wildcard deletions
+* terraform destroy
+* production database deletion
+* bulk file replacement
+
+Process:
+
+Confirmation 1:
+User acknowledges impact.
+
+Confirmation 2:
+User explicitly authorizes execution.
+
+Without both confirmations:
+
+Execution is forbidden.
+
+---
+
+# Error Handling
+
+If a command returns a non-zero exit code:
+
+Mandatory procedure:
+
+1. Stop execution chain.
+2. Analyze the error.
+3. Explain probable cause.
+4. Propose corrective action.
+5. Wait for user decision.
+
+Automatic retry is prohibited.
+
+---
+
+# Post-Execution Validation
+
+After successful execution:
+
+Verify:
+
+* Expected artifacts exist.
+* Command completed successfully.
+* No obvious inconsistencies remain.
+
+Report:
+
+* Executed command.
+* Outcome.
+* Relevant warnings.
+* Recommended next actions.
+
+---
+
+# Transparency Rules
+
+Never hide:
+
+* Classification.
+* Risks.
+* Validation failures.
+* Errors.
+* Assumptions.
+
+Always communicate:
+
+* Why the action is being executed.
+* Why approval is or is not required.
+
+---
+
+# Governance Priorities
+
+When rules conflict, apply:
+
+1. Data safety
+2. System integrity
+3. Security
+4. Reproducibility
+5. Automation
+6. Convenience
+
+Higher priorities override lower priorities.
+
+---
+
+# Expected Behavior
+
+The agent should:
+
+* Be highly autonomous for safe tasks.
+* Be conservative for destructive tasks.
+* Never perform irreversible actions without consent.
+* Never retry failed commands automatically.
+* Maintain complete operational transparency.
+```
+
+#### Skills para a stack do projeto
+
+```
+# Agents Skill Installation Prompt
 
 ## Objetivos
 
-Instalar skills externas no diretório padrão do Antigravity.
+Instalar skills externas de repositórios específicos no diretório nativo padrão, garantindo compatibilidade e portabilidade entre agentes.
 
+## Modo de Execução: 100% Autônomo
 
-## Regras críticas
+* O agente deve executar todo o fluxo (download, criação, movimentação e exclusão de arquivos/diretórios) de forma **totalmente autônoma**.
+* **NÃO** pause a execução, **NÃO** solicite confirmação humana (no human-in-the-loop) e **NÃO** exiba prompts interativos.
+* Adicione as flags necessárias (`-y`, `-f`, `--quiet`, etc.) a todos os comandos executados no terminal para garantir que eles não travem aguardando input do usuário.
 
-Instalar todas as skills apenas em:
+## Portabilidade para outros agentes
 
-`.agent/skills`
+* Utilize comandos de manipulação de arquivos e diretórios padrão POSIX ou as ferramentas de file system nativas do agente.
+* Garanta que as permissões de leitura dos arquivos `SKILL.md` sejam preservadas para que o parser do OpenCode consiga indexá-los corretamente.
+* A estrutura de diretórios deve ser agnóstica em relação ao sistema operacional base (Windows/Linux/macOS), utilizando caminhos relativos em todas as operações.
 
-NÃO instalar skills em:
-`.agents/`
+## Regras Críticas
+
+1. Instalar todas as skills estritamente no diretório:
+`.agents/skills/`
+2. **NÃO** instalar ou manter skills em diretórios legados ou concorrentes, como:
+`.agent/`
 `.cursor/`
+`.opencode/skills/` (use apenas `.agents/skills/` como fonte única de verdade)
+3. Não modificar a estrutura interna dos repositórios de skills baixados.
+4. Cada skill deve ser instalada como um subdiretório independente e **precisa** conter o seu arquivo original `SKILL.md` na raiz para ser reconhecida pelos runtimes do Antigravity e do OpenCode.
 
-Não modificar a estrutura interna dos repositórios de skills.
+## Otimização de Performance (Ingestão)
 
-Cada skill deve ser instalada como subdiretório independente dentro de:
-`.agent/skills`
+Para endereços que apontam diretamente para arquivos ou subdiretórios específicos dentro de um repositório, utilize métodos de importação direta restrita (ex: `git sparse-checkout`, `gh repo download` ou requisições diretas via API).
 
-## Otimização de performance
+* **Evite rigorosamente:** Clonagem completa (*full clone*) de repositórios inteiros.
+* **Evite rigorosamente:** Varredura recursiva desnecessária no file system.
 
-Para endereços que apontam diretamente para arquivos ou subdiretórios específicos, utilize importação direta de conteúdo.
+Objetivo: Reduzir o tempo de processamento, consumo de banda e otimizar a ingestão para o contexto do agente.
 
-Evite:
-- clonagem completa de repositórios
-- varredura recursiva desnecessária
-
-Objetivo: reduzir tempo de processamento e ingestão
-
-## Fontes das skills
+## Fontes das Skills
 
 Instale as skills provenientes dos seguintes repositórios:
 
-### Vercel Skills
-
-`https://github.com/vercel-labs/next-skills/tree/main/skills/next-best-practices`
-`https://github.com/vercel-labs/next-skills/tree/main/skills/next-cache-components`
-`https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel`
-`https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices`
-`https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines`
-`https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns`
-
-### Prisma
-
-`https://github.com/prisma/skills/tree/main/prisma-database-setup`
-
 ### Google Stitch
 
-`https://github.com/google-labs-code/stitch-skills`
-
-### Supabase
-
-`https://github.com/supabase/agent-skills`
-
-### Clerk
-
-`https://github.com/clerk/skills`
+`[https://github.com/google-labs-code/stitch-skills](https://github.com/google-labs-code/stitch-skills)`
 
 ### Antigravity Community Skills
 
-`https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/frontend-design`
-`https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/backend-architect/`
-`https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/nestjs-expert`
-`https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/docker-expert`
-`https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/github-actions-templates/`
+`[https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/frontend-design](https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/frontend-design)`
+`[https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/backend-architect/](https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/backend-architect/)`
+`[https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/nestjs-expert](https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/nestjs-expert)`
+`[https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/docker-expert](https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/docker-expert)`
+`[https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/github-actions-templates/](https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/github-actions-templates/)`
 
+### Terraform Skill
 
-## Procedimento de instalação
+`[https://github.com/hashicorp/agent-skills/tree/main/terraform/code-generation/skills/terraform-style-guide](https://github.com/hashicorp/agent-skills/tree/main/terraform/code-generation/skills/terraform-style-guide)`
 
-Para cada fonte listada:
-- Localizar o diretório da skill.
-- Importar apenas o conteúdo necessário da skill.
-- Criar um diretório dentro de:
+### Vercel Skills
 
-`.agent/skills/<skill-name>`
+`[https://github.com/vercel-labs/next-skills/tree/main/skills/next-best-practices](https://github.com/vercel-labs/next-skills/tree/main/skills/next-best-practices)`
+`[https://github.com/vercel-labs/next-skills/tree/main/skills/next-cache-components](https://github.com/vercel-labs/next-skills/tree/main/skills/next-cache-components)`
+`[https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel](https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel)`
+`[https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices)`
+`[https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines](https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines)`
+`[https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns](https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns)`
 
-Copiar os arquivos da skill para o diretório correspondente.
+### Prisma
 
-Estrutura final esperada:
+`[https://github.com/prisma/skills/tree/main/prisma-database-setup](https://github.com/prisma/skills/tree/main/prisma-database-setup)`
 
-.agent
- └── skills
-      ├── next-best-practices
-      ├── next-cache-components
-      ├── deploy-to-vercel
-      ├── react-best-practices
-      ├── web-design-guidelines
-      ├── composition-patterns
-      ├── prisma-database-setup
-      ├── stitch-skills
-      ├── frontend-design
-      ├── backend-architect
-      ├── nestjs-expert
-      ├── docker-expert
-      └── github-actions-templates
+### Supabase
 
-## Manutenção do ambiente
+`[https://github.com/supabase/agent-skills](https://github.com/supabase/agent-skills)`
 
-Após a instalação das skills:
-- Remover diretórios de agentes que não são nativos do Antigravity.
-- Remoção deve ocorrer em:
-  - nível local
-  - nível global
+### Clerk
 
-Manter apenas:
+`[https://github.com/clerk/skills/blob/main/skills/core/clerk-setup](https://github.com/clerk/skills/blob/main/skills/core/clerk-setup)`
+`[https://github.com/clerk/skills/blob/main/skills/core/clerk](https://github.com/clerk/skills/blob/main/skills/core/clerk)`
 
-`.agent/`
+## Procedimento de Instalação Autônoma
 
-Remover quaisquer diretórios como:
+Para cada fonte listada acima, execute via script ou terminal integrado:
+
+1. Extraia o nome da skill com base no último segmento da URL.
+2. Crie um diretório isolado estritamente dentro de:
+`.agents/skills/<skill-name>`
+3. Importe apenas o conteúdo necessário da skill (download direto ou *sparse checkout*).
+4. Garanta de forma mandatória que o `SKILL.md` e eventuais arquivos de suporte (como scripts de OpenCode compatíveis) aterrissem corretamente neste novo diretório de destino.
+
+## Manutenção e Limpeza do Ambiente
+
+Após a instalação bem-sucedida de todas as skills, purgue o ambiente de configurações externas através de deleção forçada (`rm -rf` ou equivalente do agente):
+
+1. Remova diretórios de agentes que não são nativos ou estão obsoletos (nível local de workspace e global, se acessível).
+2. Mantenha intacto apenas:
 `.agents/`
-`.cursor/`
+3. Remova definitivamente quaisquer ocorrências de diretórios como `.agent/` e `.cursor/`.
 
-ou outros diretórios de agentes externos.
+## Resultado Esperado
 
-## Resultado esperado
-
-O ambiente final deve possuir:
-- apenas um diretório de agentes
-- todas as skills instaladas em:
-`.agent/skills`
-
-Estrutura limpa e otimizada para execução do Antigravity Agent Runtime.
+O ambiente final deve possuir apenas um diretório central de configuração (`.agents/`), abrigando todas as skills instaladas como pastas independentes em `.agents/skills`. A estrutura deve estar higienizada e pronta para execução instantânea pelo Antigravity Agent Runtime e interoperável com o OpenCode.
 ```
 
 - Ao lado do item implementation_plan.md, acione o comando Open.
@@ -300,65 +640,7 @@ Estrutura limpa e otimizada para execução do Antigravity Agent Runtime.
 
 ---
 
-#### Configuração de MCP Servers
-
-**Configuração de credenciais**
-
-- No diretório raiz do projeto crie uma cópiado arquivo .env.example com o nome .env
-- Edite o arquivo .env
-- Acesse os endereços informados junto a cada credencial
-- Navegue em cada aplicação e obtenha os valores solicitados
-
-```
-PROJECT_NAME=<nome do projeto>
-
-# GitHub
-# https://github.com/settings/tokens/new
-GITHUB_PERSONAL_ACCESS_TOKEN=
-
-# Stitch
-# https://stitch.withgoogle.com/settings
-STITCH_API_KEY=
-
-# Vercel
-# https://vercel.com/account/settings/tokens
-VERCEL_API_TOKEN=
-
-# Supabase
-# https://supabase.com/dashboard/account/tokens
-SUPABASE_ACCESS_TOKEN=
-#NEXT_PUBLIC_SUPABASE_URL=(será preenchida posteriormente)
-#NEXT_PUBLIC_SUPABASE_ANON_KEY=(será preenchida posteriormente)
-
-# Clerk
-# https://dashboard.clerk.com/apps/
-# Criar uma aplicação e copiar as chaves de API
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-CLERK_JWT_KEY=
-JWT_SECRET
-
-# Context7
-# https://context7.com/dashboard
-CONTEXT7_API_KEY=
-
-#Backend para Frontend
-NEXT_PUBLIC_API_URL=
-
-#Portas
-FRONTEND_PORT=
-BACKEND_PORT=
-
-```
-
-- Crie ou atualize o arquivo .gitignore e inclua nele o seguinte conteúdo:
-  
-```
-.env.local
-```
-
-
-**Configuração dos MCP servers**
+### Configuração de MCP Servers
 
 - Selecione o painel Agent.
 - Selecione a opção Additional options (símbolo de três pontos "...").
@@ -376,46 +658,6 @@ BACKEND_PORT=
         "X-Goog-Api-Key": "<STITCH_API_KEY>"
       }
     },
-    "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "<GITHUB_PERSONAL_ACCESS_TOKEN>"
-      }
-    },    
-    "vercel": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "https://mcp.vercel.com"
-      ],
-      "env": {
-        "VERCEL_API_TOKEN": "<VERCEL_API_TOKEN>"
-      }
-    },    
-    "supabase-mcp-server": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--access-token",
-        "<SUPABASE_ACCESS_TOKEN>"
-      ],
-      "env": {}
-    },
-    "clerk": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@clerk/clerk-mcp"
-      ],
-      "env": {
-        "CLERK_SECRET_KEY": "<CLERK_SECRET_KEY>"
-      }
-    },
     "context7": {
       "serverUrl": "https://mcp.context7.com/mcp",
       "headers": {
@@ -425,11 +667,38 @@ BACKEND_PORT=
   }
 }
 ```
-
 - Salve o arquivo.
 - No painel Manage MCP servers, acione o comando Refresh.
 
-#### Teste de MCP Servers
+- Para configuração dos MCP servers no opencode, crie o arquivo opencode.json no diretório raiz do projeto com o conteúdo a seguir:
+
+```json
+{
+  "mcp": {
+    "stitch": {
+      "type": "remote",
+      "url": "https://stitch.googleapis.com/mcp",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+        "X-Goog-Api-Key": "<YOUR_STITCH_API_KEY>"
+      }
+    }
+  },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+        "CONTEXT7_API_KEY": "<CONTEXT7_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+Teste de MCP Servers
 
 - No painel Agent, selecione a opção Start a new conversation.
 - Solicite listar os projetos disponíveis no Stitch:
@@ -438,220 +707,96 @@ BACKEND_PORT=
 Use o mcp server do Stitch para listar os projetos
 ```
 
-- Solicite listar as organizações do Supabase:
+- Solicite listar informações sobre o Supabase no Context7:
 
 ```
-Use o mcp server do Supabase para listar as organizações e projetos
+Use o mcp server do Context7 para obter informações atualizadas sobre o Supabase
 ```
 
-- Solicite listar os times e projetos do Vercel:
+## 2.3 Spec Driven Development
 
-```
-Use o mcp server do Vercel para listar os times e projetos
-```
+### Criação de changes
 
-- Solicite listar as aplicações disponíveis no Clerk:
+- Certifique-se de que o Openspec esteja instalado. 
+- Inicialize o openspec no diretório do projeto. Para tanto, acesse o terminal e execute o comando:
 
-```
-Use o mcp server do Clerk para listar os times e projetos
-```
-
-### 2.1.2 Criação do projeto
-
-- No painel Agent, selecione a opção Start a new conversation.
-- Copie o conteúdo a seguir e proceda os seguintes ajustes antes de comandar a execução:
-- Troque o [projeto stitch] pelo nome do projeto criado no Stitch.
-- Priorize a escolha do modo Planning.
-- Priorize a escolha de modelos com maior capacidade de reasoning.
-  
-```
-# Criação de projeto full stack
-
-## System prompt
-
-Você é um arquiteto de software sênior especializado em geração de scaffolds para projetos full stack assistidos por IA.
-
-Seu papel é gerar a arquitetura inicial mínima de um projeto, garantindo que ele seja:
-- modular
-- previsível
-- facilmente evolutivo
-- compatível com desenvolvimento incremental orientado por IA
-
-Priorize sempre:
-- arquitetura modular
-- separação clara de responsabilidades
-- estrutura de diretórios previsível
-- baixo acoplamento
-- simplicidade estrutural
-- extensibilidade futura
-- Nunca implemente funcionalidades fora do escopo solicitado.
-
-## Objetivo
-
-Gerar o scaffold inicial de um projeto web full stack organizado como monorepo, preparado para evolução incremental assistida por IA.
-
-O scaffold deve incluir apenas:
-- estrutura de diretórios
-- configuração mínima
-- integração básica entre frontend e backend
-- Não implementar funcionalidades além do necessário para validar a integração.
-
----
-
-## Estrutura do Monorepo
-
-Gerar a seguinte estrutura:
-
-`
-monorepo
-│
-├─ apps
-│  ├─ frontend
-│  │  ├─ Dockerfile
-│  │  └─ src
-│  │     ├─ app
-│  │     ├─ components
-│  │     └─ lib
-│  │
-│  └─ backend
-│     ├─ Dockerfile
-│     └─ src
-│        ├─ database
-│        └─ modules
-│
-├─ docs
-│
-├─ infra
-│
-├─ .env
-└─ docker-compose.yml
-└─ package.json
-`
-Regras:
-- frontend e backend devem ser aplicações independentes
-- comunicação deve ocorrer exclusivamente via API
-- utilizar organização feature-based
-- manter separação clara entre camadas
-- evitar dependências cruzadas entre apps
----
-
-## Configuração de Ambiente
-
-Deve existir apenas um arquivo .env na raiz do monorepo.
-
-Esse arquivo será utilizado por:
-- frontend
-- backend
-- docker-compose
-
-## Fonte de Verdade do Projeto
-
-A implementação deve seguir **estritamente** os seguintes documentos:
-
-`docs/prd.md`
-`docs/spec_tech.md`
-`docs/spec_ui.md`
-`docs/design_system.md`
-
-Os documentos definem:
-- requisitos funcionais
-- arquitetura técnica
-- especificação de interface
-- design system
-
-## Recursos de Projeto
-
-O projeto possui imagens e protótipos disponíveis no Stitch:
-
-`[projeto stitch]`
-
-Utilizar as skills disponíveis em:
-
-`.agent/skills`
-
-Utilizar documentação atualizada por meio do mcp server do Context7.
----
-
-## Artefatos Docker
-
-### Dockerfiles das Aplicações
-
-Cada aplicação do monorepo deve possuir seu próprio Dockerfile:
-- apps/frontend/Dockerfile
-- apps/backend/Dockerfile
-
-Regras para Dockerfiles:
-- Todos os Dockerfiles devem seguir as mesmas diretrizes:
-- Imagem base: utilizar node:lts-alpine
-- utilizar multi-stage build
-- instalar dependências com npm ci
-- separar etapas de dependências, build e runtime
-- diretório de trabalho deve ser /app
-- expor porta configurável via variável PORT
-- iniciar aplicação com npm start ou node
-
-Boas práticas:
-- copiar apenas arquivos necessários para o build
-- evitar copiar todo o repositório
-- gerar imagem final mínima
-- otimizar cache de build
-
-Os Dockerfiles devem ser compatíveis com monorepos:
-- o contexto de build é a raiz do repositório
-- caminhos devem considerar a estrutura apps/
-- evitar caminhos relativos frágeis
-
-### Docker Compose
-
-Criar serviços mínimos:
-- db
-- backend
-- frontend
-
-Objetivo do docker-compose:
-- permitir execução local completa do sistema
-- permitir comunicação entre os serviços
-
-## Restrições
-
-Não:
-- criar módulos adicionais
-- criar páginas adicionais
-- implementar autenticação
-- integrar serviços externos
-- configurar infraestrutura de cloud
-- adicionar bibliotecas não especificadas
-- gerar funcionalidades além do scaffold mínimo
-
-## Regra de Minimalismo
-
-Gerar apenas o mínimo necessário para permitir evolução incremental do projeto.
-
-Se uma funcionalidade não for necessária para:
-- estruturar o projeto
-- validar a integração frontend-backend
-- então não deve ser implementada.
-
-## Regra de Saída
-
-A resposta deve conter apenas um plano de implementação contendo:
-- estrutura de diretórios
-- arquivos essenciais do scaffold
-- código mínimo necessário
-
-Não incluir:
-- explicações
-- comentários desnecessários
-- documentação extensa
-
-
+```bash
+openspec init
 ```
 
-- Revise o plano de implementação proposto.
+- Selecione as ferramentas desejadas para configuração do openspec (ex.: Antigravity e Opencode).
+
+Utilize a skill openspec-explore para criar as mudanças incrementais do projeto. 
+
+- Inicie uma nova sessão do agente.
+- Na janela do chat, digite o caracter "/" e selecione a skill "opsx-explore".
+- Informe o conteúdo a seguir como parâmetro (lembre-se de informar o nome do projeto stitch corretamente)
+
+```
+Planeje a implementação de uma aplicação web full stack de maneira incremental.
+
+Utilize a documentação disponível nos arquivos @docs/prd.md @docs/spec_tech.md @docs/spec_ui.md e @docs/design_system.md.
+
+Obtenha os protótipos das interfaces gráficas no projeto stitch <nome do projeto> por meio do mcp server correspondente.
+
+Configure as seguintes changes incrementais:
+- Scaffold full stack
+- Catálogo de produtos
+- Clientes
+- Pedidos
+- Dashboard
+- Configuração Docker local
+- infraestrutura como código para vercel, supabase e clerk
+- pipeline CI/CD
+- autenticação e segurança.
+```
+
+- Analise os resultados apresentados.
 - Verifique se o agente conseguiu identificar corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.
 - Solicite ao agente que faça os eventuais ajustes.
-- Solicite a execução do plano.
-- Siga as instruções apresentadas e acesse a aplicação.
+
+- Execute o workflow /opsx-propose para criar uma change para cada bloco de implementação incremental.
+- Como resultado, o diretório openspec/changes deverá conter todas as propostas de mudança solicitadas. 
+- Dentro de cada diretório, deve haver, pelo menos, o arquivo proposal.md.
+- Particularmente, no diretório scaffold-full-stack deverão constar também os arquivos spec.md, design.md e tasks.md.
+- Revise o conteúdo dos arquivos gerados. Solicite ajustes, caso necessário.
+
+
+### Execução de changes
+
+- Inicie uma nova sessão.
+- Execute o workflow para aplicação da change criada:
+
+```bash
+/opsx-apply scaffold-full-stack
+```
+
+- Acompanhe a execução do agente, analisando os resultados apresentados.
+- Caso sejam encontrados erros ou funcionalidades não implementadas, corrija-os solicitando os ajustes necessários.
+
+- Inicie uma nova sessão.
+- Execute o workflow para verificação da change aplicada:
+
+```bash
+/opsx-verify
+```
+
+- Ao final do processo, será gerado um relatório de validação. Verifique se o relatório indica que a change foi aplicada corretamente.
+- Caso contrário, corrija os problemas encontrados solicitando os ajustes necessários.
+- Execute o workflow de arquivamento
+
+```bash
+/opsx-archive
+```
+
+- Inicie uma nova sessão.
+- Solicite a execução da aplicação.
+
+Repita o ciclo /opsx-propose /opsx-apply /opsx-verify /opsx-archive para as demais changes.
+
+
+### Criação de README.md
+
 - Solicite ao agente a criação do arquivo README.md.
 
 ```
@@ -659,219 +804,6 @@ Crie o arquivo README.md para o repositório, seguindo as boas práticas recomen
 ```
 
 - Analise o arquivo gerado.
-
-
-## 2.2 Testes
-
-Resultados:
-- Produto testado
-
-Participantes:
-- Desenvolvedor
-- Designer UX
-
-Ferramentas:
-- Ambientes de desenvolvimento.
-
----
-
-- Navegue pela aplicação para verificar as páginas criadas.
-- Caso sejam encontrados erros ou funcionalidades não implementadas, copie a tela e mensagem com o comportamento atual e descreva o comportamento esperado.
-- Cole as informações no agent e solicite os ajustes.
-
----
-
-## 2.3 Liberação
-
-Resultados:
-- Produto implantado
-
-Participantes:
-- Desenvolvedor
-- Designer UX
-
-Ferramentas:
-- Ambientes de desenvolvimento.
-- Infraestrutura de deployment (Vercel).
-
--  Faça o commit das modificações locais e o push para o repositório remoto no GitHub.
-
-### 2.3.1 Criação dos projetos no Vercel
-
-- No painel Agent, selecione a opção Start a new conversation.
-- Informe o conteúdo a seguir.
-- Substitua [time] pelo valor correspondente configurado no vercel.
-- Substitua [projeto] pelo nome do projeto.
-
-```
-# Criação de projetos Vercel
-
-## Contexto
-
-Você é um agente de engenharia de software especializado em automação de infraestrutura e integração com Vercel.
-
-Objetivo:
-Criar os projetos backend e frontend no Vercel para um monorepo existente.
-
-## Regras:
-- Utilize as skills disponíveis em :
-`.agent/skills/`
-
-Os projetos devem ser criados no seguinte time da Vercel:
-`[time]`
-
-Crie dois projetos distintos no Vercel. Aponte para os respectivos diretórios no monorepo:
-- Mapeamento backend:
-  - Projeto: `[projeto]-backend`
-  - Diretório: `apps/backend`
-- Mapeamento frontend:
-  - Projeto: `[projeto]`
-  - Diretório: `apps/frontend`
-
-Importante:
-- Não executar deploy
-- Não rodar build
-- Não publicar a aplicação
-
-O objetivo desta tarefa é somente registrar os projetos no Vercel.
-
-##  Resultado Esperado:
-- Projeto backend criado no Vercel
-- Projeto frontend criado no Vercel
-- Ambos associados ao time informado
-- Nenhum deploy executado
-
-```
-
-- Verifique o plano de implementação e se o agente conseguiu identificar corretamente o time.
-- Faça os devidos ajustes e solicite a execução do plano.
-- Verifique os projetos criados na Vercel.
-
-
-### 2.3.2 Configuração do pipeline CI/CD
-
-- No painel Agent, selecione a opção Start a new conversation.
-- Solicite a criação do pipeline incluindo o deploy Vercel.
-
-```
-# Role
-Atue como um Engenheiro de DevOps sênior e Arquiteto de Software, especializado em Ecossistemas JavaScript e Automação de Infraestrutura.
-
-# Objetivo
-Crie um arquivo de workflow do GitHub Actions (`.github/workflows/deploy.yml`) que automatize o ciclo de vida de integração e entrega contínua (CI/CD).
-
-# Contexto Técnico
-
-Utilize:
-- skill do Github em `.agent/skills`
-- mcp server do github.
-- especificação técnica disponível em `docs/spec_tech.md`
-
-# Etapas do Workflow
-1. **Trigger:** O workflow deve ser acionado em cada `push` na branch `main`.
-2. **Setup:** Utilizar a versão LTS do Node.js e configurar o cache de dependências para acelerar execuções futuras.
-3. **Qualidade:** Executar passos de `lint` e `test` (unitários/integração). O pipeline deve ser interrompido se houver falhas.
-4. **Build & Deploy:** realizar o **Production Deploy** na Vercel, tanto do projeto backend quanto do frontend
-5. **Segurança:** Utilizar as Secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
-
-# Resultado Esperado
-- Código YAML completo e comentado.
-- Instruções passo a passo de onde configurar as Secrets no repositório do GitHub.
-- Sugestão de como adicionar uma notificação de status ao final do processo.
-```
-
-- Acesse o diretório .github/workflows do repositório no GitHub.
-- Verifique o arquivo deploy.yml com o conteúdo gerado pelo Antigravity.
-- Verifique se o arquivo foi criado com sucesso.
-- Obtenha as secrets do vercel:
-  - VERCEL_TOKEN no endereço: <https://vercel.com/account/settings/tokens>
-  - VERCEL_ORG_ID no endereço: <https://vercel.com/[team]/~/settings>, [team] é o nome da sua equipe.
-  - VERCEL_PROJECT_ID no endereço: <https://vercel.com/[team]/[project]/settings>, campo Project ID.
-- Configure as secrets no repositório do GitHub, no endereço: <https://github.com/[usuário]/[projeto]/settings/secrets/actions>.
-- Verifique se as secrets foram configuradas com sucesso.
-- Faça o commit no repositório local e o push para o GitHub.
-- Verifique a execução do pipeline na aba Actions: <https://github.com/[usuário]/[projeto]/actions>
-- Ao final do processo, acesse a aplicação por meio do navegador web. O endereço é disponibilizado no formato <https://[projeto].vercel.app/>.
-
-
-### 2.3.3 Configuração de segurança com Clerk
-
-- No painel Agent, selecione a opção Start a new conversation.
-- Solicite a criação de uma nova aplicação no Clerk (substitua <nome do projeto> pelo nome do projeto):
-
-```
-# Prompt de Configuração: Clerk e Sincronização de Clientes
-
-## Objetivo
-Configurar a autenticação e autorização do projeto utilizando o Clerk e garantir a sincronização de dados com o banco de dados local através de um serviço dedicado no backend.
-
-Garanta que toda a lógica de implementação de autenticação e autorização sejam feitas pelo backend, que deverá expor serviços a serem consumidos pelo frontend.
-
-Garanta também que o frontend não dependa de nenhum componente ou biblioteca do clerk. O frontend deve apenas consumir os serviços do backend.
-
-## Referências e Ferramentas
-* **Aplicação:** [Nome da Aplicação]
-* **Documentação Base:** `docs/spec_tech.md`
-* **Ferramentas:**
-    * MCP Server: `clerk`
-    * Skill: `.agent/skills/clerk`
-* **Versão:** Utilizar a versão estável mais recente do SDK do Clerk.
-
-## Instruções de Implementação
-
-### 1. Autenticação e Autorização
-- Implementar o fluxo completo de autenticação e controle de acesso para a aplicação utilizando as capacidades do Clerk.
-- Seguir rigorosamente as definições técnicas e de segurança descritas em `docs/spec_tech.md`.
-
-### 2. Sincronização de Dados (Serviço de Backend)
-- Configurar a lógica para que, uma vez que um usuário esteja registrado no Clerk, o backend realize a sincronização dos dados na tabela de clientes.
-- **Tarefa:** O backend deve criar ou atualizar um registro de **Cliente** no banco de dados local sempre que houver uma alteração ou novo registro no Clerk.
-- **Chave de Integração:** O atributo principal para o mapeamento entre o Clerk e o banco de dados é o **e-mail** do usuário.
-- **Restrição de Implementação:** A sincronização **não** deve utilizar Webhooks. O processo deve ser gerido inteiramente por um serviço implementado no backend (ex: via polling, execução pós-auth no cliente ou tarefa agendada).
-
-## Diretrizes Adicionais
-- Priorizar comandos locais para a configuração e interação com o MCP server.
-- Garantir a integridade dos dados, tratando possíveis erros de comunicação entre o serviço de backend e as APIs do Clerk.
-```
-
-- Após a conclusão, navegue na aplicação localmente e verifique se tanto o botão Login quanto o Finalizar compra apontam para a página de login.
-- Caso ocorra algum erro, copie a mensagem de erro e cole no chat do agente para correção.
-- Faça o registro e o login de um usuário.
-
-
-### 2.3.4 Configuração do banco de dados com Supabase
-
-- No painel Agent, selecione a opção Start a new conversation.
-- Solicite a criação do projeto Vercel (substitua <nome do projeto> pelo nome do projeto e <nome da organização> pelo valor correspondente configurado no supabase):
-
-```
-# Prompt: Setup de Projeto e Banco de Dados via Supabase MCP
-
-## Contexto
-Este prompt deve ser utilizado pelo **Google Antigravity** para automatizar a criação de infraestrutura de banco de dados no Supabase, garantindo que o schema siga rigorosamente a documentação técnica do projeto.
-
----
-
-## Instruções de Execução
-
-**Atue como um Engenheiro de Dados utilizando o MCP server do Supabase e a skill `.agent/skills/supabase`. Realize as seguintes tarefas em ordem:**
-
-1.  **Análise de Contexto:** * Leia o arquivo `docs/spec_tech.md` para extrair a definição completa do schema (tabelas, colunas, tipos, chaves estrangeiras e constraints).
-2.  **Criação do Projeto:** * Crie um novo projeto de banco de dados chamado `<nome do projeto>` dentro da organização `<nome da organização>`.
-3.  **Provisionamento de Tabelas:** * Implemente o banco de dados seguindo rigorosamente as especificações extraídas no passo 1.
-4.  **Massa de Teste:** * Insira dados fictícios coerentes para permitir a validação imediata da aplicação.
-5.  **Limpeza de Resíduos:** * Certifique-se de que o ambiente final esteja limpo de quaisquer dados de exemplo ou configurações temporárias que não constem na especificação original, mantendo apenas os dados de teste solicitados para a aplicação.
-
----
-
-> **Nota:** Certifique-se de que as orientações necessárias mencionadas em `docs/spec_tech.md` sejam aplicadas durante o provisionamento.
-```
-
-- Caso tenha ocorrido algum erro, copie a mensagem de erro e cole no chat do agente para correção.
-- Verifique se a aplicação está funcionando corretamente.
-- Atualize o projeto no Vercel com as variáveis de ambiente do Supabase e Clerk
-- Faça o deploy do projeto no Vercel
-- Verifique se a aplicação está funcionando corretamente.
 
 ---
 

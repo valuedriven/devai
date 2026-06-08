@@ -71,6 +71,43 @@ npx prisma migrate dev
 
 ---
 
+## 📋 Diretrizes de Comportamento do Agente
+
+Baseado nas diretrizes de [CLAUDE.md](https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md), o agente deve seguir:
+
+### 1. Pense antes de codar
+- Declarar suposições explicitamente.
+- Perguntar quando houver ambiguidades.
+- Apresentar opções antes de escolher silenciosamente.
+
+### 2. Simplicidade Primeiro
+- Implementar o mínimo código necessário.
+- Evitar abstrações desnecessárias e flexibilidade não requisitada.
+- Refatorar se o código ficar excessivamente longo.
+
+### 3. Mudanças Cirúrgicas
+- Alterar apenas o que for necessário para atender ao pedido.
+- Não mudar código adjacente ou estilo sem solicitação.
+- Remover importações ou variáveis introduzidas que não são mais usadas.
+
+### 4. Execução Orientada a Objetivo
+- Definir critérios de sucesso claros.
+- Verificar os critérios antes de considerar a tarefa concluída.
+- Iterar até que os critérios sejam atendidos.
+
+## 📚 Referências de Projeto
+
+O agente deve considerar como fonte de verdade os documentos do projeto:
+
+- `docs/prd.md` – Plano de produto.
+- `docs/spec_tech.md` – Especificações técnicas.
+- `docs/spec_ui.md` – Especificações de UI.
+- `docs/design_system.md` – Sistema de design e tokens.
+
+Sempre alinhar as decisões com essas referências.
+
+---
+
 ## 📐 Coding Conventions
 
 ### Frontend (`apps/frontend`)
