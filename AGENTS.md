@@ -140,3 +140,35 @@ Antes de submeter qualquer alteração, o agente DEVE validar:
 2. Build local para garantir que não quebrou o monorepo.
 3. Testes de unidade.
 4. Consistência com `docs/prd.md` e `docs/spec_tech.md`.
+
+---
+
+## Instruções para o Harness de Testes
+
+Quando uma nova funcionalidade for implementada ou alterada, o agente deve seguir a pirâmide de testes e utilizar os comandos especificados abaixo.
+
+## Regras de Qualidade e Cobertura
+
+- Testes Unitários: Isole completamente as funções e componentes alterados. Use mocks apenas para limites externos complexos (ex: banco de dados, APIs de terceiros).
+- Testes de Integração: Valide se múltiplos módulos ou serviços (ex: repositories e services) operam corretamente em conjunto.
+- Testes E2E: Verifique fluxos pontuais do usuário simulando o comportamento real da aplicação.
+
+### Comandos do Harness de Testes
+
+Para validar o código localmente, execute os seguintes comandos no seu terminal:
+
+- Unitários: npm run test:unit
+- Integração: npm run test:integration
+- E2E (End-to-End): npx playwright test
+
+### Ciclo de Vida da Implementação (Definition of Done)
+
+O agente deve considerar uma tarefa finalizada apenas após validar a saúde do código por meio das seguintes etapas:
+
+- Escrita do Teste: O agente deve, preferencialmente, escrever o teste antes ou logo após a implementação do código.
+- Verificação Isolada: Execute o teste unitário específico referente à alteração.
+- Regressão de Escopo: Execute os testes de integração para garantir que a nova feature não quebrou módulos adjacentes.
+- Validação Completa: Execute o teste E2E aplicável ao fluxo de negócio alterado.
+- Critério de Aceite: Certifique-se de que toda a suíte de testes (especialmente a afetada) esteja verde.
+
+-

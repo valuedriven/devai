@@ -74,6 +74,12 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - **Infraestrutura como Código (IaC):** Terraform.
 - **Pipeline CI/CD:** GitHub Actions.
 
+### Repositório
+
+- **Estrutura**: monorepo
+- **Gerenciamento de workspaces**: npm workspaces
+- **Diretórios**: apps/frontend/, apps/backend/, infra/, docs/
+
 ### Integrações
 
 - **Persistência:** Supabase.

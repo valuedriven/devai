@@ -128,6 +128,8 @@ Use como referência os arquivos @docs/prd.md @docs/spec_tech.md @docs/spec_ui.m
 Inclua regras de comportamento para o agente baseadas nas diretrizes disponíveis em: https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md
 
 Inclua uma regra para sempre utilizar o mcp server do Context7 quando for feita uma busca por documentação atualizada.
+
+Inclua regras para harness de qualidade e testes, com previsão de implementação e execução contínuos de testes de unidade, integração e e2e críticos.
 ```
 - Verifique o resultado
 
