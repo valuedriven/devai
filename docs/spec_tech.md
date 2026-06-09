@@ -80,6 +80,12 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - **Gerenciamento de workspaces**: npm workspaces
 - **Diretórios**: apps/frontend/, apps/backend/, infra/, docs/
 
+### Testes
+
+- **Unidade**: jest
+- **Integração**: jest+supertest
+- **E2E**: playwright
+
 ### Integrações
 
 - **Persistência:** Supabase.

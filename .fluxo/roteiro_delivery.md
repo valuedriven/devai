@@ -751,6 +751,8 @@ Configure as seguintes changes incrementais:
 - infraestrutura como código para vercel, supabase e clerk
 - pipeline CI/CD
 - autenticação e segurança.
+
+Inclua no planejamento de cada change, a previsão de implementação de testes de unidade, integração e e2e, respeitando as diretrizes gerais do projeto.
 ```
 
 - Analise os resultados apresentados.
