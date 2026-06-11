@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingCart, User, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import React, { useState } from "react";
@@ -46,17 +47,23 @@ export function Header() {
             <div className="header-container">
                 {/* Logo */}
                 {/* Logo and Menu Trigger */}
-                <div className="header-brand hidden-desktop">
+                <div className="header-brand">
                     {/* Mobile Menu Trigger - Visible only on mobile */}
                     <button
-                        className="menu-trigger-btn"
+                        className="menu-trigger-btn hidden-desktop"
                         onClick={() => setIsMenuOpen(true)}
                     >
                         <Menu className="icon-md" />
                         <span className="sr-only">Menu</span>
                     </button>
-                    <Link href="/" className="header-logo ml-2">
-                        DevAI
+                    <Link href="/" className="header-logo ml-2 flex items-center">
+                        <Image
+                            src="/logo.svg"
+                            alt="DevAI Logo"
+                            width={120}
+                            height={36}
+                            priority
+                        />
                     </Link>
                 </div>
 
