@@ -37,7 +37,8 @@ export class OrdersController {
   ) {
     // Se não for admin, força o email do próprio usuário
     const isAdmin = user?.publicMetadata?.role === 'admin';
-    const emailToFilter = isAdmin ? customerEmail : user.email;
+    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+    const emailToFilter = isAdmin ? customerEmail : userEmail;
 
     return this.ordersService.findAll(tenantId, emailToFilter);
   }
@@ -52,7 +53,8 @@ export class OrdersController {
 
     // Se não for admin, verifica se o pedido pertence ao usuário
     const isAdmin = user?.publicMetadata?.role === 'admin';
-    if (!isAdmin && order.customers?.email !== user.email) {
+    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+    if (!isAdmin && order.customers?.email !== userEmail) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
 

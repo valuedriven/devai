@@ -37,7 +37,7 @@ async function main() {
   const products = [
     {
       name: 'Smartphone X',
-      description: 'Um smartphone potente',
+      description: 'Um smartphone potente com câmera de 108MP.',
       price: 2500.0,
       stock: 50,
       categoryId: category.id,
@@ -45,12 +45,44 @@ async function main() {
     },
     {
       name: 'Laptop Pro',
-      description: 'Para trabalho pesado',
+      description: 'Notebook de alta performance para trabalho pesado e edição de vídeo.',
       price: 5000.0,
       stock: 20,
       categoryId: category.id,
       tenantId,
     },
+    {
+      name: 'Fone de Ouvido Bluetooth',
+      description: 'Fone com cancelamento de ruído ativo e 30 horas de bateria.',
+      price: 450.0,
+      stock: 100,
+      categoryId: category.id,
+      tenantId,
+    },
+    {
+      name: 'Smartwatch Série 5',
+      description: 'Relógio inteligente com monitoramento cardíaco e GPS integrado.',
+      price: 1200.0,
+      stock: 35,
+      categoryId: category.id,
+      tenantId,
+    },
+    {
+      name: 'Câmera Mirrorless',
+      description: 'Câmera digital mirrorless 4K com lente intercambiável.',
+      price: 4300.0,
+      stock: 15,
+      categoryId: category.id,
+      tenantId,
+    },
+    {
+      name: 'Tablet Ultra',
+      description: 'Tablet de 11 polegadas com suporte a caneta stylus.',
+      price: 3200.0,
+      stock: 40,
+      categoryId: category.id,
+      tenantId,
+    }
   ];
 
   for (const p of products) {
