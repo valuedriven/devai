@@ -42,6 +42,10 @@ resource "aws_ecs_task_definition" "frontend" {
           hostPort      = 3000
         }
       ]
+      secrets = [
+        { name = "INTERNAL_API_URL", valueFrom = "${var.secret_arn}:NEXT_PUBLIC_API_URL::" },
+        { name = "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", valueFrom = "${var.secret_arn}:NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY::" }
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {

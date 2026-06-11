@@ -233,7 +233,6 @@ jobs:
             -f apps/backend/Dockerfile .
           docker push --all-tags $REGISTRY/$IMAGE          
 
-      # Frontend Build & Push
       - name: Build and push Frontend image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -242,7 +241,7 @@ jobs:
           CLERK_PUB_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_API_URL=http://$ALB_DNS/api/v1 \
+            --build-arg NEXT_PUBLIC_API_URL=/api/v1 \
             --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$CLERK_PUB_KEY \
             -t $REGISTRY/$IMAGE:latest \
             -f apps/frontend/Dockerfile .
