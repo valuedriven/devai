@@ -3,19 +3,20 @@
 ## 1.Visão geral do fluxo
 
 Resultados:
-- Scaffold
+- Roadmap de mudanças
+- Propostas de mudança
+- Planos de testes
+- Casos de teste
 - Incremento de Produto
-- Infraestrutura do projeto:
-  - Vercel
-  - Supabase
-  - Clerk
 
 Participantes:
 - Designer UX
 - Desenvolvedor
 
 Ferramentas:
-- Ambientes de desenvolvimento (Antigravity, Claude Code, Cursor, Codex, Opencode etc.)
+- Agentes de IA para desenvolvimento (Antigravity, Claude Code, Cursor, Codex, Opencode etc.)
+- Ferramentas de Spec-Driven Development (Openspec, BMAD, Spec-kit, GSD etc.)
+- Ferramentas para automação de testes de Spec-Driven Development (Playwright) 
 
 ---
 
@@ -24,7 +25,6 @@ Ferramentas:
 ### Pré-requisitos
 
 - Google Antigravity <https://antigravity.google> instalado localmente.
-- Opencode <https://opencode.ai/> instalado localmente (como alternativa/complemento ao Google Antigravity). 
 - Node.js <https://nodejs.org/> instalado localmente.
 - Git <https://git-scm.com/> instalado localmente.
 - Docker e Docker Compose <https://docker.com> instalados localmente.
@@ -34,6 +34,7 @@ Ferramentas:
 - Conta Clerk <https://clerk.com/>.
 - Conta Context7 <https://context7.com/>.
 - Openspec <https://openspec.dev/> instalado localmente.
+- Playwright <https://playwright.dev/> instalado localmente.
 
 Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
@@ -354,15 +355,7 @@ Teste de MCP Servers
 Use o mcp server do Stitch para listar os projetos
 ```
 
-- Solicite listar informações sobre o Supabase no Context7:
-
-```
-Use o mcp server do Context7 para obter informações atualizadas sobre o Supabase
-```
-
 ## 5. Criação de mudanças
-
-As mudanças seguem o fluxo: Planejar -> Gerar -> Avaliar
 
 ### Configuração do Openspec
 
@@ -758,11 +751,16 @@ Use as orientações disponíveis em <@.opencode/prompts/playwright-test-healer.
 
 - Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
 - Caso tenha sido criada em outro local, mova-a para esse diretório.
-
 - Reexecute a suíte de testes com o recurso de acompanhamento visual:
 
 ```bash
 npx playwright test --headed
+```
+
+- Verifique o relatório de execução de testes:
+
+```bash
+npx playwright show-report
 ```
 
 
