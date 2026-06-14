@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { ShoppingCart, User, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import React, { useState } from "react";
@@ -57,13 +56,7 @@ export function Header() {
                         <span className="sr-only">Menu</span>
                     </button>
                     <Link href="/" className="header-logo ml-2 flex items-center">
-                        <Image
-                            src="/logo.svg"
-                            alt="DevAI Logo"
-                            width={120}
-                            height={36}
-                            priority
-                        />
+                        DevAI
                     </Link>
                 </div>
 

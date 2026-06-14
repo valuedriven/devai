@@ -54,7 +54,7 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
 ---
 
-## 2.3 Configuração do projeto
+## 3. Configuração do projeto
 
 ### Documentação geral do projeto
 
@@ -119,7 +119,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3005/v1
 Certifique-se que a documentação geral do projeto esteja disponível em: <@docs>
 
 
-## 2.4 Configuração do Agente de IA
+## 4 Configuração do Agente de IA
 
 ### Configuração de regras no arquivo AGENTS.md
 
@@ -129,7 +129,7 @@ Certifique-se que a documentação geral do projeto esteja disponível em: <@doc
 ```
 Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
 
-- Comportamento geral (com base nas diretrizes de Andrej Karpathy disponíveis em https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>)
+- Comportamento geral. Use como referência as diretrizes de Andrej Karpathy disponíveis em <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>
 - Stack tech resumida com base em <@docs/spech_tech.md>
 - Estrutura do monorepo com base em <@docs/spech_tech.md>
 - Comandos
@@ -146,6 +146,14 @@ Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
 Valide o AGENTS.md com as diretrizes disponíveis em <https://github.com/valuedriven/devai/tree/main/.fluxo/concepts/agents-md-guidelines.md>
 ```
 - Verifique o resultado
+- Peça ajuda a alguma IA de fronteira para validar o resultado.
+
+
+- Ao final de cada sessão, pode ser interessante avaliar o nível de autonomia dos agentes na execução das tarefas. Use um prompt análogo ao seguinte:
+
+```
+Analise o histórico de conversações desta sessão e proponha ajustes no arquivo AGENTS.md, seção Governança e uso de terminal, de forma a aumentar a autonomia do agente na execução de tarefas como leitura e escrita de arquivos.
+```
 
 ### Configuração de skills
 
@@ -169,7 +177,7 @@ Alternativamente, pode ser configurada forma manual, por meio da criação da se
 - 
 ```
 
-#### Skills para a stack do projeto
+Skills para a stack do projeto
 
 ```
 # Agents Skill Installation Prompt
@@ -318,34 +326,6 @@ O ambiente final deve possuir apenas um diretório central de configuração (`.
 - Salve o arquivo.
 - No painel Manage MCP servers, acione o comando Refresh.
 
-- Para configuração dos MCP servers no opencode, crie o arquivo opencode.json no diretório raiz do projeto com o conteúdo a seguir:
-
-```json
-{
-  "mcp": {
-    "stitch": {
-      "type": "remote",
-      "url": "https://stitch.googleapis.com/mcp",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "X-Goog-Api-Key": "<YOUR_STITCH_API_KEY>"
-      }
-    }
-  },
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "CONTEXT7_API_KEY": "<CONTEXT7_API_KEY>"
-      }
-    }
-  }
-}
-```
-
 Teste de MCP Servers
 
 - No painel Agent, selecione a opção Start a new conversation.
@@ -361,86 +341,178 @@ Use o mcp server do Stitch para listar os projetos
 Use o mcp server do Context7 para obter informações atualizadas sobre o Supabase
 ```
 
-## 2.3 Spec Driven Development
+## 5. Criação de mudanças
 
-### Criação de changes
+As mudanças seguem o fluxo: Planejar -> Gerar -> Avaliar
 
-- Certifique-se de que o Openspec esteja instalado. 
+### Configuração do Openspec
+
+
+- Certifique-se de que o Openspec esteja instalado, conforme disponível em https://openspec.dev/.
 - Inicialize o openspec no diretório do projeto. Para tanto, acesse o terminal e execute o comando:
 
 ```bash
 openspec init
 ```
 
-- Selecione as ferramentas desejadas para configuração do openspec (ex.: Antigravity e Opencode).
+- Selecione as ferramentas desejadas para configuração do openspec (ex.: Antigravity).
+- Como resultado, devem ser criadas ou atualizadas as seguintes estruturas de pastas:
+
+```
+├── .agents
+│   ├── commands
+│   ├── rules
+│   ├── skills
+│   └── workflows
+├── openspec
+│   ├── changes
+│   ├── config.yaml
+│   └── specs
+```
+
+- Caso tenha sido criada a pasta .agent (no singular), mova seu conteúdo para a pasta .agents
+
+- Execute o seguinte comando (certifique-se de que o comando /opsx-explore seja selecionado ao clicar em "/". Faça o mesmo para o arquivo indicado, acionando "@"):
+
+```
+/opsx-explore personalize o arquivo config.yaml com informações sobre stack e diretrizes de testes e qualidade disponíveis no arquivo @docs/spec_tech.md
+```
+
+### Definição de roadmap de mudanças
 
 Utilize a skill openspec-explore para criar as mudanças incrementais do projeto. 
 
 - Inicie uma nova sessão do agente.
 - Na janela do chat, digite o caracter "/" e selecione a skill "opsx-explore".
-- Informe o conteúdo a seguir como parâmetro (lembre-se de informar o nome do projeto stitch corretamente)
+- Informe o conteúdo a seguir logo depois da skill (lembre-se de informar o nome do projeto stitch corretamente)
 
 ```
-Planeje a implementação de uma aplicação web full stack de maneira incremental.
+/opsx-explore Dimensione as mudanças necessárias para a implementação de uma aplicação web full stack de maneira incremental.
 
 Utilize a documentação disponível nos arquivos @docs/prd.md @docs/spec_tech.md @docs/spec_ui.md e @docs/design_system.md.
 
 Obtenha os protótipos das interfaces gráficas no projeto stitch <nome do projeto> por meio do mcp server correspondente.
 
-Configure as seguintes changes incrementais:
-- Scaffold full stack
-- Catálogo de produtos
-- Clientes
-- Pedidos
-- Dashboard
-- Configuração Docker local
-- infraestrutura como código para vercel, supabase e clerk
-- pipeline CI/CD
-- autenticação e segurança.
+Configure as mudanças de forma que nenhuma fique com tamanho, complexidade e/ou risco maior que médio.
 
-Inclua no planejamento de cada change, a previsão de implementação de testes de unidade, integração e e2e, respeitando as diretrizes gerais do projeto.
+Crie apenas o proposal.md de cada mudança.
+
+Crie um arquivo roadmap.md com um resumo do planejamento.
 ```
 
-- Analise os resultados apresentados.
-- Verifique se o agente conseguiu identificar corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.
-- Solicite ao agente que faça os eventuais ajustes.
+- Verifique se o agente identificou corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.
+- Verifique se o agente identificou e leu corretamente os documentos do projeto.
 
-- Execute o workflow /opsx-propose para criar uma change para cada bloco de implementação incremental.
-- Como resultado, o diretório openspec/changes deverá conter todas as propostas de mudança solicitadas. 
-- Dentro de cada diretório, deve haver, pelo menos, o arquivo proposal.md.
-- Particularmente, no diretório scaffold-full-stack deverão constar também os arquivos spec.md, design.md e tasks.md.
-- Revise o conteúdo dos arquivos gerados. Solicite ajustes, caso necessário.
+- Analise os resultados apresentados. É esperado que tenha sido criada uma estrutura parecida com a seguir:
 
+```
+└── openspec
+    ├── changes
+    │   ├── archive
+    │   ├── iteracao 1 ...
+    │   │   │   |── .openspec.yaml
+    │   │   ├── proposal.md
+    │   ├── iteracao n ...
+    │   │   │   |── .openspec.yaml
+    │   │   ├── proposal.md
+ ```
 
-### Execução de changes
+- Analise a proposta e outros detalhes. Proceda os ajustes interagindo com o agente por meio da skill /psx-explore ou editando diretamente os arquivos.
 
-- Inicie uma nova sessão.
-- Execute o workflow para aplicação da change criada:
+A cada etapa do fluxo de trabalho, pode ser verificado o progresso por meio do comando:
 
 ```bash
-/opsx-apply scaffold-full-stack
+openspec view
+
+```
+
+- Deve aparecer as seguintes informações:
+
+```
+ ● Draft Changes: x
+  ● Active Changes: x in progress
+  ● Completed Changes: x
+  ● Task Progress: x/xx (x% complete)
+
+Draft Changes
+────────────────────────────────────────────────────────────
+  ○ iteracao-x ...
+  ○ iteracao-y ...
+  
+Active Changes
+────────────────────────────────────────────────────────────
+  ◉ iteracao-z-xxx     [░░░░░░░░░░░░░░░░░░░░] 0%
+
+════════════════════════════════════════════════════════════
+
+Use openspec list --changes or openspec list --specs for detailed view
+```
+
+### Criação de propostas de mudanças
+
+- Solicite a criação de cada proposta de mudança conforme roadmap.
+- Crie uma nova seção.
+- Informe o seguinte prompt, informando a mudança desejada:
+
+```bash
+/opsx-propose <id da mudança>
+```
+
+- Analise os resultados apresentados. É esperado que tenha sido criada uma estrutura parecida com a seguir:
+
+```
+└── openspec
+    ├── changes
+    │   ├── archive
+    │   ├── iteracao1 ...
+    │   │   ├── design.md
+    │   │   ├── proposal.md
+    │   │   ├── specs
+    │   │   │   └── ...
+    │   │   │   |   └── spec.md
+    │   │   └── tasks.md
+ ```
+
+- Analise a proposta de mudança. Proceda os ajustes interagindo com o agente por meio da skill /psx-explore ou editando diretamente os arquivos.
+
+
+### Execução de propostas de mudanças
+
+- Inicie uma nova sessão.
+- Informe o seguinte prompt, informando a mudança desejada:
+
+```bash
+/opsx-apply <id da mudança>
 ```
 
 - Acompanhe a execução do agente, analisando os resultados apresentados.
-- Caso sejam encontrados erros ou funcionalidades não implementadas, corrija-os solicitando os ajustes necessários.
+- Caso sejam encontrados erros ou recursos não implementados, corrija-os solicitando os ajustes necessários.
+
+
+### Avaliação de resultados
 
 - Inicie uma nova sessão.
 - Execute o workflow para verificação da change aplicada:
 
 ```bash
-/opsx-verify
+/opsx-verify <id da mudança>
 ```
 
 - Ao final do processo, será gerado um relatório de validação. Verifique se o relatório indica que a change foi aplicada corretamente.
 - Caso contrário, corrija os problemas encontrados solicitando os ajustes necessários.
+
+
+### Arquivamento de mudança
+
 - Execute o workflow de arquivamento
 
 ```bash
-/opsx-archive
+/opsx-archive <id da mudança>
 ```
 
 - Inicie uma nova sessão.
 - Solicite a execução da aplicação.
+
 
 Repita o ciclo /opsx-propose /opsx-apply /opsx-verify /opsx-archive para as demais changes.
 
@@ -456,5 +528,9 @@ Crie o arquivo README.md para o repositório, seguindo as boas práticas recomen
 - Analise o arquivo gerado.
 
 ---
+
+## 6. Verificação de mudanças
+
+
 
 Fim do roteiro de delivery.

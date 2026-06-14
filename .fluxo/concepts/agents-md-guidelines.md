@@ -51,15 +51,6 @@ A ordem das seções importa. Construa seu arquivo priorizando o que destrava a 
 
 ---
 
-### Diretrizes Específicas para Agentes de Dados
-
-Quando seu agente precisa interagir com bancos de dados de produção, o `AGENTS.md` não deve depender da "memória" humana, que fica desatualizada rápido.
-*   **Fontes de Dados Certificadas:** Liste apenas nomes de tabelas e versões de schemas oficiais.
-*   **Restrições de PII:** Identifique explicitamente colunas com informações pessoais e sensíveis na seção *Never do*.
-*   **Conecte a Catálogos de Dados:** Em vez de escrever essas seções manualmente, automatize o CI/CD para consultar APIs do catálogo de dados e auto-gerar esta seção do `AGENTS.md`, garantindo atualizações contínuas de governança.
-
----
-
 ### Anti-padrões: O que EVITAR a todo custo
 
 *   **Gerar o arquivo inteiro com LLMs:** Usar IA para gerar as regras geralmente produz diretivas vagas, instruções genéricas que duplicam o conhecimento prévio da IA ("escreva código limpo") e pode reduzir ativamente a taxa de sucesso das tarefas em comparações com não ter nenhum contexto.

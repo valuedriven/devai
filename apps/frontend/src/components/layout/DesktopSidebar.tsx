@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, Tags, Users, ShoppingBag, LogOut, Home, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +16,15 @@ export function DesktopSidebar() {
     return (
         <aside className="sidebar-desktop">
             <div className="sidebar-header">
-                <Link href="/">DevAI</Link>
+                <Link href="/" className="flex items-center">
+                    <Image
+                        src="/logo.svg"
+                        alt="DevAI Logo"
+                        width={120}
+                        height={36}
+                        priority
+                    />
+                </Link>
             </div>
 
             <nav className="sidebar-nav">

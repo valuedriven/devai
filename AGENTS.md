@@ -1,174 +1,373 @@
-# AGENTS.md
+# AGENTS.md — Engineering Operating Constitution
 
-Manual operacional para agentes de IA neste repositório. Este documento define a stack, fluxos de trabalho, convenções de código e regras de validação que devem ser seguidas rigorosamente.
+## Purpose
 
----
+This document defines the operational rules for AI coding agents working in this repository (Claude Code, Cursor Agent, Antigravity, OpenCode, Aider and similar tools).
 
-## 🏗️ Project Overview
+When rules conflict, follow the order of precedence:
 
-Monorepo estruturado com **npm workspaces**.
-
-- **Apps:**
-  - `apps/frontend`: Next.js 16+, React 19, TypeScript.
-  - `apps/backend`: NestJS 11, TypeScript, Prisma ORM.
-- **Tech Stack:**
-  - **Frontend:** Lucide React, clsx, Vanilla CSS (Design System).
-  - **Backend:** PostgreSQL, Clerk Auth.
-  - **Infra:** Docker Compose (local), Vercel/AWS (deploy).
+1. Security
+2. Architecture
+3. Correctness
+4. Simplicity
+5. Developer Experience
 
 ---
 
-## 🛠️ Agent Skills
+# 1. Core Principles
 
-Abaixo estão os módulos de conhecimento específicos disponíveis em `.agent/skills/`. Ative-os conforme necessário:
+## Think Before Acting
 
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `clerk` | Auth Router | Configuração inicial de Auth, fluxos de login. |
-| `clerk-webhooks` | Data Sync | Sincronizar usuários do Clerk com o banco de dados. |
-| `nestjs-best-practices` | Backend Arch | Criação de módulos, serviços e validação DTO. |
-| `next-best-practices` | Frontend Arch | Estrutura de App Router, Server Components e Performance. |
-| `next-cache-components` | Next.js 16 Cache | Uso de `use cache`, PPR e estratégias de cache. |
-| `design-md` | Design System | Análise de tokens e estilos semânticos. |
-| `monorepo-management` | Workspaces | Gestão de dependências e scripts em monorepo. |
-| `web-design-guidelines` | UX/UI Audit | Verificação de conformidade com boas práticas de design. |
+Before implementing:
+
+- Analyze the request.
+- State assumptions when uncertainty exists.
+- Present alternatives and tradeoffs when relevant.
+- Ask for clarification if requirements are ambiguous.
+
+Never start coding before understanding the problem.
 
 ---
 
-## 🚀 Setup & Development
+## Simplicity First
 
-### 1. Setup Inicial
-```bash
-npm install
-# O projeto utiliza npm workspaces, instale as dependências na raiz.
+Prefer:
+
+- Simple solutions
+- Existing patterns
+- Minimal changes
+
+Avoid:
+
+- Premature abstractions
+- Speculative features
+- Unnecessary refactoring
+
+Implement only what is required.
+
+---
+
+## Surgical Changes
+
+Modify only files directly related to the task.
+
+Do not:
+
+- Reformat unrelated files
+- Rename unrelated symbols
+- Refactor adjacent code without explicit justification
+
+Keep diffs small and focused.
+
+---
+
+## Goal-Oriented Development
+
+Whenever possible:
+
+1. Reproduce the problem.
+2. Create or update tests.
+3. Implement the fix.
+4. Validate the solution.
+
+---
+
+# 2. Architecture Constraints
+
+## Frontend
+
+Technology:
+
+- Next.js (App Router)
+- TypeScript
+- Vanilla CSS
+
+Responsibilities:
+
+- UI rendering
+- User interaction
+- API consumption
+
+Forbidden:
+
+- Business rules
+- Authorization logic
+- Database access
+- Prisma usage
+
+Frontend must remain a presentation layer.
+
+---
+
+## Backend
+
+Technology:
+
+- NestJS
+- TypeScript
+- Prisma
+- PostgreSQL
+
+Responsibilities:
+
+- Business rules
+- Authorization
+- Validation
+- Persistence
+
+All business decisions must be enforced on the backend.
+
+---
+
+## Database
+
+Primary database:
+
+- PostgreSQL
+
+Requirements:
+
+- Use Prisma as the access layer.
+- All schema changes must be versioned through migrations.
+
+Forbidden:
+
+- Manual production schema changes
+- Vendor-specific database features that reduce portability
+
+The system must remain compatible with:
+
+- Local PostgreSQL (Docker)
+- Managed PostgreSQL providers
+
+  - Supabase
+  - AWS RDS
+  - Similar services
+
+---
+
+# 3. Repository Structure
+
+```text
+apps/
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── features/
+│   ├── services/
+│   ├── hooks/
+│   └── types/
+
+└── backend/
+    └── modules/
+        ├── catalog/
+        ├── customers/
+        └── orders/
+
+docs/
 ```
 
-### 2. Comandos de Desenvolvimento
-- **Frontend:** `npm run dev:frontend` (Raiz) ou `npm run dev` (`apps/frontend`)
-- **Backend:** `npm run dev:backend` (Raiz) ou `npm run start:dev` (`apps/backend`)
+Follow existing project conventions before introducing new structure.
 
-### 3. Banco de Dados (Backend)
+---
+
+# 4. Development Workflow
+
+For every non-trivial task:
+
+## Phase 1 — Analysis
+
+- Understand requirements.
+- Inspect affected files.
+- Identify risks.
+
+## Phase 2 — Planning
+
+Describe:
+
+- Files to modify
+- Expected behavior
+- Validation strategy
+
+## Phase 3 — Implementation
+
+Apply the smallest change that satisfies the requirement.
+
+## Phase 4 — Validation
+
+Run applicable checks:
+
 ```bash
-# Dentro de apps/backend
-npx prisma generate
-npx prisma migrate dev
+npm run lint
+npm run test
+npm run build
+```
+
+Execute only what is relevant to the scope of the change.
+
+## Phase 5 — Report
+
+Summarize:
+
+- What changed
+- Validation performed
+- Remaining risks
+- Assumptions made
+
+---
+
+# 5. Terminal Governance
+
+## Safe Command Execution
+
+Commands should:
+
+- Be reproducible
+- Be non-interactive
+- Have predictable outcomes
+
+Prefer:
+
+```bash
+--yes
+-y
+--force-with-lease
+```
+
+when appropriate.
+
+---
+
+## Working Directory
+
+When the tool supports it:
+
+- Use an explicit working directory.
+- Avoid chained navigation commands.
+
+Prefer:
+
+```bash
+cwd=apps/backend
+```
+
+over:
+
+```bash
+cd apps/backend && ...
 ```
 
 ---
 
-## 🧪 Testing & Validation
+## Long Running Processes
 
-### Regras de Ouro
-1. **SEMPRE** execute o lint antes de finalizar uma tarefa.
-2. **NUNCA** ignore erros de tipagem TypeScript.
-3. Testes unitários são obrigatórios para novos serviços no backend.
-4. **OBRIGATÓRIO:** Sempre use o MCP server `context7` (`query-docs`) para consultar documentação técnica atualizada (Next.js, NestJS, Clerk, etc.) antes de iniciar qualquer implementação.
+Do not start processes that block execution unless explicitly requested.
 
-### Comandos de Teste
-- **Backend Unit:** `npm run test --workspace=backend`
-- **Backend E2E:** `npm run test:e2e --workspace=backend`
-- **Frontend Lint:** `npm run lint --workspace=frontend`
+Examples:
+
+- Development servers
+- Watch mode
+- Interactive shells
 
 ---
 
-## 📋 Diretrizes de Comportamento do Agente
+## Port and Service Conflict Management
 
-Baseado nas diretrizes de [CLAUDE.md](https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md), o agente deve seguir:
-
-### 1. Pense antes de codar
-- Declarar suposições explicitamente.
-- Perguntar quando houver ambiguidades.
-- Apresentar opções antes de escolher silenciosamente.
-
-### 2. Simplicidade Primeiro
-- Implementar o mínimo código necessário.
-- Evitar abstrações desnecessárias e flexibilidade não requisitada.
-- Refatorar se o código ficar excessivamente longo.
-
-### 3. Mudanças Cirúrgicas
-- Alterar apenas o que for necessário para atender ao pedido.
-- Não mudar código adjacente ou estilo sem solicitação.
-- Remover importações ou variáveis introduzidas que não são mais usadas.
-
-### 4. Execução Orientada a Objetivo
-- Definir critérios de sucesso claros.
-- Verificar os critérios antes de considerar a tarefa concluída.
-- Iterar até que os critérios sejam atendidos.
-
-## 📚 Referências de Projeto
-
-O agente deve considerar como fonte de verdade os documentos do projeto:
-
-- `docs/prd.md` – Plano de produto.
-- `docs/spec_tech.md` – Especificações técnicas.
-- `docs/spec_ui.md` – Especificações de UI.
-- `docs/design_system.md` – Sistema de design e tokens.
-
-Sempre alinhar as decisões com essas referências.
+- **Conflict Detection**: Before starting services that bind to host ports (such as PostgreSQL on `5432`, Next.js on `3000`, or NestJS on `3001`), verify if these ports are already in use.
+- **Docker Container Management**: If a port is occupied by conflicting or legacy Docker containers (e.g., leftover containers like `devai-db`), safely check (`docker ps`), inspect, and stop them (`docker stop`) to free up resource ports.
+- **Port Mapping Verification**: After starting containerized services, always verify the port mapping (e.g., via `docker ps`) to ensure the host port is mapped correctly and no binding failures occurred.
 
 ---
 
-## 📐 Coding Conventions
+## Tool CLI Diagnostics
 
-### Frontend (`apps/frontend`)
-- **Estrutura de Rotas:** Use grupos de rotas `(admin)`, `(auth)`, `(shop)` para separação lógica.
-- **Styling:** Use Vanilla CSS com variáveis do Design System (`src/app/globals.css`).
-- **NUNCA** use TailwindCSS a menos que explicitamente solicitado.
-- **Anti-Pattern:** Evite criar componentes genéricos em `src/app`. Use `src/components`.
-
-### Backend (`apps/backend`)
-- **Estrutura de Módulos:** Siga o padrão Feature Module em `src/modules/`.
-  - Ex: `src/modules/customers/{customers.controller.ts, customers.service.ts, dto/}`
-- **DTOs:** Valide todos os inputs usando `class-validator` e `Pipes`.
-- **Database:** Acesse o banco apenas via serviços, abstraindo o Prisma quando possível.
+- **Error Output Analysis**: When CLI tools fail (such as database migrations or npm installations), inspect the command output carefully to identify version-specific constraint changes (e.g., Prisma 7 config structure updates) before attempting to re-run the command.
 
 ---
 
-## 🚫 Anti-Patterns & Defensive Rules
+## Autonomy in File Operations and Validation
 
-- **Não duplique códigos:** Verifique se utilitários já existem em `apps/backend/src/core` ou `apps/frontend/src/lib`.
-- **Package.json:** Sempre leia o `package.json` do workspace específico antes de adicionar novos scripts ou dependências.
-- **Respeite o Design System:** Não use cores hardcoded. Use as variáveis CSS definidas.
-- **Docker:** Verifique se os containers necessários estão rodando antes de testar integrações.
-- **Documentação OSO:** Nunca confie apenas no conhecimento interno para bibliotecas externas. Use o `context7` para validar assinaturas de métodos e novos recursos.
+- **Proactive File Modifications**: The agent is fully authorized to proactively read, create, modify, and delete files in the workspace to complete tasks. It should apply edits directly rather than asking for permission before each operation.
+- **Handling Permission Failures**: In case of file read/write permission errors, the agent must proactively request the narrowest required permission scope using the appropriate system tools to proceed without interrupting the user.
+- **Autonomous Testing**: After modifying files, the agent should proactively run validation tests or linters without requiring prior user consent, reporting findings and fixing errors dynamically.
 
 ---
 
-## 🔍 Validation Rules
-Antes de submeter qualquer alteração, o agente DEVE validar:
-1. `npm run lint` no workspace afetado.
-2. Build local para garantir que não quebrou o monorepo.
-3. Testes de unidade.
-4. Consistência com `docs/prd.md` e `docs/spec_tech.md`.
+# 6. Quality Standards
+
+## Testing
+
+Business logic changes must include tests covering:
+
+- Happy path
+- Failure path
+- Relevant edge cases
 
 ---
 
-## Instruções para o Harness de Testes
+## Linting
 
-Quando uma nova funcionalidade for implementada ou alterada, o agente deve seguir a pirâmide de testes e utilizar os comandos especificados abaixo.
+Lint must pass before considering work complete.
 
-## Regras de Qualidade e Cobertura
+---
 
-- Testes Unitários: Isole completamente as funções e componentes alterados. Use mocks apenas para limites externos complexos (ex: banco de dados, APIs de terceiros).
-- Testes de Integração: Valide se múltiplos módulos ou serviços (ex: repositories e services) operam corretamente em conjunto.
-- Testes E2E: Verifique fluxos pontuais do usuário simulando o comportamento real da aplicação.
+## Build Validation
 
-### Comandos do Harness de Testes
+Modified applications must build successfully.
 
-Para validar o código localmente, execute os seguintes comandos no seu terminal:
+---
 
-- Unitários: npm run test:unit
-- Integração: npm run test:integration
-- E2E (End-to-End): npx playwright test
+## Definition of Done
 
-### Ciclo de Vida da Implementação (Definition of Done)
+A task is complete when:
 
-O agente deve considerar uma tarefa finalizada apenas após validar a saúde do código por meio das seguintes etapas:
+- Requirements are satisfied.
+- Relevant tests pass.
+- Lint passes.
+- Build succeeds.
+- No known regression was introduced.
 
-- Escrita do Teste: O agente deve, preferencialmente, escrever o teste antes ou logo após a implementação do código.
-- Verificação Isolada: Execute o teste unitário específico referente à alteração.
-- Regressão de Escopo: Execute os testes de integração para garantir que a nova feature não quebrou módulos adjacentes.
-- Validação Completa: Execute o teste E2E aplicável ao fluxo de negócio alterado.
-- Critério de Aceite: Certifique-se de que toda a suíte de testes (especialmente a afetada) esteja verde.
+---
 
--
+# 7. Documentation Usage
+
+Before implementing significant changes, review relevant documents in `/docs`.
+
+Priority order:
+
+1. PRD
+2. Technical Specification
+3. UI Specification
+4. Design System
+5. Problem Definition
+
+Project documentation takes precedence over assumptions.
+
+---
+
+# 8. External Documentation
+
+When framework or library behavior is uncertain:
+
+Use MCP tools to retrieve authoritative documentation.
+
+Preferred sources:
+
+- Context7
+- Official documentation
+- Official RFCs
+- Vendor documentation
+
+Avoid relying on memory when documentation can be queried.
+
+---
+
+# 9. Continuous Improvement
+
+At the end of significant tasks:
+
+- Identify recurring issues.
+- Identify obsolete rules.
+- Suggest improvements to this AGENTS.md.
+
+The operating constitution should evolve with the project.s
