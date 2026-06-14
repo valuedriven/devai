@@ -759,6 +759,13 @@ Use as orientações disponíveis em <@.opencode/prompts/playwright-test-healer.
 - Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
 - Caso tenha sido criada em outro local, mova-a para esse diretório.
 
+- Reexecute a suíte de testes com o recurso de acompanhamento visual:
+
+```bash
+npx playwright test --headed
+```
+
+
 Os procedimentos de planejamento -> geração -> ajustes devem ser realzados para cada nova mudança implementada.
 
 ---
