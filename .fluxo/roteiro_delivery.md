@@ -1,6 +1,27 @@
-# Roteiro de Delivery
+# Fluxo de Delivery
 
-## Pré-requisitos
+## 1.Visão geral do fluxo
+
+Resultados:
+- Scaffold
+- Incremento de Produto
+- Infraestrutura do projeto:
+  - Vercel
+  - Supabase
+  - Clerk
+
+Participantes:
+- Designer UX
+- Desenvolvedor
+
+Ferramentas:
+- Ambientes de desenvolvimento (Antigravity, Claude Code, Cursor, Codex, Opencode etc.)
+
+---
+
+## 2. Orientações gerais
+
+### Pré-requisitos
 
 - Google Antigravity <https://antigravity.google> instalado localmente.
 - Opencode <https://opencode.ai/> instalado localmente (como alternativa/complemento ao Google Antigravity). 
@@ -15,8 +36,6 @@
 - Openspec <https://openspec.dev/> instalado localmente.
 
 Certifique-se de estar logado nessses serviços ao realizar o roteiro.
-
-## Orientações gerais
 
 ### Gerenciamento da janela de contexto
 
@@ -33,33 +52,17 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 - Para vários exemplos de prompts disponibilizados, atente para a necessidade de substituir os valores entre os símbolos "<" e ">" pelos valores específicos de seu projeto.
 - Quando estiver editando um prompt, utilize o caracter "@" para referenciar recursos como arquivos, diretórios, rules e mcp servers.
 
-
-## 2.1 Desenvolvimento
-
-**Visão geral**
-
-Resultados:
-- Scaffold
-- Incremento de Produto
-- Infraestrutura do projeto:
-  - Vercel
-  - Supabase
-  - Clerk
-
-Participantes:
-- Designer UX
-- Desenvolvedor
-
-Ferramentas:
-- Ambientes de desenvolvimento (Google Antigravity, Claude Code, Opencode etc.)
-
 ---
 
-## 2.2 Configuração do Antigravity
+## 2.3 Configuração do projeto
+
+### Documentação geral do projeto
+
+Certifique-se que a documentação geral do projeto esteja disponível em: <@docs>
 
 ### Configuração de variáveis de ambiente
 
-- No diretório raiz do projeto crie arquivo .env com o conteúdo a seguir (os endereços correspondem aos locais onde os dados podem ser obtidos).
+- No diretório raiz do projeto crie arquivo .env com o conteúdo a seguir (os endereços correspondem aos locais onde os dados podem ser obtidos)
 - Acesse os endereços informados junto a cada credencial
 - Navegue em cada endereço e obtenha os valores solicitados
 
@@ -113,28 +116,38 @@ NEXT_PUBLIC_API_URL=http://localhost:3005/v1
 .env
 ```
 
----
+Certifique-se que a documentação geral do projeto esteja disponível em: <@docs>
 
-# Configuração de regras no arquivo AGENTS.md
+
+## 2.4 Configuração do Agente de IA
+
+### Configuração de regras no arquivo AGENTS.md
 
 - Crie uma nova sessão no agente.
 - Informe o prompt a seguir:
 
 ```
-Configure o arquivo AGENTS.md para o projeto.
+Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
 
-Use como referência os arquivos @docs/prd.md @docs/spec_tech.md @docs/spec_ui.md e @docs/design_system.md.
+- Comportamento geral (com base nas diretrizes de Andrej Karpathy disponíveis em https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>)
+- Stack tech resumida com base em <@docs/spech_tech.md>
+- Estrutura do monorepo com base em <@docs/spech_tech.md>
+- Comandos
+   - Setup inicial
+   - build
+   - run
+   - banco de dados
+- Regras de qualidade e testes com base em <@docs/spech_tech.md>
+- Regras de governança e autonomia no terminal
+- Regras de aprendizado contínuo com reflexão e sugestão de atualização de regras ao final de cada mudança
+- Referências de documentação do projeto na pasta <@docs>
+- Busca atualizada de informações por meio do mcp serve do context7
 
-Inclua regras de comportamento para o agente baseadas nas diretrizes disponíveis em: https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md
-
-Inclua uma regra para sempre utilizar o mcp server do Context7 quando for feita uma busca por documentação atualizada.
-
-Inclua regras para harness de qualidade (linter) e testes, com previsão de implementação e execução contínuos de testes de unidade, integração e e2e críticos.
+Valide o AGENTS.md com as diretrizes disponíveis em <https://github.com/valuedriven/devai/tree/main/.fluxo/concepts/agents-md-guidelines.md>
 ```
 - Verifique o resultado
 
 ### Configuração de skills
-
 
 Uma skill pode ser configurada de forma iterativa ao criar um prompt para o agente:
 - Acesse o Antigravity.
@@ -154,373 +167,6 @@ Alternativamente, pode ser configurada forma manual, por meio da criação da se
     ├── assets/           # Optional: templates, resources
     └── ...               # Any additional files or directories
 - 
-```
-
-#### Skill para gerenciamento do uso do terminal
-
-Crie a seguinte skill para gerenciamento do uso do terminal:
-
-```
----
-name: terminal-rules
-description: Executa comandos de terminal de forma segura e não destrutiva nos ambientes
----
-
-# Skill: Terminal Governance
-
-## Purpose
-
-Provide a governance layer for terminal operations that maximizes automation while minimizing operational risk.
-
-Core principle:
-
-> Automate by default. Require consent only when risk becomes material.
-
----
-
-# Operating Role
-
-Assume the role of a Senior Platform Engineer with DevSecOps practices.
-
-Objectives:
-
-1. Execute safely.
-2. Minimize unnecessary user interruptions.
-3. Prevent irreversible mistakes.
-4. Maintain complete execution transparency.
-5. Prefer deterministic and reproducible operations.
-
----
-
-# Decision Workflow
-
-Before executing any terminal command:
-
-1. Classify the operation.
-2. Validate prerequisites.
-3. Evaluate risk.
-4. Execute or request approval.
-5. Validate results.
-6. Report outcome.
-
-This workflow is mandatory.
-
----
-
-# Operation Classification
-
-Every command must be assigned exactly one category.
-
-## EXPLORATION
-
-Read-only operations.
-
-Examples:
-
-* ls
-* find
-* grep
-* cat
-* head
-* tail
-* tree
-* git status
-* git log
-* docker ps
-
-Characteristics:
-
-* No state modification.
-* No user approval required.
-
-Output format:
-
-[EXPLORATION]
-
----
-
-## BUILD
-
-Operations that create, install, configure, compile or provision resources.
-
-Examples:
-
-* npm install
-* npm ci
-* pnpm install
-* docker build
-* terraform init
-* project scaffolding
-* MCP configuration
-* skill installation
-
-Characteristics:
-
-* Expected state change.
-* Low operational risk.
-* Execute automatically.
-
-Output format:
-
-[BUILD]
-
----
-
-## CRITICAL
-
-Operations that may cause irreversible changes, data loss, downtime, or security impact.
-
-Examples:
-
-* rm
-* rm -rf
-* mv overwriting files
-* database migrations
-* terraform apply
-* terraform destroy
-* git reset --hard
-* git clean -fd
-* force push
-* chmod recursive
-* credential rotation
-
-Characteristics:
-
-* Requires impact assessment.
-* Requires explicit approval.
-
-Output format:
-
-[CRITICAL]
-
----
-
-# Automation Policy
-
-Execute automatically when:
-
-* Operation is EXPLORATION.
-* Operation is BUILD.
-* Risk level is LOW.
-* No destructive action is involved.
-
-Do not request confirmation for:
-
-* Environment setup.
-* Dependency installation.
-* Tool installation.
-* MCP configuration.
-* Project inspection.
-* Read-only diagnostics.
-
-Default behavior:
-
-> Execute first, ask only when risk justifies interruption.
-
----
-
-# Mandatory Validation Rules
-
-Perform validations before execution whenever applicable.
-
-## Package Manager
-
-Priority:
-
-1. Existing lockfile manager.
-2. npm as default.
-
-Rules:
-
-package-lock.json → npm
-
-pnpm-lock.yaml → pnpm
-
-yarn.lock → yarn
-
-bun.lockb → bun
-
-If no lockfile exists:
-
-Use npm.
-
----
-
-## Docker Validation
-
-Before Docker operations:
-
-Verify:
-
-* Docker installed
-* Docker daemon running
-* Required permissions available
-
-If validation fails:
-
-Stop execution and explain the issue.
-
----
-
-## Destructive Command Validation
-
-When supported by the tool:
-
-Use:
-
-* --dry-run
-* --plan
-* preview mode
-* diff mode
-
-before execution.
-
-If preview is unavailable:
-
-Inform the user.
-
----
-
-# Critical Action Policy
-
-For CRITICAL operations:
-
-## Step 1 — Impact Analysis
-
-Explain:
-
-* What will change.
-* What may be deleted.
-* Scope affected.
-* Whether rollback exists.
-
-Example:
-
-Impact:
-
-* 24 files will be removed.
-* Operation is irreversible.
-* No automatic rollback available.
-
----
-
-## Step 2 — Approval Request
-
-Require explicit user consent.
-
-Accepted approvals:
-
-* yes
-* approve
-* proceed
-* execute
-* confirm
-
-Anything else is treated as rejection.
-
----
-
-# High-Risk Deletion Protection
-
-The following operations require double confirmation:
-
-* rm -rf
-* recursive deletion
-* wildcard deletions
-* terraform destroy
-* production database deletion
-* bulk file replacement
-
-Process:
-
-Confirmation 1:
-User acknowledges impact.
-
-Confirmation 2:
-User explicitly authorizes execution.
-
-Without both confirmations:
-
-Execution is forbidden.
-
----
-
-# Error Handling
-
-If a command returns a non-zero exit code:
-
-Mandatory procedure:
-
-1. Stop execution chain.
-2. Analyze the error.
-3. Explain probable cause.
-4. Propose corrective action.
-5. Wait for user decision.
-
-Automatic retry is prohibited.
-
----
-
-# Post-Execution Validation
-
-After successful execution:
-
-Verify:
-
-* Expected artifacts exist.
-* Command completed successfully.
-* No obvious inconsistencies remain.
-
-Report:
-
-* Executed command.
-* Outcome.
-* Relevant warnings.
-* Recommended next actions.
-
----
-
-# Transparency Rules
-
-Never hide:
-
-* Classification.
-* Risks.
-* Validation failures.
-* Errors.
-* Assumptions.
-
-Always communicate:
-
-* Why the action is being executed.
-* Why approval is or is not required.
-
----
-
-# Governance Priorities
-
-When rules conflict, apply:
-
-1. Data safety
-2. System integrity
-3. Security
-4. Reproducibility
-5. Automation
-6. Convenience
-
-Higher priorities override lower priorities.
-
----
-
-# Expected Behavior
-
-The agent should:
-
-* Be highly autonomous for safe tasks.
-* Be conservative for destructive tasks.
-* Never perform irreversible actions without consent.
-* Never retry failed commands automatically.
-* Maintain complete operational transparency.
 ```
 
 #### Skills para a stack do projeto
