@@ -58,7 +58,16 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
 ### Documentação geral do projeto
 
-Certifique-se que a documentação geral do projeto esteja disponível em: <@docs>
+- Certifique-se que a documentação geral do projeto esteja disponível no diretório específico, conforme orientações anteriores do fluxo de descoberta:
+
+```
+├── docs
+│   ├── definicao_problema.md
+│   ├── design_system.md
+│   ├── prd.md
+│   ├── spec_tech.md
+│   └── spec_ui.md
+```
 
 ### Configuração de variáveis de ambiente
 
@@ -116,7 +125,17 @@ NEXT_PUBLIC_API_URL=http://localhost:3005/v1
 .env
 ```
 
-Certifique-se que a documentação geral do projeto esteja disponível em: <@docs>
+
+### Criação de README.md
+
+- Crie uma nova sessão do agente.
+- Solicite ao agente a criação do arquivo README.md.
+
+```
+Crie o arquivo README.md para o repositório com base na documentação disponível em @docs.
+
+Siga as boas práticas recomendadas pelo GitHub disponíveis em: <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes>
+```
 
 
 ## 4 Configuração do Agente de IA
@@ -129,7 +148,7 @@ Certifique-se que a documentação geral do projeto esteja disponível em: <@doc
 ```
 Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
 
-- Comportamento geral. Use como referência as diretrizes de Andrej Karpathy disponíveis em <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>
+- Comportamento geral. Use como referência as diretrizes disponíveis em <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>
 - Stack tech resumida com base em <@docs/spech_tech.md>
 - Estrutura do monorepo com base em <@docs/spech_tech.md>
 - Comandos
@@ -347,9 +366,8 @@ As mudanças seguem o fluxo: Planejar -> Gerar -> Avaliar
 
 ### Configuração do Openspec
 
-
-- Certifique-se de que o Openspec esteja instalado, conforme disponível em https://openspec.dev/.
-- Inicialize o openspec no diretório do projeto. Para tanto, acesse o terminal e execute o comando:
+- Certifique-se de que o Openspec esteja instalado, conforme orientações disponíveis em https://openspec.dev/.
+- Inicialize o Openspec, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
 
 ```bash
 openspec init
@@ -418,6 +436,7 @@ Crie um arquivo roadmap.md com um resumo do planejamento.
  ```
 
 - Analise a proposta e outros detalhes. Proceda os ajustes interagindo com o agente por meio da skill /psx-explore ou editando diretamente os arquivos.
+- Recomenda-se que a estrutura inicial do projeto e o mecanismo de autenticação estejam entre as primeiras entregas.
 
 A cada etapa do fluxo de trabalho, pode ser verificado o progresso por meio do comando:
 
@@ -504,6 +523,12 @@ Use openspec list --changes or openspec list --specs for detailed view
 
 ### Arquivamento de mudança
 
+- Caso deseje que a documentação criada seja incluída na documentação persistente do projeto, execute:
+
+```bash
+/opsx-sync
+```
+
 - Execute o workflow de arquivamento
 
 ```bash
@@ -513,24 +538,239 @@ Use openspec list --changes or openspec list --specs for detailed view
 - Inicie uma nova sessão.
 - Solicite a execução da aplicação.
 
-
-Repita o ciclo /opsx-propose /opsx-apply /opsx-verify /opsx-archive para as demais changes.
-
-
-### Criação de README.md
-
-- Solicite ao agente a criação do arquivo README.md.
-
-```
-Crie o arquivo README.md para o repositório, seguindo as boas práticas recomendadas pelo GitHub disponíveis em: <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes>
-```
-
-- Analise o arquivo gerado.
+O ciclo /opsx-propose -> /opsx-apply -> /opsx-verify -> /opsx-archive deverá ser executado para cada mudança, posteriormente.
 
 ---
 
 ## 6. Verificação de mudanças
 
+### Verificação manual
+
+Após a implementação de cada mudança devem ser feitas verificações.
+
+Um ciclo básico pode consistir na execução manual de comandos. Na execução de todos, interaja com o agente para eventuais correções.
+
+- No diretório raiz do projeto, execute o prompt a seguir, para execução do linter:
+
+```bash
+npm run lint
+```
+
+- No diretório raiz do projeto, execute o prompt a seguir, para execução dos testes:
+
+```bash
+npm run test
+```
+
+- No diretório raiz do projeto, execute o prompt a seguir, para construção da build:
+
+```bash
+npm run build
+```
+
+- No diretório raiz do projeto, execute o prompt a seguir, para execução da aplicação:
+
+```bash
+npm run dev
+```
+
+- Acesse os endpoints da aplicação:
+
+```
+http://localhost:3000 (frontend)
+
+http://localhost:3001 (backend)
+```
+
+### Configuração do Playwright
+
+- Certifique-se de que o Playwright esteja instalado, conforme orientações disponíveis em https://playwright.dev/.
+- Inicialize o Playwright, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
+
+```bash
+npm init playwright@latest
+```
+
+- Informe os seguintes valores:
+
+```
+Do you want to use TypeScript or JavaScript? TypeScript
+Where to put your end-to-end tests? apps/frontend/tests
+Add a GitHub Actions workflow? yes
+Install Playwright browsers? yes
+Install Playwright operating system dependencies? yes
+```
+
+- Verifique a instalação:
+
+```bash
+npx playwright test
+```
+
+- Verifique o resultado esperado:
+
+```
+Running 6 tests using 4 workers
+  6 passed (4.1s)
+
+To open last HTML report run:
+
+  npx playwright show-report
+```
+
+- Remova o arquivo apps/frontend/tests/example.spec.ts.
+
+- Instale o MCP server do Playwright, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
+
+```bash
+npm install -g @playwright/mcp
+```
+
+- Inclua a configuração do MCP server:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+        "command": "npx",
+        "args": [
+            "-y",
+            "@playwright/mcp@latest"
+        ]
+    }
+  }
+}
+```
+
+- Inicialize o agente do Playwright, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
+
+```bash
+npx playwright init-agents --loop=opencode
+```
+
+O Playwright não possui configuração específica para o opencode.
+
+- Verifique a criação dos seguintes arquivos:
+
+```
+.opencode
+└── prompts
+    ├── playwright-test-generator.md
+    ├── playwright-test-healer.md
+    └── playwright-test-planner.md
+
+```
+
+### Criação de testes
+
+Certifique-se de que aplicação esteja em execução.
+
+- Execute o seguinte comando:
+
+```
+npx playwright codegen localhost:3000
+```
+
+- Na janela do navegador que aparece com a aplicação em execução, use o mouse para acionar alguns componentes visuais disponíveis na página. Verifique a gravação dos eventos na janela Playwright inspector em segundo plano.
+- Acione o comando Stop recording.
+- Na janela Playwright inspector, acione o comando Copy.
+- Feche ambas janelas.
+- Crie o arquivo apps/frontend/tests/scaffold.spec.ts com o conteúdo copiado.
+- A partir do terminal, execute os testes:
+
+```
+npx playwright test --headed apps/frontend/tests/scaffold.spec.ts 
+```
+
+## 7. Verificação de mudanças com agentes
+
+Antes de executar esta seção, certifique-se de que tenha sido implementada pelo menos uma mudança que contenha alguma interface gráfica relevante como: login, catálogo de produtos, clientes e/ou pedidos.
+
+Como há restrições do número de usuários no Clerk, será necessário fazer um cadastro manual previamente.
+
+Nas próximas seções, será utilizado o cenário de login. Caso ainda não haja um usuário válido:
+- Acessar a página http://localhost:3000/login. 
+- Solicitar o cadastro de um novo usuário.
+- Realizar os procedimentos recomendados.
+
+### Configuração do Playwright para testes com Clerk
+
+```
+Realize as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk.
+
+Siga as orientações disponíveis em:
+- https://clerk.com/docs/guides/development/testing/playwright/overview
+- https://clerk.com/docs/guides/development/testing/playwright/test-authenticated-flows
+
+```
+
+### Criação de plano de testes
+
+Nesta seção será criado um plano de testes com base na especificação criada por meio do Openspec.
+
+- Crie uma nova seção.
+- Execute o seguinte prompt. Substitua a especificação pelo nome correspondente em seu projeto:
+
+```
+Use as orientações disponíveis em <@.opencode/prompts/playwright-test-planner.md> para criar um plano de testes para o fluxo de login com Clerk.
+
+Explore a especificação disponível em <@openspec/specs/user-authentication.md>.
+
+Dadas as restrições do Clerk, não inclua cenários de criação de usuários.
+```
+
+Caso a especificação não tenha sido sincronizada ela pode ser encontrada na pasta openspec/changes ou openspec/changes/archived, caso tenha sido arquivada.
+
+- Verifique a criação do arquivo de planejamento. Por default, ele deve se encontrar no diretório specs.
+- Caso tenha sido criada em outro local, mova-a para esse diretório.
+
+No caso da execução realizada, o arquivo criado foi o specs/login-flow-test-plan.md.
 
 
-Fim do roteiro de delivery.
+### Geração de casos de teste
+
+- Crie uma nova seção.
+- Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto:
+
+```
+Use as orientações disponíveis em <@.opencode/prompts/playwright-test-generator.md> para criar os testes para o fluxo de login.
+
+Explore o plano disponível em <@specs/login-flow-test-plan.md>.
+
+Crie um único arquivo com toda suíte de testes para o plano proposto.
+```
+
+- Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
+- Caso tenha sido criada em outro local, mova-a para esse diretório.
+- Verifique a execução dos testes e respectivo relatório gerado.
+
+
+### Ajustes nos testes
+
+Desenvolva esta seção caso tenham ocorrido erros na execução dos testes.
+
+- Crie uma nova seção.
+- Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto. Substitua os valores de usuário e senha pelas credenciais configuradas anteriormente.
+
+```
+Use as orientações disponíveis em <@.opencode/prompts/playwright-test-healer.md> para ajustar os testes para o fluxo de login criados em <@apps/frontend/tests/login-flow.spec.ts>.
+```
+
+- Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
+- Caso tenha sido criada em outro local, mova-a para esse diretório.
+
+Os procedimentos de planejamento -> geração -> ajustes devem ser realzados para cada nova mudança implementada.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+---

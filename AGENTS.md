@@ -371,3 +371,13 @@ At the end of significant tasks:
 - Suggest improvements to this AGENTS.md.
 
 The operating constitution should evolve with the project.s
+
+---
+
+## Variáveis de Ambiente
+
+* Tanto o módulo frontend quanto o backend devem sempre ler as variáveis de ambiente a partir do único arquivo `.env` localizado no diretório raiz do projeto.
+* É estritamente proibido criar arquivos `.env`, `.env.local` ou links simbólicos apontando para arquivos `.env` em quaisquer subpastas ou diretórios de módulos do workspace (como `apps/frontend/` ou `apps/backend/`).
+* As variáveis de ambiente devem ser carregadas de forma programática a partir da raiz (por exemplo, utilizando `process.loadEnvFile` no `next.config.ts` do Next.js, ou o `ConfigModule` do NestJS com o caminho do `envFilePath` resolvido para o diretório raiz).
+
+---
