@@ -5,10 +5,17 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "docker compose up -d db && concurrently -n frontend,backend -c cyan,green \"npm run dev:frontend\" \"npm run dev:backend\"",
     "vercel-build": "npm run build --workspace=frontend",
     "dev:frontend": "npm run dev --workspace=frontend",
     "dev:backend": "npm run start:dev --workspace=backend",
     "build:frontend": "npm run build --workspace=frontend",
     "build:backend": "npm run build --workspace=backend"
+  },
+  "devDependencies": {
+    "@clerk/testing": "^2.1.1",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.3",
+    "concurrently": "^10.0.3"
   }
 }

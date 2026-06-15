@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "devai_auth_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBU0g3WjMwemdaQ0xPTmpLb1ZEN2FDY3FtRyIsImVtYWlsIjoianVuaWxzb25AaG90bWFpbC5jb20iLCJpYXQiOjE3ODE1NjAwMDEsImV4cCI6MTc4MTY0NjQwMX0.8qW-0KPQTSfeTu_ZjSp3mvkqP2NINOMqmB-HxKHo9EE",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1781646401.631214,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "devai_auth_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBU0g3WjMwemdaQ0xPTmpLb1ZEN2FDY3FtRyIsImVtYWlsIjoianVuaWxzb25AaG90bWFpbC5jb20iLCJpYXQiOjE3ODE1NjAwMDEsImV4cCI6MTc4MTY0NjQwMX0.8qW-0KPQTSfeTu_ZjSp3mvkqP2NINOMqmB-HxKHo9EE"
+        }
+      ]
+    }
+  ]
+}

@@ -102,7 +102,7 @@ http://localhost:20128/
       "type": "remote",
       "url": "https://stitch.googleapis.com/mcp",
       "headers": {
-        "X-Goog-Api-Key": "<STITCH_API_KEY>"
+        "X-Goog-Api-Key": "$STITCH_API_KEY"
       }
     },
     "context7": {
@@ -111,12 +111,15 @@ http://localhost:20128/
       "enabled": true,
       "oauth": false,
       "headers": {
-        "CONTEXT7_API_KEY": "<CONTEXT7_API_KEY>"
+        "CONTEXT7_API_KEY": "$CONTEXT7_API_KEY"
       }
     }
   }
 }
 ```
+
+Certifique-se de que as variáveis de ambiente estejam corretamente configuradas no arquivo .env.
+
 
 Para utilização de skills e outros recursos, o Opencode suporta as informações disponveis no diretório `.agents`
 
