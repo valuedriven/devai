@@ -641,7 +641,8 @@ npm install -g @playwright/mcp
 npx playwright init-agents --loop=opencode
 ```
 
-O Playwright não possui configuração específica para o opencode.
+O Playwright não possui configuração específica para o Antigravity.
+Com isso, os arquivos criados na pasta .opencode devem ser copiados para a pasta .agents.
 
 - Verifique a criação dos seguintes arquivos:
 
@@ -664,7 +665,8 @@ Certifique-se de que aplicação esteja em execução.
 npx playwright codegen localhost:3000
 ```
 
-- Na janela do navegador que aparece com a aplicação em execução, use o mouse para acionar alguns componentes visuais disponíveis na página. Verifique a gravação dos eventos na janela Playwright inspector em segundo plano.
+- Na janela do navegador que aparece com a aplicação em execução, use o mouse para acionar alguns componentes visuais disponíveis na página.
+- Verifique a gravação dos eventos na janela Playwright inspector em segundo plano.
 - Acione o comando Stop recording.
 - Na janela Playwright inspector, acione o comando Copy.
 - Feche ambas janelas.
@@ -677,6 +679,7 @@ npx playwright test --headed apps/frontend/tests/scaffold.spec.ts
 
 ## 7. Verificação de mudanças com agentes
 
+
 Antes de executar esta seção, certifique-se de que tenha sido implementada pelo menos uma mudança que contenha alguma interface gráfica relevante como: login, catálogo de produtos, clientes e/ou pedidos.
 
 Como há restrições do número de usuários no Clerk, será necessário fazer um cadastro manual previamente.
@@ -688,13 +691,9 @@ Nas próximas seções, será utilizado o cenário de login. Caso ainda não haj
 
 ### Configuração do Playwright para testes com Clerk
 
+- Execute o seguinte 
 ```
-Realize as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk.
-
-Siga as orientações disponíveis em:
-- https://clerk.com/docs/guides/development/testing/playwright/overview
-- https://clerk.com/docs/guides/development/testing/playwright/test-authenticated-flows
-
+Efetue as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk.
 ```
 
 ### Criação de plano de testes
@@ -705,7 +704,7 @@ Nesta seção será criado um plano de testes com base na especificação criada
 - Execute o seguinte prompt. Substitua a especificação pelo nome correspondente em seu projeto:
 
 ```
-Use as orientações disponíveis em <@.opencode/prompts/playwright-test-planner.md> para criar um plano de testes para o fluxo de login com Clerk.
+Use as orientações disponíveis em <@.agents/prompts/playwright-test-planner.md> para criar um plano de testes para o fluxo de login com Clerk.
 
 Explore a especificação disponível em <@openspec/specs/user-authentication.md>.
 
@@ -726,7 +725,7 @@ No caso da execução realizada, o arquivo criado foi o specs/login-flow-test-pl
 - Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto:
 
 ```
-Use as orientações disponíveis em <@.opencode/prompts/playwright-test-generator.md> para criar os testes para o fluxo de login.
+Use as orientações disponíveis em <@.agents/prompts/playwright-test-generator.md> para criar os testes para o fluxo de login.
 
 Explore o plano disponível em <@specs/login-flow-test-plan.md>.
 
@@ -746,7 +745,7 @@ Desenvolva esta seção caso tenham ocorrido erros na execução dos testes.
 - Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto. Substitua os valores de usuário e senha pelas credenciais configuradas anteriormente.
 
 ```
-Use as orientações disponíveis em <@.opencode/prompts/playwright-test-healer.md> para ajustar os testes para o fluxo de login criados em <@apps/frontend/tests/login-flow.spec.ts>.
+Use as orientações disponíveis em <@.agents/prompts/playwright-test-healer.md> para ajustar os testes para o fluxo de login criados em <@apps/frontend/tests/login-flow.spec.ts>.
 ```
 
 - Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
@@ -765,17 +764,5 @@ npx playwright show-report
 
 
 Os procedimentos de planejamento -> geração -> ajustes devem ser realzados para cada nova mudança implementada.
-
----
-
-
-
-
-
-
-
-
-
-
 
 ---

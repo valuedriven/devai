@@ -1,20 +1,50 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Project Overview:
+    - Monorepo structured with npm workspaces.
+    - Directory Structure: apps/frontend/, apps/backend/, infra/, docs/
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Tech stack:
+    Frontend: TypeScript, Next.js 16+, App Router, Vanilla CSS
+    Backend: TypeScript, Node.js 24+, NestJS 11+, Prisma 7+
+    Database: PostgreSQL 15+
+    Observability: Grafana Cloud
+    Identity: Clerk
+    Development: Google Antigravity, npm Workspaces, Docker
+    DevOps: Terraform, GitHub Actions
+
+  Testing & Quality Guidelines:
+    Tools:
+      Lint: ESLint
+      Unit: Jest
+      Integration: Jest + Supertest
+      E2E: Playwright
+    Minimum Coverage:
+      Backend: 80% Lines, 80% Branches
+      Frontend: 70% Lines, 70% Branches
+    Rules:
+      - All business logic changes require tests.
+      - Must cover: Happy Path, Sad Path, Edge Cases.
+
+  Testing Guidelines & Commands:
+    - Unit Tests: `npm run test:unit` (runs Jest in workspace). Isolate functions/components, mock external limits.
+    - Integration Tests: `npm run test:integration` (runs Jest+supertest). Validate multiple modules/services together.
+    - E2E Tests: `npx playwright test`. Validate end-to-end user flows.
+    - Frontend Linting: `npm run lint --workspace=frontend`
+
+rules:
+  proposal:
+    - Ensure features align with docs/prd.md and docs/spec_tech.md.
+    - Verify that proposed architecture adheres to the NestJS modular patterns and Next.js App Router rules.
+    - Next.js must remain only a presentation layer (no database, Prisma, or business logic access).
+    - All business decisions and logic must be enforced on NestJS backend.
+    - Do not use official Clerk SDK components (SignIn, SignUp, UserProfile, etc.) on frontend; implement custom UI.
+    - Ensure all endpoint changes comply with OpenTelemetry standards.
+  design:
+    - Strictly use Design System CSS tokens from globals.css. No hardcoded colors.
+  tasks:
+    - Every business logic task must include Jest/Supertest tests.
+    - Database modifications require a Prisma migration versioned change.
+    - Ensure lint and tests pass before task completion.
+
