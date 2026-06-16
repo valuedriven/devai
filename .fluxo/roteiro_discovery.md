@@ -6,10 +6,11 @@ Pré-requisitos:
 ## 1.1 Definição do problema
 
 Resultados:
-- Definição do problema (problem_statement.md)
+- Definição do problema (problem.md)
 
 Participantes:
 - Gerente de produtos
+- Cliente
 
 Ferramentas:
 - IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.)
@@ -37,21 +38,13 @@ Impacto: [Insira a consequência, ex: Bloqueio na plataforma e perda de renda di
 Solução Atual: [Insira o que fazem hoje, ex: Tiram prints da tela e mandam por e-mail para o suporte]
 
 Resultado esperado:
-- Definição do problema (problem_statement.md) com a seguinte estrutura:
+- Definição do problema (problem.md) com a seguinte estrutura:
 
-# Declaração de Problema
-## 1. Problema
-[Descrição clara e concisa do problema]
-
-## 2. Público-Alvo/Persona
-[Descrição da persona que enfrenta o problema]
-
-## 3. Objetivo
-[Objetivo do produto]
+[Insira aqui o template disponível em https://github.com/valuedriven/devai/blob/main/.fluxo/templates/template.problem.md]
 ```
 
 - Revise o documento e faça os devidos ajustes.
-- Registre o problema no arquivo docs/definicao_problema.md.
+- Registre o resultado no arquivo docs/problem.md.
 
 ---
 
@@ -61,12 +54,12 @@ Resultado esperado:
 
 Resultados:
 - Definição do produto (prd.md)
-- Especificação de requisitos (spec_req.md)
-- Especificação técnica (spec_tech.md)
-- Especificação de UI (spec_ui.md)
+- Especificação (spec.md)
+- Arquitetura (architecture.md)
 
 Participantes:
 - Gerente de produtos
+- Cliente
 - Desenvolvedor
 - Designer UX
 
@@ -97,85 +90,19 @@ Contexto:
 Resultado esperado:
 - Definição do PRD (prd.md) com a seguinte estrutura:
 
-# Definição de Requisitos do Produto (PRD)
-
-## Descrição do produto
-
-**Problema** [resuma o problema].
-
-**Solução** [resuma a solução].
-
-Para o **[público-alvo]** [ganhos para público-alvo].
-
-Nossos Diferenciais:
-
-- [listar diferenciais]
-
----
-
-## Perfis de Usuário
-
-[lista de usuários]
-
-### [usuário 1]
-
-- Problemas: [problemas do usuário 1]
-- Objetivos: [objetivos do usuário 1]
-- Dados demográficos: [dados demográficos do usuário 1]
-- Motivações: [motivações do usuário 1]
-- Frustrações: [frustrações do usuário 1]
-
----
-
-## Principais Funcionalidades
-
-[lista de funcionalidades]
-
-### RFN-[número] [título da funcionalidade]
-
-- [detalhes da funcionalidade]
-
-Critérios de Aceitação:
-- [critérios de aceitação]
-
-
----
-
-## Requisitos Não Funcionais
-
-[lista de requisitos não funcionais]
-
-
-### RNF-[número] - [título do requisito]
-
-[descrição do requisito]
----
-
-## Métricas de Sucesso
-
-[lista de métricas]
-
----
-
-## Premissas e restrições
-
-[lista de premissas e restrições]
-
-## Escopo
-
-[lista de entregas por versão, v1, v2 etc.]
+[Insira aqui o template disponível em https://github.com/valuedriven/devai/blob/main/.fluxo/templates/template.prd.md]
 ```
 
 - Revise o documento e faça os devidos ajustes.
-- Registre o problema no arquivo docs/prd.md.
+- Registre o resultado no arquivo docs/prd.md.
 
-#### Especificação técnica
+#### Especificação
 
 - A partir da definição do produto, elabore uma especificação técnica
 - Execute o seguinte prompt:
 
 ```
-Atue como: Arquiteto de software
+Atue como: Analista de requisitos
 
 Objetivo: Ajude-me a criar a "Especificação Técnica do Produto" para um novo produto de software.
 
@@ -184,141 +111,37 @@ Contexto:
 [inclua aqui a prd.md]
 
 Resultado esperado:
-- Definição da especificação técnica (spec_tech.md) com a seguinte estrutura:
+- Definição da especificação (spec.md) com a seguinte estrutura:
 
-# Especificação Técnica
-
-## Visão Geral Técnica
-
-[objetivos do documento e público alvo]
-
----
-
-## Arquitetura de Referência
-
-[decisões técnicas resumidas sobre Estilo arquitetural, Componentes principais, Serviço de observabilidade, Autenticação e autorização, Protocolos de Comunicação, Infraestrutura de deployment etc.]
-
----
-
-## Stack Tecnológica
-
-### Frontend
-
-- **Linguagem**: 
-- **Framework web**: 
-- **EStilização**: 
-
-### Backend
-
-- **Linguagem**: 
-- **Runtime**: 
-- **Framework**: 
-- **Persistência**: 
-- **ORM**: 
-
-### Stack de Desenvolvimento
-
-- **IDE**:
-- **Gerenciamento de pacotes**:
-- **Ambiente de desenvolvimento local**:
-- **Infraestrutura como Código (IaC)**:
-- **Pipeline CI/CD**:
-
-### Integrações
-
-- **Persistência**:
-- **Deployment**:
-- **Segurança (autenticação e autorização)**:
-- **Observabilidade**:
-
----
-
-## Segurança
-
-### Autenticação e Gestão de Sessão
-
-### Controle de Acesso e Autorização 
-
-### Segurança de Dados e Validação
-
-#### Criptografia e Proteção de Dados
-
-### Segurança da Infraestrutura e Configuração
-
-### Segurança no Desenvolvimento e Operação (DevSecOps)
-
----
-
-## APIs
-
-[detalhes de APIs como Endpoint principal, Versionamento, Padrão de nomenclatura, Autenticação Endpoints públicos e protegidos etc.]
-
----
-
-## Tenancy
-
-[detalhes de tenancy como Estratégia, Isolamento, Identificação, Migrações, Segurança etc.].
-
----
-
-## Diretrizes para Desenvolvimento Assistido por IA
-
-[detalhes como a IA deve interpretar o documento].
-
---
-
+[Insira aqui o template disponível em https://github.com/valuedriven/devai/blob/main/.fluxo/templates/template.spec.md]
 ```
 
 - Revise o documento e faça os devidos ajustes.
-- Registre o problema no arquivo docs/spec_tech.md.
+- Registre o resultado no arquivo docs/spec.md.
 
-#### Especificação de UI
+#### Arquitetura
 
-- A partir da definição do produto, elabore uma especificação de ui
+- A partir da definição do produto, elabore uma arquitetura do software
 - Execute o seguinte prompt:
 
 ```
-Atue como: Designer de UX
+Atue como: Arquiteto de Software
 
-Objetivo: Ajude-me a criar a "Especificação de UI" para um novo produto de software.
+Objetivo: Ajude-me a criar a "Arquitetura do Software" para um novo produto de software.
 
 Contexto:
 
-[inclua aqui a prd.md]
+[inclua aqui a spec.md]
 
 Resultado esperado:
-- Definição da especificação de UI (spec_ui.md) com a seguinte estrutura:
+- Definição da arquitetura (architecture.md) com a seguinte estrutura:
 
-
-# Especificação de UI
-
-## Interfaces gráficas
-
-[listagem das interfaces gráficas]
-
-### INT-[identificador] - [título da interface gráfica]
-
-- [tipo de contêiner (ex.: página, tabela, formulário etc.)]
-- **Campos:** [lista de campos]
-- **Botões:** [lista de botões]
-- **Links:** [lista de links]
-- **Considerações:** informações complementares relevantes
-
----
-
-## Fluxo de Navegação
-
-[listagem dos componentes visuais e fluxo de navegação]
-
----
-
-## Diretrizes para IA
-
-[detalhes de como a IA deve interpretar o documento].
+[Insira aqui o template disponível em https://github.com/valuedriven/devai/blob/main/.fluxo/templates/template.architecture.md]
 ```
 
 - Revise o documento e faça os devidos ajustes.
-- Registre o problema no arquivo docs/spec_ui.md.
+- Registre o resultado no arquivo docs/architecture.md.
+
 
 #### Revisão do refinamento
 
@@ -328,9 +151,9 @@ Resultado esperado:
 ```
 Revise os seguintes documentos:
 
-<inclua aqui a prd.md>
-<inclua aqui a spec_tech.md>
-<inclua aqui a spec_ui.md>
+<inclua aqui o arquivo prd.md>
+<inclua aqui o arquivo spec.md>
+<inclua aqui o arquivo architecture.md>
 ```
 
 - Revise o relatório e faça os devidos ajustes nos documentos.
@@ -343,8 +166,7 @@ Revise os seguintes documentos:
 
 Resultados:
 - Protótipos
-- Design system (design_system.md)
-- Modelo de dados
+- Design system (design.md)
 
 Participantes:
 - Designer UX
@@ -361,24 +183,22 @@ Considerações:
 
 ### Atividades
 
-- Solicite a alguma IA para elaborar um prompt a ser usado na criação de protótipos:
 
-```
-Crie um arquivo markdown com um prompt para o papel de designer de UX que solicita a uma ferramenta de prototipagem como o Google Stitch criar templates de protótipos para um projeto.
+#### Definição de design system
 
-Siga estritamente as informações providas pelos documentos:
-
-<inclua aqui a prd.md>
-<inclua aqui a spec_tech.md>
-<inclua aqui a spec_ui.md>
-```
-
+- Utilize um arquivo de design system de sua preferência.
+- Caso deseje, escolha dentre as opções disponíveis em https://getdesign.md/.
 - Acesse o Stitch <https://stitch.withgoogle.com/>.
-- Selecione "Web" para o design.
-- Selecione um modelo com melhor reasoning (ex.: 3.0 Pro).
+- Solicite a criação de um design system com base no arquivo disponível.
+- Aguarde a conclusão.
 
-- Informe o prompt criado anteriormente.
+#### Criação de protótipos
+
+- Solicite a criação dos protótipos. Inclua os arquivos prd.md e spec.md como complemento ao prompt.
 - Avalie os resultados gerados.
+
+#### Exploração de recursos
+
 - Selecione uma das imagens e explore o recurso Preview, New Tab.
 - Selecione uma das imagens e explore o recurso Generate, Variations.
 - Selecione todas as imagens e acesse o recurso Generate, Protótipos.

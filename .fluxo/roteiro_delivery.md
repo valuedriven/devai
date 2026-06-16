@@ -44,9 +44,10 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
 ### Ciclo Planejar/Executar (Research/Plan/Implement)
 
-- Priorize a estruturação das tarefas no ciclo Planejar/Executar:
-  - Planejar: No campo Conversation mode, selecione a opção "Planning". Para o campo Model, priorize, sempre que disponíveis, modelos com maior capacidade de reasoning ou "thinking". Após o término do planejamento, abra e analise o Implementation plan criado.
-  - Executar: No campo Conversation mode, selecione a opção "Fast" (execução). Para o campo Model, podem ser selecionados modelos mais rápidos ou simples.
+- Priorize a estruturação das tarefas no ciclo Planejar/Executar.
+- Para o planejamento, parariorize, sempre que disponíveis, modelos com maior capacidade de reasoning ou "thinking". 
+- Após o término do planejamento, abra e analise o Implementation plan criado.
+- Para execução podem ser selecionados modelos mais rápidos ou simples.
    
 ### Ajuste nos prompts
 
@@ -63,11 +64,12 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
 ```
 ├── docs
-│   ├── definicao_problema.md
-│   ├── design_system.md
+│   ├── architecture.md
+│   ├── design.md
 │   ├── prd.md
-│   ├── spec_tech.md
-│   └── spec_ui.md
+│   ├── problem.md
+│   ├── spec.md
+
 ```
 
 ### Configuração de variáveis de ambiente
@@ -150,14 +152,10 @@ Siga as boas práticas recomendadas pelo GitHub disponíveis em: <https://docs.g
 Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
 
 - Comportamento geral. Use como referência as diretrizes disponíveis em <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>
-- Stack tech resumida com base em <@docs/spech_tech.md>
-- Estrutura do monorepo com base em <@docs/spech_tech.md>
-- Comandos
-   - Setup inicial
-   - build
-   - run
-   - banco de dados
-- Regras de qualidade e testes com base em <@docs/spech_tech.md>
+- Stack tech resumida com base em <@docs/architecture.md>
+- Estrutura do monorepo com base em <@docs/architecture.md>
+- Comandos: setup inicial, build, run, setup banco de dados
+- Regras de qualidade e testes com base em <@docs/architecture.md>
 - Regras de governança e autonomia no terminal
 - Regras de aprendizado contínuo com reflexão e sugestão de atualização de regras ao final de cada mudança
 - Referências de documentação do projeto na pasta <@docs>
@@ -400,7 +398,7 @@ Utilize a skill openspec-explore para criar as mudanças incrementais do projeto
 ```
 /opsx-explore Dimensione as mudanças necessárias para a implementação de uma aplicação web full stack de maneira incremental.
 
-Utilize a documentação disponível nos arquivos @docs/prd.md @docs/spec_tech.md @docs/spec_ui.md e @docs/design_system.md.
+Utilize a documentação disponível nos arquivos @docs/prd.md, @docs/spec.md e @docs/architecture.md.
 
 Obtenha os protótipos das interfaces gráficas no projeto stitch <nome do projeto> por meio do mcp server correspondente.
 
@@ -677,7 +675,7 @@ npx playwright codegen localhost:3000
 npx playwright test --headed apps/frontend/tests/scaffold.spec.ts 
 ```
 
-## 7. Verificação de mudanças com agentes
+### Verificação de mudanças com agentes
 
 
 Antes de executar esta seção, certifique-se de que tenha sido implementada pelo menos uma mudança que contenha alguma interface gráfica relevante como: login, catálogo de produtos, clientes e/ou pedidos.
@@ -689,14 +687,14 @@ Nas próximas seções, será utilizado o cenário de login. Caso ainda não haj
 - Solicitar o cadastro de um novo usuário.
 - Realizar os procedimentos recomendados.
 
-### Configuração do Playwright para testes com Clerk
+#### Configuração do Playwright para testes com Clerk
 
 - Execute o seguinte 
 ```
 Efetue as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk.
 ```
 
-### Criação de plano de testes
+#### Criação de plano de testes
 
 Nesta seção será criado um plano de testes com base na especificação criada por meio do Openspec.
 
@@ -719,7 +717,7 @@ Caso a especificação não tenha sido sincronizada ela pode ser encontrada na p
 No caso da execução realizada, o arquivo criado foi o specs/login-flow-test-plan.md.
 
 
-### Geração de casos de teste
+#### Geração de casos de teste
 
 - Crie uma nova seção.
 - Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto:
