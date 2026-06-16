@@ -93,8 +93,8 @@ A resposta deve produzir **três cenários arquiteturais progressivos**, permiti
 ## Documentação de referência
 
 - `docs/prod.md`
-- `docs/spec_tech.md`
-- `docs/spec_ui.md`
+- `docs/spec.md`
+- `docs/architecture.md`
 
 Resultado
 - `docs/ada.md`

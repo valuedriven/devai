@@ -35,7 +35,7 @@ context: |
 
 rules:
   proposal:
-    - Ensure features align with docs/prd.md and docs/spec_tech.md.
+    - Ensure features align with docs/prd.md, docs/spec.md and docs/architecture.md
     - Verify that proposed architecture adheres to the NestJS modular patterns and Next.js App Router rules.
     - Next.js must remain only a presentation layer (no database, Prisma, or business logic access).
     - All business decisions and logic must be enforced on NestJS backend.

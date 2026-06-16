@@ -384,7 +384,7 @@ openspec init
 - Execute o seguinte comando (certifique-se de que o comando /opsx-explore seja selecionado ao clicar em "/". Faça o mesmo para o arquivo indicado, acionando "@"):
 
 ```
-/opsx-explore personalize o arquivo config.yaml com informações sobre stack e diretrizes de testes e qualidade disponíveis no arquivo @docs/spec_tech.md
+/opsx-explore personalize o arquivo config.yaml com informações sobre stack e diretrizes de testes e qualidade disponíveis no arquivo @docs/architecture.md
 ```
 
 ### Definição de roadmap de mudanças
@@ -680,16 +680,12 @@ npx playwright test --headed apps/frontend/tests/scaffold.spec.ts
 
 Antes de executar esta seção, certifique-se de que tenha sido implementada pelo menos uma mudança que contenha alguma interface gráfica relevante como: login, catálogo de produtos, clientes e/ou pedidos.
 
-Como há restrições do número de usuários no Clerk, será necessário fazer um cadastro manual previamente.
-
-Nas próximas seções, será utilizado o cenário de login. Caso ainda não haja um usuário válido:
-- Acessar a página http://localhost:3000/login. 
-- Solicitar o cadastro de um novo usuário.
-- Realizar os procedimentos recomendados.
 
 #### Configuração do Playwright para testes com Clerk
 
-- Execute o seguinte 
+- Crie uma nova seção.
+- Execute o seguinte prompt:
+
 ```
 Efetue as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk.
 ```
@@ -725,7 +721,7 @@ No caso da execução realizada, o arquivo criado foi o specs/login-flow-test-pl
 ```
 Use as orientações disponíveis em <@.agents/prompts/playwright-test-generator.md> para criar os testes para o fluxo de login.
 
-Explore o plano disponível em <@specs/login-flow-test-plan.md>.
+Explore o plano disponível em <@specs/login-flow-test-plan.md> e a documentação disponível em <@docs/spec.md>.
 
 Crie um único arquivo com toda suíte de testes para o plano proposto.
 ```

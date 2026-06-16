@@ -742,4 +742,4 @@ Dado o contexto atual do projeto (MVP mono-tenant, equipe pequena, fins educacio
 | **Versão 1.0 / Produção** | 🟡 **Cenário 2 — Intermediário** |
 | **Crescimento / Multi-tenant** | 🔴 **Cenário 3 — Avançado** |
 
-> **Stack Futura documentada em `spec_tech.md`** já prevê migração para: AWS RDS PostgreSQL, AWS EKS (poderia ser ECS Fargate), AWS Cognito, AWS SQS, AWS SES e AWS CloudWatch — alinhados diretamente com os Cenários 2 e 3 desta análise.
+> **Stack Futura documentada em `spec.md`** já prevê migração para: AWS RDS PostgreSQL, AWS EKS (poderia ser ECS Fargate), AWS Cognito, AWS SQS, AWS SES e AWS CloudWatch — alinhados diretamente com os Cenários 2 e 3 desta análise.
