@@ -702,7 +702,6 @@ Use as orientações disponíveis em <@.agents/prompts/playwright-test-planner.m
 
 Explore a especificação disponível em <@openspec/specs/user-authentication.md>.
 
-Dadas as restrições do Clerk, não inclua cenários de criação de usuários.
 ```
 
 Caso a especificação não tenha sido sincronizada ela pode ser encontrada na pasta openspec/changes ou openspec/changes/archived, caso tenha sido arquivada.
