@@ -17,7 +17,7 @@ O projeto requer uma estrutura de monorepo robusta para acoplar o frontend (Next
 ## Decisions
 
 - **Utilização de npm Workspaces**: Adotado para consistência com o arquivo `package-lock.json` existente na raiz, evitando misturar gerenciadores de pacotes diferentes (como pnpm/yarn).
-- **CSS Vanilla Puro para Design System**: Os tokens de design descritos no `design_system.md` serão declarados em `:root` no globals.css do Next.js sem usar pré-processadores ou utilitários complexos para simplificar a manutenção.
+- **CSS Vanilla Puro para Design System**: Os tokens de design descritos no `design.md` serão declarados em `:root` no globals.css do Next.js sem usar pré-processadores ou utilitários complexos para simplificar a manutenção.
 
 ## Risks / Trade-offs
 

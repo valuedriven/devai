@@ -95,8 +95,9 @@ Na raiz do projeto, você pode usar os scripts mapeados:
 
 Para detalhes técnicos e de produto, consulte a pasta `docs/`:
 - [Product Requirements Document (PRD)](./docs/prd.md)
-- [Especificação Técnica](./docs/spec_tech.md)
-- [Design System](./docs/design_system.md)
+- [Especificação Técnica](./docs/spec.md)
+- [Arquitetura](./docs/architecture.md)
+- [Design System](./docs/design.md)
 
 ---
 
