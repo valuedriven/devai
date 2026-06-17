@@ -22,8 +22,8 @@ Crie contas em alguns dos providers abaixo e obtenha as chaves de acesso:
 Instale o Omniroute, conforme orientações disponíveis em:
 https://github.com/diegosouzapw/OmniRoute
 
-- Usuários do Windows com dificuldades na instalação padrão via npm, podem tentar a instalação via Docker:
-- 
+- Usuários do Windows com dificuldades na instalação padrão via npm, podem tentar a instalação via Docker: 
+   
 ```bash
 docker run -d --name omniroute --restart unless-stopped --stop-timeout 40 \
   -p 20128:20128 -v omniroute-data:/app/data diegosouzapw/omniroute:latest
