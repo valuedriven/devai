@@ -24,17 +24,17 @@ Ferramentas:
 
 ### Pré-requisitos
 
-- Google Antigravity <https://antigravity.google> instalado localmente.
+- Google Antigravity IDE <https://antigravity.google> instalado localmente.
 - Node.js <https://nodejs.org/> instalado localmente.
 - Git <https://git-scm.com/> instalado localmente.
 - Docker e Docker Compose <https://docker.com> instalados localmente.
+- Openspec <https://openspec.dev/> instalado localmente.
+- Playwright <https://playwright.dev/> instalado localmente.
 - Conta GitHub <https://github.com/>.
 - Conta Vercel <https://vercel.com/>.
 - Conta Supabase <https://www.supabase.com/>.
 - Conta Clerk <https://clerk.com/>.
 - Conta Context7 <https://context7.com/>.
-- Openspec <https://openspec.dev/> instalado localmente.
-- Playwright <https://playwright.dev/> instalado localmente.
 
 Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 
