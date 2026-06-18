@@ -92,6 +92,7 @@ http://localhost:20128/
 
 ```json
 {
+  "$schema": "https://opencode.ai/config.json",
   "mcp": {
       "$schema": "https://opencode.ai/config.json",
   "mcp": {

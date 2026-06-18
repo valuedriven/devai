@@ -150,20 +150,24 @@ Siga as boas práticas recomendadas pelo GitHub disponíveis em: <https://docs.g
 - Informe o prompt a seguir:
 
 ```
-Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
+Crie ou atualize o `AGENTS.md` com base na documentação do projeto (`docs/*`), incluindo:
 
-- Comportamento geral. Use como referência as diretrizes disponíveis em <https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md>
-- Stack tech resumida com base em <@docs/architecture.md>
-- Estrutura do monorepo com base em <@docs/architecture.md>
-- Comandos: setup inicial, build, run, setup banco de dados
-- Regras de qualidade e testes com base em <@docs/architecture.md>
-- Regras de logging com base em <@docs/architecture.md>
-- Regras de governança e autonomia no terminal
-- Regras de aprendizado contínuo com reflexão e sugestão de atualização de regras ao final de cada mudança
-- Referências de documentação do projeto na pasta <@docs>
-- Busca atualizada de informações por meio do mcp serve do context7
+* Comportamento do agente
+* Stack tecnológica
+* Estrutura do monorepo
+* Comandos principais (setup, banco, build, run e testes)
+* Regras de qualidade, testes e logging
+* Governança e autonomia no terminal
+* Uso do Context7 MCP para consulta de documentação atualizada
+* Referências da documentação do projeto
+* Aprendizado contínuo com reflexão e sugestões de melhoria após cada mudança
 
-Valide o AGENTS.md com as diretrizes disponíveis em <https://github.com/valuedriven/devai/tree/main/.fluxo/concepts/agents-md-guidelines.md>
+Utilize como referência:
+
+* https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md
+* https://github.com/valuedriven/devai/tree/main/.fluxo/concepts/agents-md-guidelines.md
+
+Adapte as diretrizes ao contexto do projeto, preserve conteúdo válido existente, remova duplicações e valide o resultado conforme as recomendações de AGENTS.md.
 ```
 - Verifique o resultado
 - Peça ajuda a alguma IA de fronteira para validar o resultado.
@@ -177,13 +181,7 @@ Analise o histórico de conversações desta sessão e proponha ajustes no arqui
 
 ### Configuração de skills
 
-Uma skill pode ser configurada de forma iterativa ao criar um prompt para o agente:
-- Acesse o Antigravity.
-- Selecione o painel Agent.
-- Acione o comando "+", Start a New Conversation (repita esse procedimento em todo início de seção, pelo menos).
-- Solicite a criação da skill com uma instrução similar a: "Crie uma skill com o seguinte conteúdo...".
-
-Alternativamente, pode ser configurada forma manual, por meio da criação da seguinte estrutura no diretório raiz do projeto:
+Os comandos a seguir, criarão a seguinte estrutura de diretórios:
 
 ```
 .agents/
@@ -197,115 +195,37 @@ Alternativamente, pode ser configurada forma manual, por meio da criação da se
 - 
 ```
 
-Skills para a stack do projeto
+- Acesse o terminal a partir do diretório raiz do projeto.
+- Execute os comandos a seguir:
 
 ```
-# Agents Skill Installation Prompt
+npx skills add https://github.com/hashicorp/agent-skills --yes --skill terraform-style-guide --agent universal 
 
-## Objetivos
+npx skills add https://github.com/vercel-labs/next-skills --yes --agent universal --skill next-best-practices next-cache-components deploy-to-vercel react-best-practices web-design-guidelines composition-patterns
 
-Instalar skills externas de repositórios específicos no diretório nativo padrão, garantindo compatibilidade e portabilidade entre agentes.
+npx skills add https://github.com/prisma/skills --yes --agent universal --skill prisma-database-setup
 
-## Modo de Execução: 100% Autônomo
+npx skills add https://github.com/supabase/agent-skills --yes --agent universal
 
-* O agente deve executar todo o fluxo (download, criação, movimentação e exclusão de arquivos/diretórios) de forma **totalmente autônoma**.
-* **NÃO** pause a execução, **NÃO** solicite confirmação humana (no human-in-the-loop) e **NÃO** exiba prompts interativos.
-* Adicione as flags necessárias (`-y`, `-f`, `--quiet`, etc.) a todos os comandos executados no terminal para garantir que eles não travem aguardando input do usuário.
+npx skills add https://github.com/clerk/skills --yes --agent universal --skill clerk-setup clerk 
 
-## Portabilidade para outros agentes
+npx skills add https://github.com/mattpocock/skills --yes --agent universal --skill improve-codebase-architecture
 
-* Utilize comandos de manipulação de arquivos e diretórios padrão POSIX ou as ferramentas de file system nativas do agente.
-* Garanta que as permissões de leitura dos arquivos `SKILL.md` sejam preservadas para que o parser do OpenCode consiga indexá-los corretamente.
-* A estrutura de diretórios deve ser agnóstica em relação ao sistema operacional base (Windows/Linux/macOS), utilizando caminhos relativos em todas as operações.
+npx skills add https://github.com/addyosmani/agent-skills --yes --agent universal --skill frontend-ui-engineering code-review-and-quality ci-cd-and-automation  
 
-## Regras Críticas
-
-1. Instalar todas as skills estritamente no diretório:
-`.agents/skills/`
-2. **NÃO** instalar ou manter skills em diretórios legados ou concorrentes, como:
-`.agent/`
-`.cursor/`
-`.opencode/skills/` (use apenas `.agents/skills/` como fonte única de verdade)
-3. Não modificar a estrutura interna dos repositórios de skills baixados.
-4. Cada skill deve ser instalada como um subdiretório independente e **precisa** conter o seu arquivo original `SKILL.md` na raiz para ser reconhecida pelos runtimes do Antigravity e do OpenCode.
-
-## Otimização de Performance (Ingestão)
-
-Para endereços que apontam diretamente para arquivos ou subdiretórios específicos dentro de um repositório, utilize métodos de importação direta restrita (ex: `git sparse-checkout`, `gh repo download` ou requisições diretas via API).
-
-* **Evite rigorosamente:** Clonagem completa (*full clone*) de repositórios inteiros.
-* **Evite rigorosamente:** Varredura recursiva desnecessária no file system.
-
-Objetivo: Reduzir o tempo de processamento, consumo de banda e otimizar a ingestão para o contexto do agente.
-
-## Fontes das Skills
-
-Instale as skills provenientes dos seguintes repositórios:
-
-### Antigravity Community Skills
-
-`[https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/frontend-design](https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/frontend-design)`
-`[https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/backend-architect/](https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/backend-architect/)`
-`[https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/nestjs-expert](https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/nestjs-expert)`
-`[https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/docker-expert](https://github.com/sickn33/antigravity-awesome-skills/tree/main/skills/docker-expert)`
-`[https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/github-actions-templates/](https://github.com/sickn33/antigravity-awesome-skills/blob/main/skills/github-actions-templates/)`
-
-### Terraform Skill
-
-`[https://github.com/hashicorp/agent-skills/tree/main/terraform/code-generation/skills/terraform-style-guide](https://github.com/hashicorp/agent-skills/tree/main/terraform/code-generation/skills/terraform-style-guide)`
-
-### Vercel Skills
-
-`[https://github.com/vercel-labs/next-skills/tree/main/skills/next-best-practices](https://github.com/vercel-labs/next-skills/tree/main/skills/next-best-practices)`
-`[https://github.com/vercel-labs/next-skills/tree/main/skills/next-cache-components](https://github.com/vercel-labs/next-skills/tree/main/skills/next-cache-components)`
-`[https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel](https://github.com/vercel-labs/agent-skills/tree/main/skills/deploy-to-vercel)`
-`[https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices)`
-`[https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines](https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines)`
-`[https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns](https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns)`
-
-### Prisma
-
-`[https://github.com/prisma/skills/tree/main/prisma-database-setup](https://github.com/prisma/skills/tree/main/prisma-database-setup)`
-
-### Supabase
-
-`[https://github.com/supabase/agent-skills](https://github.com/supabase/agent-skills)`
-
-### Clerk
-
-`[https://github.com/clerk/skills/blob/main/skills/core/clerk-setup](https://github.com/clerk/skills/blob/main/skills/core/clerk-setup)`
-`[https://github.com/clerk/skills/blob/main/skills/core/clerk](https://github.com/clerk/skills/blob/main/skills/core/clerk)`
-
-## Procedimento de Instalação Autônoma
-
-Para cada fonte listada acima, execute via script ou terminal integrado:
-
-1. Extraia o nome da skill com base no último segmento da URL.
-2. Crie um diretório isolado estritamente dentro de:
-`.agents/skills/<skill-name>`
-3. Importe apenas o conteúdo necessário da skill (download direto ou *sparse checkout*).
-4. Garanta de forma mandatória que o `SKILL.md` e eventuais arquivos de suporte (como scripts de OpenCode compatíveis) aterrissem corretamente neste novo diretório de destino.
-
-## Manutenção e Limpeza do Ambiente
-
-Após a instalação bem-sucedida de todas as skills, purgue o ambiente de configurações externas através de deleção forçada (`rm -rf` ou equivalente do agente):
-
-1. Remova diretórios de agentes que não são nativos ou estão obsoletos (nível local de workspace e global, se acessível).
-2. Mantenha intacto apenas:
-`.agents/`
-3. Remova definitivamente quaisquer ocorrências de diretórios como `.agent/` e `.cursor/`.
-
-## Resultado Esperado
-
-O ambiente final deve possuir apenas um diretório central de configuração (`.agents/`), abrigando todas as skills instaladas como pastas independentes em `.agents/skills`. A estrutura deve estar higienizada e pronta para execução instantânea pelo Antigravity Agent Runtime e interoperável com o OpenCode.
+npx skills add https://github.com/sickn33/antigravity-awesome-skills --yes --agent universal --skill backend-architect nestjs-expert docker-expert github-actions-templates
 ```
-
-- Interaja com o agente, provendo as entradas solicitadas.
 - Verifique no diretório .agents se as skills foram instaladas.
+
+Quando necessário, mais skills podem ser encontradas em marketplaces como: https://skillsmp.com/
+
+
 
 ---
 
 ### Configuração de MCP Servers
+
+Configuração no Antigravity:
 
 - Selecione o painel Agent.
 - Selecione a opção Additional options (símbolo de três pontos "...").
@@ -341,7 +261,7 @@ Teste de MCP Servers
 - Solicite listar os projetos disponíveis no Stitch:
 
 ```
-Use o mcp server do Stitch para listar os projetos
+Liste os projetos do Stitch
 ```
 
 ## 5. Criação de mudanças
@@ -349,21 +269,27 @@ Use o mcp server do Stitch para listar os projetos
 ### Configuração do Openspec
 
 - Certifique-se de que o Openspec esteja instalado, conforme orientações disponíveis em https://openspec.dev/.
-- Inicialize o Openspec, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
+- Acesse o terminal no diretório raiz do projeto.
+- Inicialize o Openspec, executando o comando a seguir:
 
 ```bash
-openspec init
+openspec init --tools antigravity, opencode
 ```
 
-- Selecione as ferramentas desejadas para configuração do openspec (ex.: Antigravity).
+- Certifique-se de que as skills e commands foram instaladas nos diretórios .agents (plural) e .opencode.
 - Como resultado, devem ser criadas ou atualizadas as seguintes estruturas de pastas:
 
 ```
 ├── .agents
-│   ├── commands
-│   ├── rules
-│   ├── skills
-│   └── workflows
+│   ├── commands/
+│   ├── rules/
+│   ├── skills/
+│   └── workflows/
+├── .opencode
+│   ├── commands/
+│   ├── rules/
+│   ├── skills/
+│   └── workflows/
 ├── openspec
 │   ├── changes
 │   ├── config.yaml
@@ -375,23 +301,11 @@ openspec init
 - Execute o seguinte comando (certifique-se de que o comando /opsx-explore seja selecionado ao clicar em "/". Faça o mesmo para o arquivo indicado, acionando "@"):
 
 ```
-/opsx-explore personalize o arquivo config.yaml com informações sobre stack, qualidade e estratégia de testes disponíveis em @docs/architecture.md.
+/opsx-explore 
 
-Adote obrigatoriamente a seguinte pirâmide de testes:
+Personalize o arquivo config.yaml com base nas informações do projeto disponíveis em:
+@docs/prd.md @docs/spec.md @docs/design.md @docs/architecture.md (em especial as diretrizes de testes e qualidade)
 
-- Testes estáticos utilizando Eslint
-- Testes unitários utilizando Jest
-- Testes de integração utilizando Jest + Supertest
-- Testes end-to-end utilizando Playwright
-
-Toda mudança deverá possuir testes compatíveis com sua natureza.
-
-Requisitos mínimos:
-
-- Serviços e regras de negócio: testes unitários
-- Controllers e APIs: testes de integração
-- Fluxos de usuário: testes Playwright
-- Cobertura mínima de 80% para statements, branches, functions e lines
 ```
 
 ### Definição de roadmap de mudanças
@@ -403,7 +317,9 @@ Utilize a skill openspec-explore para criar as mudanças incrementais do projeto
 - Informe o conteúdo a seguir logo depois da skill (lembre-se de informar o nome do projeto stitch corretamente)
 
 ```
-/opsx-explore Dimensione as mudanças necessárias para a implementação de uma aplicação web full stack de maneira incremental.
+/opsx-explore
+
+Dimensione as mudanças necessárias para a implementação de uma aplicação web full stack de maneira incremental.
 
 Utilize a documentação disponível nos arquivos @docs/prd.md, @docs/spec.md e @docs/architecture.md.
 
