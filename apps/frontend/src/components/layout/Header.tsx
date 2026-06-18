@@ -77,9 +77,9 @@ export function Header() {
 
                 {/* Actions */}
                 <div className="header-actions">
-                    <Link href="/cart" className="btn-icon-size btn-ghost rounded-md cart-icon-wrapper">
+                    <Link href="/cart" className="btn-icon-size btn-ghost rounded-md cart-icon-wrapper" data-testid="cart-icon-wrapper">
                         <ShoppingCart className="icon-md" />
-                        {itemCount > 0 && <span className="cart-badge">{itemCount}</span>}
+                        {itemCount > 0 && <span className="cart-badge" data-testid="cart-badge">{itemCount}</span>}
                         <span className="sr-only">Carrinho</span>
                     </Link>
                     

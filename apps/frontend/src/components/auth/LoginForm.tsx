@@ -42,7 +42,7 @@ export function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
-          {error && <div className="login-error">{error}</div>}
+          {error && <div className="login-error" data-testid="login-error">{error}</div>}
 
           <div className="form-group">
             <label htmlFor="email">E-mail</label>

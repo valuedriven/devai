@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from '../services/category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { TenantId } from '../../../core/decorators/tenant-id.decorator';
 import { AuthGuard } from '../../../core/guards/auth.guard';
 import { RolesGuard } from '../../../core/guards/roles.guard';
@@ -44,7 +45,7 @@ export class CategoryController {
   @Roles('admin')
   update(
     @Param('id') id: string,
-    @Body() updateCategoryDto: Partial<CreateCategoryDto>,
+    @Body() updateCategoryDto: UpdateCategoryDto,
     @TenantId() tenantId: string,
   ) {
     return this.categoryService.update(+id, updateCategoryDto, tenantId);

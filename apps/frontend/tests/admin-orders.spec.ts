@@ -1,12 +1,12 @@
-import { test, expect } from '@playwright/test';
-import { navigateAndWait, setupAdminSession, apiCall, getAdminCredentials } from './helpers';
+import { test, expect } from './auth.fixture';
+import { navigateAndWait, setupAdminSession } from './helpers';
 
 test.describe('Suite H+I: Admin (Clientes, Pedidos)', () => {
 
   let adminToken = '';
 
-  test.beforeAll(async () => {
-    const creds = await getAdminCredentials();
+  test.beforeAll(async ({ api }) => {
+    const creds = await api.getAdminCredentials();
     adminToken = creds.token;
   });
 
@@ -20,22 +20,18 @@ test.describe('Suite H+I: Admin (Clientes, Pedidos)', () => {
 
     test('H1: Listagem de clientes', async ({ page }) => {
       await navigateAndWait(page, '/admin/customers');
-      await expect(page.locator('h1', { hasText: 'Clientes' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
     });
 
-    test('H2: Criar cliente via API', async () => {
+    test('H2: Criar cliente via API', async ({ api }) => {
       const email = `test-customer-${Date.now()}@devai.com`;
-      const customer = await apiCall<{ id: string; email: string }>('/customers', {
-        method: 'POST',
-        token: adminToken,
-        body: {
-          name: 'Test Customer',
-          email,
-          phone: '(11) 99999-9999',
-          address: 'Rua Teste, 123',
-          active: true,
-        },
-      });
+      const customer = await api.post<{ id: string; email: string }>('/customers', {
+        name: 'Test Customer',
+        email,
+        phone: '(11) 99999-9999',
+        address: 'Rua Teste, 123',
+        active: true,
+      }, adminToken);
       expect(customer).toBeTruthy();
       expect(customer.email).toBe(email);
     });
@@ -44,7 +40,7 @@ test.describe('Suite H+I: Admin (Clientes, Pedidos)', () => {
       await navigateAndWait(page, '/admin/customers');
       await page.getByRole('link', { name: 'Novo Cliente' }).click();
       await page.waitForURL('/admin/customers/new');
-      await expect(page.locator('h1', { hasText: 'Novo Cliente' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Novo Cliente' })).toBeVisible();
     });
   });
 
@@ -52,12 +48,12 @@ test.describe('Suite H+I: Admin (Clientes, Pedidos)', () => {
 
     test('I1: Listagem de pedidos', async ({ page }) => {
       await navigateAndWait(page, '/admin/orders');
-      await expect(page.locator('h1', { hasText: 'Pedidos' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Pedidos' })).toBeVisible();
     });
 
-    test('I2: Detalhe do pedido (admin)', async ({ page }) => {
+    test('I2: Detalhe do pedido (admin)', async ({ api, page }) => {
       // Get first order ID
-      const orders = await apiCall<{ id: string }[]>('/orders', { token: adminToken });
+      const orders = await api.get<{ id: string }[]>('/orders', adminToken);
       if (orders.length === 0) {
         test.skip(true, 'No orders in database');
         return;
@@ -65,7 +61,7 @@ test.describe('Suite H+I: Admin (Clientes, Pedidos)', () => {
       const orderId = orders[0].id;
       await navigateAndWait(page, `/admin/orders/${orderId}`);
       // Should show order detail
-      await expect(page.locator(`text=#${orderId}`).first()).toBeVisible();
+      await expect(page.getByText(`#${orderId}`).first()).toBeVisible();
     });
   });
 });

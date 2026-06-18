@@ -28,7 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className="product-card group">
+        <div className="product-card group" data-testid="product-card">
             <div className="product-image-wrapper">
                 <Link href={`/products/${product.id}`} className="product-image-link">
                     {!imageError ? (
@@ -66,7 +66,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
             <div className="product-content">
                 <div>
-                    <Link href={`/products/${product.id}`} className="product-title">
+                    <Link href={`/products/${product.id}`} className="product-title" data-testid="product-title">
                         {product.name}
                     </Link>
                     <p className="product-description">{product.description}</p>
@@ -74,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
                 <div className="product-footer">
                     <div className="product-price-row">
-                        <div className="product-price">
+                        <div className="product-price" data-testid="product-price">
                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
                         </div>
                         <div className="product-stock">

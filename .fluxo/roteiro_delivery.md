@@ -22,6 +22,8 @@ Ferramentas:
 
 ## 2. Orientações gerais
 
+Os comandos executados neste roteiro consideram tanto execuções via terminal quanto interface de chat do agente de IA. Fique atento a cada execução.
+
 ### Pré-requisitos
 
 - Google Antigravity IDE <https://antigravity.google> instalado localmente.
@@ -155,6 +157,7 @@ Crie ou ajuste o AGENTS.md para incluir as seguintes informações:
 - Estrutura do monorepo com base em <@docs/architecture.md>
 - Comandos: setup inicial, build, run, setup banco de dados
 - Regras de qualidade e testes com base em <@docs/architecture.md>
+- Regras de logging com base em <@docs/architecture.md>
 - Regras de governança e autonomia no terminal
 - Regras de aprendizado contínuo com reflexão e sugestão de atualização de regras ao final de cada mudança
 - Referências de documentação do projeto na pasta <@docs>
@@ -238,10 +241,6 @@ Objetivo: Reduzir o tempo de processamento, consumo de banda e otimizar a ingest
 ## Fontes das Skills
 
 Instale as skills provenientes dos seguintes repositórios:
-
-### Google Stitch
-
-`[https://github.com/google-labs-code/stitch-skills](https://github.com/google-labs-code/stitch-skills)`
 
 ### Antigravity Community Skills
 

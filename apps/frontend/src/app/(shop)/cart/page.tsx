@@ -45,9 +45,9 @@ export default function CartPage() {
                 customerId,
                 totalAmount: total,
                 order_items: cartItems.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity,
-                    unitPrice: item.price
+                    productId: Number(item.id),
+                    quantity: Number(item.quantity),
+                    unitPrice: Number(item.price)
                 })),
                 status: "Novo"
             };
@@ -72,9 +72,9 @@ export default function CartPage() {
     if (orderConfirmed) {
         return (
             <div className="container py-8">
-                <div className="order-success-container">
+                <div className="order-success-container" data-testid="order-success-container">
                     <CheckCircle className="order-success-icon" />
-                    <h1 className="order-success-title">Pedido Confirmado!</h1>
+                    <h1 className="order-success-title" data-testid="order-success-title">Pedido Confirmado!</h1>
                     <p className="order-success-text">
                         Seu pedido <strong>#{orderId}</strong> foi realizado com sucesso.
                     </p>
@@ -126,7 +126,7 @@ export default function CartPage() {
                                     >
                                         -
                                     </Button>
-                                    <span className="w-8 text-center">{item.quantity}</span>
+                                    <span className="w-8 text-center" data-testid="cart-item-quantity">{item.quantity}</span>
                                     <Button
                                         variant="outline"
                                         size="icon"

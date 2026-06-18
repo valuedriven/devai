@@ -19,8 +19,8 @@ setup('global setup', async ({ page }) => {
     throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD env variables are not set');
   }
 
-  await page.locator('#email').fill(email);
-  await page.locator('#password').fill(password);
+  await page.getByLabel('E-mail').fill(email);
+  await page.getByLabel('Senha').fill(password);
   await page.getByRole('button', { name: 'Entrar' }).click();
   await page.waitForURL('/');
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import { CreateProductDto } from '../dto/create-product.dto';
+import { UpdateProductDto } from '../dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -18,12 +19,17 @@ export class ProductService {
     });
   }
 
-  async findAll(tenantId: string, search?: string) {
-    console.log('ProductService.findAll CALLED:', { tenantId, search });
+  async findAll(tenantId: string, search?: string, publicView = false) {
+    console.log('ProductService.findAll CALLED:', {
+      tenantId,
+      search,
+      publicView,
+    });
     return this.prisma.product.findMany({
       where: {
         tenantId,
         ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
+        ...(publicView ? { active: true, category: { active: true } } : {}),
       },
       include: { category: true },
     });
@@ -49,7 +55,7 @@ export class ProductService {
 
   async update(
     id: number,
-    updateProductDto: Partial<CreateProductDto>,
+    updateProductDto: UpdateProductDto,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     tenantId: string,
   ) {

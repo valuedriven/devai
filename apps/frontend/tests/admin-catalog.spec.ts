@@ -1,6 +1,6 @@
 import { setupClerkTestingToken } from '@clerk/testing/playwright';
-import { test, expect } from '@playwright/test';
-import { navigateAndWait, setupAdminSession, createTestCategory, createTestProduct, getAdminCredentials } from './helpers';
+import { test, expect } from './auth.fixture';
+import { navigateAndWait, setupAdminSession } from './helpers';
 
 test.describe('Suite E+F+G: Admin (Dashboard, Products, Categories)', () => {
 
@@ -8,8 +8,8 @@ test.describe('Suite E+F+G: Admin (Dashboard, Products, Categories)', () => {
   let adminEmail = '';
   let adminPassword = '';
 
-  test.beforeAll(async () => {
-    const creds = await getAdminCredentials();
+  test.beforeAll(async ({ api }) => {
+    const creds = await api.getAdminCredentials();
     adminEmail = creds.email;
     adminPassword = creds.password;
     adminToken = creds.token;
@@ -28,25 +28,25 @@ test.describe('Suite E+F+G: Admin (Dashboard, Products, Categories)', () => {
       // Login as admin via UI first to set session
       await setupClerkTestingToken({ page });
       await navigateAndWait(page, '/login');
-      await page.locator('#email').fill(adminEmail);
-      await page.locator('#password').fill(adminPassword);
+      await page.getByLabel('E-mail').fill(adminEmail);
+      await page.getByLabel('Senha').fill(adminPassword);
       await page.getByRole('button', { name: 'Entrar' }).click();
       await page.waitForURL('/');
 
-      // Navigate to dashboard via sidebar
-      await page.locator('aside a[href="/admin"]').click();
+      // Navigate to dashboard via sidebar (use first match since both desktop sidebar and mobile menu have it)
+      await page.getByRole('link', { name: 'Dashboard' }).first().click();
       await page.waitForURL('/admin');
 
       // KPIs should be visible
-      await expect(page.locator('text=Total de Vendas')).toBeVisible();
-      await expect(page.locator('text=Pedidos Totais')).toBeVisible();
-      await expect(page.locator('text=Valor Pendente')).toBeVisible();
+      await expect(page.getByText('Total de Vendas')).toBeVisible();
+      await expect(page.getByText('Pedidos Totais')).toBeVisible();
+      await expect(page.getByText('Valor Pendente')).toBeVisible();
     });
 
     test('E2: Últimos pedidos visíveis na dashboard', async ({ page }) => {
       await navigateAndWait(page, '/admin');
-      await expect(page.locator('text=Últimos Pedidos')).toBeVisible();
-      const tableRows = page.locator('table tbody tr');
+      await expect(page.getByText('Últimos Pedidos')).toBeVisible();
+      const tableRows = page.getByRole('row');
       const count = await tableRows.count();
       expect(count).toBeGreaterThanOrEqual(0); // May be 0 if no orders
     });
@@ -56,17 +56,17 @@ test.describe('Suite E+F+G: Admin (Dashboard, Products, Categories)', () => {
 
     test('F1: Listagem de produtos', async ({ page }) => {
       await navigateAndWait(page, '/admin/products');
-      await expect(page.locator('h1', { hasText: 'Produtos' })).toBeVisible();
-      const table = page.locator('table');
+      await expect(page.getByRole('heading', { name: 'Produtos' })).toBeVisible();
+      const table = page.getByRole('table');
       await expect(table).toBeVisible();
     });
 
-    test('F2: Criar produto via API (admin token)', async () => {
+    test('F2: Criar produto via API (admin token)', async ({ api }) => {
       interface IdObj { id: string; name: string; }
-      const cat = await createTestCategory(adminToken, `Test Cat ${Date.now()}`) as IdObj;
+      const cat = await api.createCategory(adminToken, `Test Cat ${Date.now()}`) as IdObj;
       expect(cat).toBeTruthy();
 
-      const prod = await createTestProduct(adminToken, {
+      const prod = await api.createProduct(adminToken, {
         name: `Test Product ${Date.now()}`,
         description: 'Test description',
         price: 99.90,
@@ -82,7 +82,7 @@ test.describe('Suite E+F+G: Admin (Dashboard, Products, Categories)', () => {
       await navigateAndWait(page, '/admin/products');
       await page.getByRole('link', { name: 'Novo Produto' }).click();
       await page.waitForURL('/admin/products/new');
-      await expect(page.locator('h1', { hasText: 'Novo Produto' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Novo Produto' })).toBeVisible();
     });
   });
 
@@ -90,11 +90,11 @@ test.describe('Suite E+F+G: Admin (Dashboard, Products, Categories)', () => {
 
     test('G1: Listagem de categorias', async ({ page }) => {
       await navigateAndWait(page, '/admin/categories');
-      await expect(page.locator('h1', { hasText: 'Categorias' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Categorias' })).toBeVisible();
     });
 
-    test('G2: Criar categoria via API', async () => {
-      const cat = await createTestCategory(adminToken, `Category ${Date.now()}`) as { id: string; name: string };
+    test('G2: Criar categoria via API', async ({ api }) => {
+      const cat = await api.createCategory(adminToken, `Category ${Date.now()}`) as { id: string; name: string };
       expect(cat).toBeTruthy();
       expect(cat.name).toContain('Category');
     });

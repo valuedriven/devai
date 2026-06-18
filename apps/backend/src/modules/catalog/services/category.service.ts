@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../database/prisma.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { UpdateCategoryDto } from '../dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -29,7 +30,7 @@ export class CategoryService {
 
   async update(
     id: number,
-    updateCategoryDto: Partial<CreateCategoryDto>,
+    updateCategoryDto: UpdateCategoryDto,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     tenantId: string,
   ) {

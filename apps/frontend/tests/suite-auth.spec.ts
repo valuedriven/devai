@@ -10,9 +10,9 @@ test.describe('Suite B: Autenticação (INT-02)', () => {
 
     test('B1: Página de login carrega', async ({ page }) => {
       await navigateAndWait(page, '/login');
-      await expect(page.locator('h1', { hasText: 'Bem-vindo de volta' })).toBeVisible();
-      await expect(page.locator('#email')).toBeVisible();
-      await expect(page.locator('#password')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Bem-vindo de volta' })).toBeVisible();
+      await expect(page.getByLabel('E-mail')).toBeVisible();
+      await expect(page.getByLabel('Senha')).toBeVisible();
       await expect(page.getByRole('button', { name: 'Entrar' })).toBeVisible();
     });
 
@@ -25,21 +25,21 @@ test.describe('Suite B: Autenticação (INT-02)', () => {
       }
 
       await navigateAndWait(page, '/login');
-      await page.locator('#email').fill(email);
-      await page.locator('#password').fill(password);
+      await page.getByLabel('E-mail').fill(email);
+      await page.getByLabel('Senha').fill(password);
       await page.getByRole('button', { name: 'Entrar' }).click();
       await page.waitForURL('/');
-      await expect(page.locator('.user-dropdown-container')).toBeVisible();
+      await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
     });
 
     test('B4: Login com credenciais inválidas mostra erro', async ({ page }) => {
       await setupClerkTestingToken({ page });
       await navigateAndWait(page, '/login');
-      await page.locator('#email').fill('invalid@test.com');
-      await page.locator('#password').fill('wrongpassword');
+      await page.getByLabel('E-mail').fill('invalid@test.com');
+      await page.getByLabel('Senha').fill('wrongpassword');
       await page.getByRole('button', { name: 'Entrar' }).click();
       // Should show error message
-      await expect(page.locator('.login-error')).toBeVisible();
+      await expect(page.getByTestId('login-error')).toBeVisible();
     });
 
     test('B5: Redirecionamento de /admin sem auth', async ({ page }) => {
@@ -55,13 +55,12 @@ test.describe('Suite B: Autenticação (INT-02)', () => {
       await navigateAndWait(page, '/');
 
       // Logout via sidebar
-      await page.locator('aside').getByRole('button', { name: 'Sair da Loja' }).click();
-      await page.waitForTimeout(500);
+      await page.getByRole('complementary').getByRole('button', { name: 'Sair da Loja' }).click();
 
       // Reload and verify login icon is shown
       await navigateAndWait(page, '/');
       // The user icon should be a link to /login
-      const loginLink = page.locator('a[href="/login"]').first();
+      const loginLink = page.getByRole('link', { name: /login/i }).first();
       await expect(loginLink).toBeVisible();
     });
   });

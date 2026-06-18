@@ -5,7 +5,7 @@ test.describe('Suite A: Vitrine (RFN-01 / INT-01)', () => {
 
   test('A1: Home carrega grid de produtos', async ({ page }) => {
     await navigateAndWait(page, '/');
-    const productCards = page.locator('.product-card');
+    const productCards = page.getByTestId('product-card');
     await expect(productCards.first()).toBeVisible();
     const count = await productCards.count();
     expect(count).toBeGreaterThan(0);
@@ -14,15 +14,15 @@ test.describe('Suite A: Vitrine (RFN-01 / INT-01)', () => {
   test('A2: Cada card exibe nome e preço', async ({ page }) => {
     await navigateAndWait(page, '/');
     const firstCard = page.locator('.product-card').first();
-    await expect(firstCard.locator('.product-title')).toBeVisible();
-    await expect(firstCard.locator('.product-price')).toBeVisible();
+    await expect(firstCard.getByTestId('product-title')).toBeVisible();
+    await expect(firstCard.getByTestId('product-price')).toBeVisible();
   });
 
   test('A3: Busca filtra produtos', async ({ page }) => {
     // Get the first product name to search for
     await navigateAndWait(page, '/');
     const firstCard = page.locator('.product-card').first();
-    const firstProductName = await firstCard.locator('.product-title').textContent();
+    const firstProductName = await firstCard.getByTestId('product-title').textContent();
     expect(firstProductName).toBeTruthy();
 
     // Search for it using URL param
@@ -42,7 +42,7 @@ test.describe('Suite A: Vitrine (RFN-01 / INT-01)', () => {
 
   test('A5: Produto detail carrega', async ({ page }) => {
     await navigateAndWait(page, '/');
-    const firstProductLink = page.locator('.product-title').first();
+    const firstProductLink = page.getByTestId('product-title').first();
     const href = await firstProductLink.getAttribute('href');
     expect(href).toBeTruthy();
 

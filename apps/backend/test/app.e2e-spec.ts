@@ -1,3 +1,8 @@
+import * as dotenv from 'dotenv';
+import { resolve } from 'path';
+// Load environment variables from root .env file before anything else
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';

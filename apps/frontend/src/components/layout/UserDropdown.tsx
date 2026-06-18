@@ -37,7 +37,7 @@ export function UserDropdown({ user, isAdmin, onLogout }: UserDropdownProps) {
   const displayName = user?.firstName ? `${user.firstName} ${user.lastName || ""}` : user?.email || "Usuário";
 
   return (
-    <div className="user-dropdown-container" ref={dropdownRef}>
+    <div className="user-dropdown-container" ref={dropdownRef} data-testid="user-dropdown-container">
       <div className="user-dropdown-trigger" onClick={toggleDropdown}>
         {user?.imageUrl ? (
           <Image 

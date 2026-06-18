@@ -281,38 +281,64 @@ Toda alteração em banco de dados deve gerar migration Prisma versionada.
 * alterar tabelas manualmente
 * alterar schema sem migration correspondente
 
-### Testes Automatizados
+### Testes e Qualidade
 
-Ferramentas:
+#### Ferramentas
 
-* Lint: ESLint
-* Unidade: Jest
-* Integração: Jest + Supertest
-* E2E: Playwright
+| Categoria  | Ferramenta       |
+| ---------- | ---------------- |
+| Lint       | ESLint           |
+| Unidade    | Jest             |
+| Integração | Jest + Supertest |
+| E2E        | Playwright       |
 
-### Cobertura Mínima
+#### Cobertura Mínima
 
-Backend:
+##### Backend
 
 * Linhas: 80%
 * Branches: 80%
 
-Frontend:
+##### Frontend
 
 * Linhas: 70%
 * Branches: 70%
 
-### Critérios de Teste
+####  Diretrizes
 
-Toda alteração de regra de negócio exige testes.
+* Toda alteração de regra de negócio deve incluir testes automatizados.
+* Testes unitários devem validar regras de negócio de forma isolada.
+* Testes de integração devem validar endpoints, persistência e integração entre componentes.
 
-Devem ser cobertos:
+* Testes E2E devem cobrir os fluxos críticos da aplicação.
+* Os testes devem contemplar:
 
-* Happy Path
-* Sad Path
-* Edge Cases
+  * Happy Path
+  * Failure Path
+  * Casos limite relevantes
 
----
+#### Critérios de Qualidade
+
+Nenhuma alteração pode ser considerada concluída se:
+
+* Existirem erros de lint.
+* Existirem testes falhando.
+* A cobertura mínima não for atingida.
+
+### Pipeline Obrigatório
+
+Toda alteração deve executar com sucesso:
+
+1. ESLint
+2. Testes Unitários
+3. Testes de Integração
+4. Testes E2E aplicáveis
+5. Verificação de cobertura
+
+### Diretriz para Agentes de IA
+
+Agentes de IA devem criar ou atualizar os testes necessários juntamente com a implementação e considerar a tarefa concluída somente após todas as validações serem aprovadas.
+
 
 ## Segurança
 
@@ -539,23 +565,90 @@ Devem ser propagados:
 
 Logs, métricas e traces devem compartilhar o mesmo correlation id.
 
-### Logs Estruturados
+## Logging e Auditoria
 
-É proibido utilizar:
+### Objetivo
 
-```ts
-console.log()
+Garantir rastreabilidade, monitoramento e diagnóstico de falhas por meio de logs estruturados e auditoria de operações críticas.
+
+### Ferramentas
+
+#### Backend (NestJS)
+
+* Pino
+* nestjs-pino
+
+#### Frontend (Next.js)
+
+* Pino
+
+### Diretrizes de Logging
+
+* Utilizar exclusivamente logging estruturado em JSON.
+* Não utilizar `console.log` em código de produção.
+* Todos os logs devem conter:
+
+  * timestamp
+  * level
+  * correlationId
+  * event
+  * message
+
+Exemplo:
+
+```json
+{
+  "timestamp": "2026-01-01T10:00:00Z",
+  "level": "info",
+  "correlationId": "uuid",
+  "event": "order.created",
+  "message": "Order created successfully"
+}
 ```
 
-Utilizar exclusivamente logging estruturado.
+### Eventos de Negócio
 
-Campos mínimos:
+Registrar eventos para operações relevantes do domínio.
 
-* timestamp
-* level
-* service
-* trace_id
-* user_id
+Exemplos:
+
+* user.registered
+* cart.updated
+* order.created
+* order.cancelled
+* payment.approved
+* payment.failed
+
+### Correlation ID
+
+* Toda requisição deve possuir um Correlation ID.
+* O identificador deve ser propagado entre serviços e integrações.
+
+### Segurança
+
+Não registrar:
+
+* Senhas
+* Tokens
+* Dados de cartão
+* Informações sensíveis protegidas por LGPD
+
+### Auditoria
+
+Registrar auditoria para operações críticas:
+
+* Alteração de preços
+* Alteração de estoque
+* Cancelamento de pedidos
+* Reembolsos
+* Alteração de permissões
+
+### Diretrizes para IA
+
+* Utilizar sempre o serviço de logging padronizado.
+* Registrar erros e integrações externas.
+* Criar eventos de negócio para ações relevantes.
+* Não registrar dados sensíveis.
 
 ### Métricas
 
