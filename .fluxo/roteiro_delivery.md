@@ -25,7 +25,7 @@ Ferramentas:
 ### Pré-requisitos
 
 - Google Antigravity IDE <https://antigravity.google> instalado localmente.
-- Node.js <https://nodejs.org/> instalado localmente.
+- Node.js e npm <https://nodejs.org/> instalados localmentes.
 - Git <https://git-scm.com/> instalado localmente.
 - Docker e Docker Compose <https://docker.com> instalados localmente.
 - Openspec <https://openspec.dev/> instalado localmente.
@@ -45,8 +45,7 @@ Certifique-se de estar logado nessses serviços ao realizar o roteiro.
 ### Ciclo Planejar/Executar (Research/Plan/Implement)
 
 - Priorize a estruturação das tarefas no ciclo Planejar/Executar.
-- Para o planejamento, parariorize, sempre que disponíveis, modelos com maior capacidade de reasoning ou "thinking". 
-- Após o término do planejamento, abra e analise o Implementation plan criado.
+- Para o planejamento, priorize, sempre que disponíveis, modelos com maior capacidade de reasoning ou "thinking". 
 - Para execução podem ser selecionados modelos mais rápidos ou simples.
    
 ### Ajuste nos prompts
@@ -302,14 +301,7 @@ Após a instalação bem-sucedida de todas as skills, purgue o ambiente de confi
 O ambiente final deve possuir apenas um diretório central de configuração (`.agents/`), abrigando todas as skills instaladas como pastas independentes em `.agents/skills`. A estrutura deve estar higienizada e pronta para execução instantânea pelo Antigravity Agent Runtime e interoperável com o OpenCode.
 ```
 
-- Ao lado do item implementation_plan.md, acione o comando Open.
-- Na seção de prompt, alterne da opção "Planning" para "Fast" (execução).
-- Repita esse procedimento sempre que for executar um plano.
-- No painel Implementation Plan, acione o comando Proceed.
 - Interaja com o agente, provendo as entradas solicitadas.
-- Ao lado do item walkthrough.md, acione o comando Open.
-- Analise o conteúdo do arquivo.
-- Analise também o conteúdo do arquivo Task.
 - Verifique no diretório .agents se as skills foram instaladas.
 
 ---
@@ -653,7 +645,7 @@ Com isso, os arquivos criados na pasta .opencode devem ser copiados para a pasta
 
 ```
 
-### Criação de testes
+### Gravação de testes
 
 Certifique-se de que aplicação esteja em execução.
 
@@ -675,7 +667,7 @@ npx playwright codegen localhost:3000
 npx playwright test --headed apps/frontend/tests/scaffold.spec.ts 
 ```
 
-### Verificação de mudanças com agentes
+### Geração de testes com agentes
 
 
 Antes de executar esta seção, certifique-se de que tenha sido implementada pelo menos uma mudança que contenha alguma interface gráfica relevante como: login, catálogo de produtos, clientes e/ou pedidos.
@@ -730,7 +722,7 @@ Crie um único arquivo com toda suíte de testes para o plano proposto.
 - Verifique a execução dos testes e respectivo relatório gerado.
 
 
-### Ajustes nos testes
+#### Ajustes nos testes
 
 Desenvolva esta seção caso tenham ocorrido erros na execução dos testes.
 

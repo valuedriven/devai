@@ -53,8 +53,8 @@ http://localhost:20128/
 
 ## Configuração do Opencode
 
+- Instale o Opencode, conforme orientações disponíveis em: https://opencode.ai/
 - Instale o VSCode, conforme orientações disponíveis em: https://code.visualstudio.com/
-
 (Alternativamente, o Opencode também pode ser instalado como extensão do Antigravity)
 
 - Acesse o VSCode.
