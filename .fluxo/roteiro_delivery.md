@@ -376,7 +376,22 @@ openspec init
 - Execute o seguinte comando (certifique-se de que o comando /opsx-explore seja selecionado ao clicar em "/". Faça o mesmo para o arquivo indicado, acionando "@"):
 
 ```
-/opsx-explore personalize o arquivo config.yaml com informações sobre stack e diretrizes de testes e qualidade disponíveis no arquivo @docs/architecture.md
+/opsx-explore personalize o arquivo config.yaml com informações sobre stack, qualidade e estratégia de testes disponíveis em @docs/architecture.md.
+
+Adote obrigatoriamente a seguinte pirâmide de testes:
+
+- Testes unitários utilizando Jest
+- Testes de integração utilizando Jest + Supertest
+- Testes end-to-end utilizando Playwright
+
+Toda mudança deverá possuir testes compatíveis com sua natureza.
+
+Requisitos mínimos:
+
+- Serviços e regras de negócio: testes unitários
+- Controllers e APIs: testes de integração
+- Fluxos de usuário: testes Playwright
+- Cobertura mínima de 80% para statements, branches, functions e lines
 ```
 
 ### Definição de roadmap de mudanças
@@ -399,6 +414,17 @@ Configure as mudanças de forma que nenhuma fique com tamanho, complexidade e/ou
 Crie apenas o proposal.md de cada mudança.
 
 Crie um arquivo roadmap.md com um resumo do planejamento.
+
+Para cada mudança proposta, informe:
+- Escopo funcional
+- Dependências
+- Riscos
+- Testes unitários necessários
+- Testes de integração necessários
+- Testes E2E necessários
+
+Nenhuma mudança pode ser considerada concluída sem os testes correspondentes.
+
 ```
 
 - Verifique se o agente identificou corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.

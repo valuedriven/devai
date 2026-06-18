@@ -15,17 +15,18 @@ context: |
     DevOps: Terraform, GitHub Actions
 
   Testing & Quality Guidelines:
-    Tools:
-      Lint: ESLint
-      Unit: Jest
-      Integration: Jest + Supertest
-      E2E: Playwright
+    Estratégia de Testes (Pirâmide de Testes):
+      - Testes unitários utilizando Jest (Serviços e regras de negócio)
+      - Testes de integração utilizando Jest + Supertest (Controllers e APIs)
+      - Testes end-to-end utilizando Playwright (Fluxos de usuário)
     Minimum Coverage:
-      Backend: 80% Lines, 80% Branches
-      Frontend: 70% Lines, 70% Branches
+      - Cobertura mínima de 80% para statements, branches, functions e lines (em toda a base de código e novas modificações)
     Rules:
-      - All business logic changes require tests.
-      - Must cover: Happy Path, Sad Path, Edge Cases.
+      - Toda mudança deverá possuir testes compatíveis com sua natureza.
+      - Serviços e regras de negócio: obrigatoriamente testes unitários.
+      - Controllers e APIs: obrigatoriamente testes de integração.
+      - Fluxos de usuário: obrigatoriamente testes Playwright.
+      - Todos os testes devem cobrir Happy Path, Sad Path e Edge Cases.
 
   Testing Guidelines & Commands:
     - Unit Tests: `npm run test:unit` (runs Jest in workspace). Isolate functions/components, mock external limits.
@@ -47,4 +48,6 @@ rules:
     - Every business logic task must include Jest/Supertest tests.
     - Database modifications require a Prisma migration versioned change.
     - Ensure lint and tests pass before task completion.
+    - Verify that new files/changes satisfy the testing pyramid and 80% coverage requirements (statements, branches, functions, and lines).
+
 
