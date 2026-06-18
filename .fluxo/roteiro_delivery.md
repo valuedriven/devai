@@ -380,6 +380,7 @@ openspec init
 
 Adote obrigatoriamente a seguinte pirâmide de testes:
 
+- Testes estáticos utilizando Eslint
 - Testes unitários utilizando Jest
 - Testes de integração utilizando Jest + Supertest
 - Testes end-to-end utilizando Playwright
@@ -419,6 +420,7 @@ Para cada mudança proposta, informe:
 - Escopo funcional
 - Dependências
 - Riscos
+- Execução de linter necessária
 - Testes unitários necessários
 - Testes de integração necessários
 - Testes E2E necessários
