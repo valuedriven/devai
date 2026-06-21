@@ -80,9 +80,9 @@ http://localhost:20128/
 - Algumas sugestões de bons grupos de modelo disponíveis (priorize as versões mais recentes e gratuitas):
   - Deepseek;
   - Qwen;
-  - MiniMax;
   - Kimi;
   - GLM;
+  - MiniMax.
 
 ---
 

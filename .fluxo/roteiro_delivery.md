@@ -310,8 +310,6 @@ Personalize o arquivo config.yaml com base nas informações do projeto disponí
 
 ### Definição de roadmap de mudanças
 
-Utilize a skill openspec-explore para criar as mudanças incrementais do projeto. 
-
 - Inicie uma nova sessão do agente.
 - Na janela do chat, digite o caracter "/" e selecione a skill "opsx-explore".
 - Informe o conteúdo a seguir logo depois da skill (lembre-se de informar o nome do projeto stitch corretamente)
@@ -395,8 +393,7 @@ Use openspec list --changes or openspec list --specs for detailed view
 
 ### Criação de propostas de mudanças
 
-- Solicite a criação de cada proposta de mudança conforme roadmap.
-- Crie uma nova seção.
+- Inicie uma nova sessão do agente.
 - Informe o seguinte prompt, informando a mudança desejada:
 
 ```bash
@@ -423,7 +420,7 @@ Use openspec list --changes or openspec list --specs for detailed view
 
 ### Execução de propostas de mudanças
 
-- Inicie uma nova sessão.
+- Inicie uma nova sessão do agente.
 - Informe o seguinte prompt, informando a mudança desejada:
 
 ```bash
@@ -436,7 +433,7 @@ Use openspec list --changes or openspec list --specs for detailed view
 
 ### Avaliação de resultados
 
-- Inicie uma nova sessão.
+- Inicie uma nova sessão do agente.
 - Execute o workflow para verificação da change aplicada:
 
 ```bash
@@ -461,7 +458,7 @@ Use openspec list --changes or openspec list --specs for detailed view
 /opsx-archive <id da mudança>
 ```
 
-- Inicie uma nova sessão.
+- Inicie uma nova sessão do agente.
 - Solicite a execução da aplicação.
 
 O ciclo /opsx-propose -> /opsx-apply -> /opsx-verify -> /opsx-archive deverá ser executado para cada mudança, posteriormente.
@@ -472,33 +469,20 @@ O ciclo /opsx-propose -> /opsx-apply -> /opsx-verify -> /opsx-archive deverá se
 
 ### Verificação manual
 
-Após a implementação de cada mudança devem ser feitas verificações.
+Após a implementação de cada mudança podem ser feitas verificações.
 
 Um ciclo básico pode consistir na execução manual de comandos. Na execução de todos, interaja com o agente para eventuais correções.
 
-- No diretório raiz do projeto, execute o prompt a seguir, para execução do linter:
+- Acesse o terminal.
+- No diretório raiz do projeto, execute os comandos seguir:
 
 ```bash
 npm run lint
-```
-
-- No diretório raiz do projeto, execute o prompt a seguir, para execução dos testes:
-
-```bash
 npm run test
-```
-
-- No diretório raiz do projeto, execute o prompt a seguir, para construção da build:
-
-```bash
 npm run build
-```
-
-- No diretório raiz do projeto, execute o prompt a seguir, para execução da aplicação:
-
-```bash
 npm run dev
 ```
+
 
 - Acesse os endpoints da aplicação:
 
@@ -511,7 +495,8 @@ http://localhost:3001 (backend)
 ### Configuração do Playwright
 
 - Certifique-se de que o Playwright esteja instalado, conforme orientações disponíveis em https://playwright.dev/.
-- Inicialize o Playwright, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
+- Acesse o terminal.
+- Inicialize o Playwright, executando o comando a seguir no diretório raiz do projeto:
 
 ```bash
 npm init playwright@latest
@@ -568,7 +553,7 @@ npm install -g @playwright/mcp
 }
 ```
 
-- Inicialize o agente do Playwright, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
+- Inicialize o agente do Playwright:
 
 ```bash
 npx playwright init-agents --loop=opencode
@@ -588,28 +573,6 @@ Com isso, os arquivos criados na pasta .opencode devem ser copiados para a pasta
 
 ```
 
-### Gravação de testes
-
-Certifique-se de que aplicação esteja em execução.
-
-- Execute o seguinte comando:
-
-```
-npx playwright codegen localhost:3000
-```
-
-- Na janela do navegador que aparece com a aplicação em execução, use o mouse para acionar alguns componentes visuais disponíveis na página.
-- Verifique a gravação dos eventos na janela Playwright inspector em segundo plano.
-- Acione o comando Stop recording.
-- Na janela Playwright inspector, acione o comando Copy.
-- Feche ambas janelas.
-- Crie o arquivo apps/frontend/tests/scaffold.spec.ts com o conteúdo copiado.
-- A partir do terminal, execute os testes:
-
-```
-npx playwright test --headed apps/frontend/tests/scaffold.spec.ts 
-```
-
 ### Geração de testes com agentes
 
 
@@ -618,18 +581,18 @@ Antes de executar esta seção, certifique-se de que tenha sido implementada pel
 
 #### Configuração do Playwright para testes com Clerk
 
-- Crie uma nova seção.
+- Crie uma nova seção do agente.
 - Execute o seguinte prompt:
 
 ```
-Efetue as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk.
+Efetue as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk conforme @docs/architecture.md
 ```
 
 #### Criação de plano de testes
 
 Nesta seção será criado um plano de testes com base na especificação criada por meio do Openspec.
 
-- Crie uma nova seção.
+- Crie uma nova seção do agente.
 - Execute o seguinte prompt. Substitua a especificação pelo nome correspondente em seu projeto:
 
 ```
@@ -649,7 +612,7 @@ No caso da execução realizada, o arquivo criado foi o specs/login-flow-test-pl
 
 #### Geração de casos de teste
 
-- Crie uma nova seção.
+- Crie uma nova seção do agente.
 - Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto:
 
 ```
@@ -669,7 +632,7 @@ Crie um único arquivo com toda suíte de testes para o plano proposto.
 
 Desenvolva esta seção caso tenham ocorrido erros na execução dos testes.
 
-- Crie uma nova seção.
+- Crie uma nova seção do agente.
 - Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto. Substitua os valores de usuário e senha pelas credenciais configuradas anteriormente.
 
 ```
@@ -678,6 +641,7 @@ Use as orientações disponíveis em <@.agents/prompts/playwright-test-healer.md
 
 - Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
 - Caso tenha sido criada em outro local, mova-a para esse diretório.
+- Acesse o terminal.
 - Reexecute a suíte de testes com o recurso de acompanhamento visual:
 
 ```bash
@@ -690,7 +654,98 @@ npx playwright test --headed
 npx playwright show-report
 ```
 
-
 Os procedimentos de planejamento -> geração -> ajustes devem ser realzados para cada nova mudança implementada.
+
+---
+
+### Inspeção de código
+
+- Acesse o terminal.
+- Inicialize o servidor Sonar:
+
+```bash
+docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
+```
+- Acesse o navegador e informe o endereço:
+
+```bash
+localhost:9000
+```
+
+- Informe como credenciais: usuário = admin, senha = admin.
+- Altere a senha conforme recomendado.
+- Aguarde a navegação até a seção Projects, How do you want to create your project?
+- Selecione a opção "Create a local project".
+- Informe os dados solicitados.
+- Na seção Set up new code for project, escolha a opção default.
+- Acione o comando Create project.
+- Para seção Analysis Method, selecione a opção Locally.
+- Na seção Analyze your project, acione o comando Generate.
+- Copie o token criado.
+- Acione o comando Continue.
+- Para a opção Run analysis on your project, selecione JS/TS & Web.
+- Acione o terminal e execute o seguinte comando:
+
+```
+npm install -g @sonar/scan
+```
+
+- Acesse o termina e execute o comando:
+
+```bash
+npm install -g @sonar/scan
+```
+
+- Configure as seguintes variáveis de ambiente
+
+```
+SONARQUBE_TOKEN= <troque pelo token criado>
+SONARQUBE_HOST=http://localhost:9000
+SONARQUBE_PROJECT_KEY=<identificador do projeto>
+```
+- Execute o scaner:
+
+```bash
+sonar \
+  -Dsonar.host.url=$SONARQUBE_HOST \
+  -Dsonar.token=$SONARQUBE_TOKEN \
+  -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY
+```
+
+- Acesse novamente o navegador e informe o endereço:
+
+```
+localhost:9000
+```
+
+- Analise os resultados apresentados.
+
+- Inclua o trecho a seguir nos servidores MCP do projeto:
+
+```
+"sonarqube": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "${workspaceRoot}:/app/mcp-workspace",
+        "-e",
+        "SONAR_TOKEN=$SONARQUBE_TOKEN",
+        "-e",
+        "SONAR_HOST_URL=$SONARQUBE_HOST", 
+        "SonarSource/sonarqube-mcp-server"
+      ],
+      "enabled": true
+    }
+```
+
+- Abra uma nova seção do agente.
+- Solicite a listagem dos achados:
+
+```
+Liste os problemas de qualidade identificados pelo sonar
+```
 
 ---

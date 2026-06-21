@@ -25,6 +25,22 @@
       "headers": {
         "CONTEXT7_API_KEY": "$CONTEXT7_API_KEY"
       }
+    },
+     "sonarqube": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "${workspaceRoot}:/app/mcp-workspace",
+        "-e",
+        "SONAR_TOKEN=$SONARQUBE_TOKEN",
+        "-e",
+        "SONAR_HOST_URL=$SONARQUBE_HOST", 
+        "SonarSource/sonarqube-mcp-server"
+      ],
+      "enabled": true
     }
   },
   "tools": {
