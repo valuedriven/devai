@@ -8,8 +8,8 @@ import {
 } from 'class-validator';
 
 export class CreateOrderItemDto {
-  @IsNumber()
-  productId: number;
+  @IsString()
+  productId: string;
 
   @IsNumber()
   quantity: number;
@@ -19,9 +19,9 @@ export class CreateOrderItemDto {
 }
 
 export class CreateOrderDto {
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  customerId?: number;
+  customerId?: string;
 
   @IsNumber()
   totalAmount: number;

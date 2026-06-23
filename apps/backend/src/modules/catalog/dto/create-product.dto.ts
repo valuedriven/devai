@@ -28,10 +28,9 @@ export class CreateProductDto {
   @IsOptional()
   imageUrl?: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  @IsNotEmpty()
-  categoryId: number;
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 
   @Type(() => Number)
   @IsInt()

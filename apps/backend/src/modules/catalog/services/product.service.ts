@@ -13,7 +13,7 @@ export class ProductService {
       data: {
         ...rest,
         active: active ?? true,
-        categoryId: BigInt(categoryId),
+        ...(categoryId ? { categoryId } : {}),
       },
     });
   }
@@ -38,32 +38,31 @@ export class ProductService {
     });
   }
 
-  async findOne(id: number) {
-    return this.prisma.product.findFirst({
-      where: { id: BigInt(id) },
+  async findOne(id: string) {
+    return this.prisma.product.findUnique({
+      where: { id },
       include: { category: true },
     });
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto) {
     const { categoryId, ...rest } = updateProductDto;
     return this.prisma.product.update({
-      where: { id: BigInt(id) },
+      where: { id },
       data: {
         ...rest,
-        ...(categoryId ? { categoryId: BigInt(categoryId) } : {}),
+        ...(categoryId ? { categoryId } : {}),
       },
     });
   }
 
-  async remove(id: number) {
-    const bigIntId = BigInt(id);
-    const item = await this.prisma.product.findFirst({
-      where: { id: bigIntId },
+  async remove(id: string) {
+    const item = await this.prisma.product.findUnique({
+      where: { id },
     });
     if (!item) return false;
 
-    await this.prisma.product.delete({ where: { id: bigIntId } });
+    await this.prisma.product.delete({ where: { id } });
     return true;
   }
 }

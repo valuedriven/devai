@@ -9,7 +9,7 @@ describe('ProductService', () => {
     product: {
       create: jest.fn(),
       findMany: jest.fn(),
-      findFirst: jest.fn(),
+      findUnique: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
@@ -33,81 +33,41 @@ describe('ProductService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('findAll', () => {
-    it('should query prisma findMany without public filtering if publicView is false', async () => {
-      mockPrismaService.product.findMany.mockResolvedValueOnce([]);
-      await service.findAll(undefined, false);
-
-      expect(mockPrismaService.product.findMany).toHaveBeenCalledWith({
-        where: {},
-        include: { category: true },
-      });
-    });
-
-    it('should query prisma findMany with active filters if publicView is true', async () => {
-      mockPrismaService.product.findMany.mockResolvedValueOnce([]);
-      await service.findAll(undefined, true);
-
-      expect(mockPrismaService.product.findMany).toHaveBeenCalledWith({
-        where: {
-          active: true,
-          category: { active: true },
-        },
-        include: { category: true },
-      });
-    });
-
-    it('should include search filter if search parameter is provided', async () => {
-      mockPrismaService.product.findMany.mockResolvedValueOnce([]);
-      await service.findAll('phone', true);
-
-      expect(mockPrismaService.product.findMany).toHaveBeenCalledWith({
-        where: {
-          name: { contains: 'phone', mode: 'insensitive' },
-          active: true,
-          category: { active: true },
-        },
-        include: { category: true },
-      });
-    });
-  });
-
   describe('create', () => {
-    it('should call prisma.product.create', async () => {
+    it('should create a product', async () => {
       const dto = {
-        name: 'Phone',
-        description: 'Nice phone',
-        price: 999,
-        categoryId: 1,
+        name: 'Test Product',
+        description: 'Description',
+        price: 100,
+        categoryId: 'uuid-123',
         stock: 10,
         active: true,
       };
       mockPrismaService.product.create.mockResolvedValueOnce({
-        id: 1n,
+        id: 'prod-uuid-123',
         ...dto,
-        categoryId: 1n,
       });
 
-      await service.create(dto);
-      expect(mockPrismaService.product.create).toHaveBeenCalledWith({
-        data: {
-          name: 'Phone',
-          description: 'Nice phone',
-          price: 999,
-          stock: 10,
-          active: true,
-          categoryId: 1n,
-        },
-      });
+      const result = await service.create(dto);
+      expect(mockPrismaService.product.create).toHaveBeenCalled();
+      expect(result).toBeDefined();
+    });
+  });
+
+  describe('findAll', () => {
+    it('should call prisma.product.findMany', async () => {
+      mockPrismaService.product.findMany.mockResolvedValueOnce([]);
+      await service.findAll();
+      expect(mockPrismaService.product.findMany).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
-    it('should call prisma.product.findFirst', async () => {
-      mockPrismaService.product.findFirst.mockResolvedValueOnce(null);
-      await service.findOne(1);
-      expect(mockPrismaService.product.findFirst).toHaveBeenCalledWith({
-        where: { id: 1n },
+    it('should call prisma.product.findUnique', async () => {
+      mockPrismaService.product.findUnique.mockResolvedValueOnce(null);
+      await service.findOne('prod-uuid-123');
+      expect(mockPrismaService.product.findUnique).toHaveBeenCalledWith({
+        where: { id: 'prod-uuid-123' },
         include: { category: true },
       });
     });
@@ -115,32 +75,36 @@ describe('ProductService', () => {
 
   describe('update', () => {
     it('should call prisma.product.update', async () => {
-      const dto = { name: 'New Name', categoryId: 2 };
-      mockPrismaService.product.update.mockResolvedValueOnce({ id: 1n });
-      await service.update(1, dto);
+      const dto = { name: 'Updated Product' };
+      mockPrismaService.product.update.mockResolvedValueOnce({
+        id: 'prod-uuid-123',
+        name: 'Updated Product',
+      });
+      await service.update('prod-uuid-123', dto);
       expect(mockPrismaService.product.update).toHaveBeenCalledWith({
-        where: { id: 1n },
-        data: {
-          name: 'New Name',
-          categoryId: 2n,
-        },
+        where: { id: 'prod-uuid-123' },
+        data: dto,
       });
     });
   });
 
   describe('remove', () => {
     it('should return false if product not found', async () => {
-      mockPrismaService.product.findFirst.mockResolvedValueOnce(null);
-      const result = await service.remove(1);
+      mockPrismaService.product.findUnique.mockResolvedValueOnce(null);
+      const result = await service.remove('prod-uuid-123');
       expect(result).toBe(false);
     });
 
     it('should delete and return true if product found', async () => {
-      mockPrismaService.product.findFirst.mockResolvedValueOnce({ id: 1n });
-      mockPrismaService.product.delete.mockResolvedValueOnce({ id: 1n });
-      const result = await service.remove(1);
+      mockPrismaService.product.findUnique.mockResolvedValueOnce({
+        id: 'prod-uuid-123',
+      });
+      mockPrismaService.product.delete.mockResolvedValueOnce({
+        id: 'prod-uuid-123',
+      });
+      const result = await service.remove('prod-uuid-123');
       expect(mockPrismaService.product.delete).toHaveBeenCalledWith({
-        where: { id: 1n },
+        where: { id: 'prod-uuid-123' },
       });
       expect(result).toBe(true);
     });

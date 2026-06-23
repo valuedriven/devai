@@ -16,7 +16,7 @@ export class OrdersService {
         orderItems: order_items
           ? {
               create: order_items.map((item) => ({
-                productId: BigInt(item.productId),
+                productId: item.productId,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
               })),
@@ -48,8 +48,8 @@ export class OrdersService {
     });
   }
 
-  async findOne(id: bigint) {
-    const order = await this.prisma.order.findFirst({
+  async findOne(id: string) {
+    const order = await this.prisma.order.findUnique({
       where: { id },
       include: {
         orderItems: {
@@ -68,7 +68,7 @@ export class OrdersService {
     return order;
   }
 
-  async updateStatus(id: bigint, status: string) {
+  async updateStatus(id: string, status: string) {
     await this.findOne(id);
 
     return this.prisma.order.update({
@@ -81,7 +81,7 @@ export class OrdersService {
     });
   }
 
-  async update(id: bigint, updateOrderDto: UpdateOrderDto) {
+  async update(id: string, updateOrderDto: UpdateOrderDto) {
     await this.findOne(id);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -91,12 +91,12 @@ export class OrdersService {
       where: { id },
       data: {
         ...orderData,
-        customerId: customerId ? BigInt(customerId) : undefined,
+        customerId: customerId ?? undefined,
       },
     });
   }
 
-  async remove(id: bigint) {
+  async remove(id: string) {
     await this.findOne(id);
 
     return this.prisma.order.delete({

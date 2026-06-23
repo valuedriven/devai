@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './core/auth/auth.module';
 import { HealthModule } from './core/health/health.module';
@@ -30,6 +31,7 @@ import configuration from './core/config/configuration';
     CatalogModule,
     CustomersModule,
     OrdersModule,
+    CategoriesModule,
     DatabaseModule,
     AuthModule,
     HealthModule,

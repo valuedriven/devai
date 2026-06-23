@@ -46,8 +46,7 @@ export class CustomersController {
   @Roles('admin')
   @Get(':id')
   findOne(@Param('id') id: string) {
-    const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
-    return this.customersService.findOne(bigIntId);
+    return this.customersService.findOne(id);
   }
 
   @Roles('admin')
@@ -56,14 +55,12 @@ export class CustomersController {
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
-    return this.customersService.update(bigIntId, updateCustomerDto);
+    return this.customersService.update(id, updateCustomerDto);
   }
 
   @Roles('admin')
   @Delete(':id')
   remove(@Param('id') id: string) {
-    const bigIntId = /^\d+$/.test(id) ? BigInt(id) : BigInt(0);
-    return this.customersService.remove(bigIntId);
+    return this.customersService.remove(id);
   }
 }

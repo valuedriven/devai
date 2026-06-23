@@ -8,6 +8,19 @@ dotenv.config({ path: join(process.cwd(), '.env') });
 dotenv.config({ path: join(process.cwd(), '../../.env') });
 dotenv.config({ path: join(__dirname, '../../../../.env') });
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function normalizeName(name: string): string {
+  return name.toLowerCase().trim();
+}
+
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
@@ -24,6 +37,9 @@ async function main() {
     category = await prisma.category.create({
       data: {
         name: 'Eletrônicos',
+        nameNormalized: normalizeName('Eletrônicos'),
+        slug: slugify('Eletrônicos'),
+        active: true,
       },
     });
   }

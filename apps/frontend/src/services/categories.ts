@@ -4,32 +4,87 @@ import type { Category } from "@/types/models";
 export interface CategoryListParams {
   page?: number;
   limit?: number;
+  search?: string;
+  includeInactive?: boolean;
+}
+
+export interface CategoryListResponse {
+  data: Category[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateCategoryDto {
+  name: string;
+}
+
+export interface UpdateCategoryDto {
+  name?: string;
   active?: boolean;
 }
 
 export const categoriesService = {
-  list(params?: CategoryListParams): Promise<Category[]> {
+  /**
+   * List categories with pagination, search, and filter options.
+   * Requires admin authentication.
+   */
+  list(params?: CategoryListParams, token?: string): Promise<CategoryListResponse> {
     const searchParams = new URLSearchParams();
     if (params?.page) searchParams.set("page", String(params.page));
     if (params?.limit) searchParams.set("limit", String(params.limit));
-    if (params?.active !== undefined) searchParams.set("active", String(params.active));
+    if (params?.search) searchParams.set("search", params.search);
+    if (params?.includeInactive) searchParams.set("includeInactive", "true");
     const qs = searchParams.toString();
-    return api.get<Category[]>(`/categories${qs ? `?${qs}` : ""}`);
+    return api.get<CategoryListResponse>(`/admin/categories${qs ? `?${qs}` : ""}`, { token });
   },
 
-  getById(id: string): Promise<Category> {
-    return api.get<Category>(`/categories/${id}`);
+  /**
+   * Get a single category by ID.
+   * Requires admin authentication.
+   */
+  getById(id: string, token?: string): Promise<Category> {
+    return api.get<Category>(`/admin/categories/${id}`, { token });
   },
 
-  create(data: Partial<Category>): Promise<Category> {
-    return api.post<Category>("/categories", data);
+  /**
+   * Create a new category.
+   * Requires admin authentication.
+   */
+  create(data: CreateCategoryDto, token?: string): Promise<Category> {
+    return api.post<Category>("/admin/categories", data, { token });
   },
 
-  update(id: string, data: Partial<Category>): Promise<Category> {
-    return api.put<Category>(`/categories/${id}`, data);
+  /**
+   * Update an existing category.
+   * Requires admin authentication.
+   */
+  update(id: string, data: UpdateCategoryDto, token?: string): Promise<Category> {
+    return api.patch<Category>(`/admin/categories/${id}`, data, { token });
   },
 
-  delete(id: string): Promise<void> {
-    return api.delete<void>(`/categories/${id}`);
+  /**
+   * Delete (soft delete) a category.
+   * Requires admin authentication.
+   * Returns 204 No Content on success.
+   */
+  delete(id: string, token?: string): Promise<void> {
+    return api.delete<void>(`/admin/categories/${id}`, { token });
+  },
+
+  /**
+   * Public endpoint: List active categories only.
+   * No authentication required.
+   */
+  listPublic(params?: { page?: number; limit?: number; search?: string }): Promise<CategoryListResponse> {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", String(params.page));
+    if (params?.limit) searchParams.set("limit", String(params.limit));
+    if (params?.search) searchParams.set("search", params.search);
+    const qs = searchParams.toString();
+    return api.get<CategoryListResponse>(`/categories${qs ? `?${qs}` : ""}`);
   },
 };

@@ -34,7 +34,7 @@ export class OrdersController {
     } else if (Array.isArray(metadata.role)) {
       roles = metadata.role;
     } else if (typeof metadata.role === 'string') {
-      roles = [metadata.role];
+      roles = metadata.role;
     }
     return roles.includes('admin');
   }
@@ -53,7 +53,7 @@ export class OrdersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @CurrentUser() user: any) {
-    const order = await this.ordersService.findOne(BigInt(id));
+    const order = await this.ordersService.findOne(id);
 
     const isAdmin = this.checkIsAdmin(user);
     const userEmail = user?.emailAddresses?.[0]?.emailAddress;
@@ -68,17 +68,17 @@ export class OrdersController {
   @Patch(':id/status')
   @Roles('admin')
   updateStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.ordersService.updateStatus(BigInt(id), status);
+    return this.ordersService.updateStatus(id, status);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(BigInt(id), updateOrderDto);
+    return this.ordersService.update(id, updateOrderDto);
   }
 
   @Delete(':id')
   @Roles('admin')
   remove(@Param('id') id: string) {
-    return this.ordersService.remove(BigInt(id));
+    return this.ordersService.remove(id);
   }
 }

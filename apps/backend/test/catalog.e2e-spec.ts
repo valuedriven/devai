@@ -137,9 +137,12 @@ describe('Catalog (e2e)', () => {
       const cat = await prisma.category.create({
         data: {
           name: 'Category For Products',
+          nameNormalized: 'category for products',
+          slug: 'category-for-products',
+          active: true,
         },
       });
-      categoryId = cat.id.toString();
+      categoryId = cat.id;
     });
 
     it('should create a product', async () => {
@@ -150,7 +153,7 @@ describe('Catalog (e2e)', () => {
           description: 'A premium phone',
           price: 999.99,
           stock: 50,
-          categoryId: parseInt(categoryId),
+          categoryId: categoryId,
         })
         .expect(201);
 
@@ -200,7 +203,7 @@ describe('Catalog (e2e)', () => {
           name: 'Cheap Phone',
           price: -10,
           stock: 10,
-          categoryId: parseInt(categoryId),
+          categoryId: categoryId,
         })
         .expect(400);
 
@@ -210,7 +213,7 @@ describe('Catalog (e2e)', () => {
           name: 'Cheap Phone',
           price: 100,
           stock: -5,
-          categoryId: parseInt(categoryId),
+          categoryId: categoryId,
         })
         .expect(400);
     });

@@ -9,25 +9,28 @@ datasource db {
 }
 
 model Category {
-  id        BigInt    @id @default(autoincrement())
-  name      String
-  active    Boolean   @default(true)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
-  products  Product[]
+  id            String    @id @default(uuid())
+  name          String    @db.VarChar(100)
+  nameNormalized String   @unique @map("name_normalized")
+  slug          String    @unique
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  products      Product[]
 
+  @@index([active])
   @@map("categories")
 }
 
 model Product {
-  id          BigInt        @id @default(autoincrement())
+  id          String        @id @default(uuid())
   name        String
   description String?
   price       Decimal       @db.Decimal(10, 2)
   imageUrl    String?       @map("image_url")
   stock       Int           @default(0)
   active      Boolean       @default(true)
-  categoryId  BigInt?       @map("category_id")
+  categoryId  String?       @map("category_id")
   createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
   orderItems  OrderItem[]
@@ -38,27 +41,27 @@ model Product {
 }
 
 model Customer {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   email     String   @unique
   phone     String?
   address   String?
   active    Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   orders    Order[]
 
   @@map("customers")
 }
 
 model OrderItem {
-  id        BigInt   @id @default(autoincrement())
-  orderId   BigInt   @map("order_id")
-  productId BigInt   @map("product_id")
+  id        String   @id @default(uuid())
+  orderId   String   @map("order_id")
+  productId String   @map("product_id")
   quantity  Int
   unitPrice Decimal  @map("unit_price") @db.Decimal(10, 2)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   product   Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
@@ -68,14 +71,14 @@ model OrderItem {
 }
 
 model Order {
-  id              BigInt        @id @default(autoincrement())
+  id              String        @id @default(uuid())
   number          String        @unique
-  customerId      BigInt?       @map("customer_id")
+  customerId      String?       @map("customer_id")
   totalAmount     Decimal       @default(0) @map("total_amount") @db.Decimal(10, 2)
   shippingAddress String?       @map("shipping_address")
   status          String        @default("Novo")
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
   orderItems      OrderItem[]
   customer        Customer?     @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   payments        Payment[]
@@ -85,15 +88,15 @@ model Order {
 }
 
 model Payment {
-  id        BigInt    @id @default(autoincrement())
-  orderId   BigInt    @map("order_id")
+  id        String    @id @default(uuid())
+  orderId   String    @map("order_id")
   value     Decimal   @db.Decimal(10, 2)
   method    String
   date      DateTime  @db.Timestamptz(6)
   status    String    @default("Pendente")
   notes     String?
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   order     Order     @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([orderId])

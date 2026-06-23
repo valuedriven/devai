@@ -3,7 +3,11 @@ export type OrderStatus = 'Novo' | 'Pago' | 'Preparação' | 'Faturado' | 'Despa
 export interface Category {
   id: string;
   name: string;
+  slug?: string;
+  nameNormalized?: string;
   active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Product {

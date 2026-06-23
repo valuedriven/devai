@@ -44,8 +44,8 @@ export class CustomersService {
     });
   }
 
-  async findOne(id: bigint) {
-    const customer = await this.prisma.customer.findFirst({
+  async findOne(id: string) {
+    const customer = await this.prisma.customer.findUnique({
       where: { id },
     });
 
@@ -56,7 +56,7 @@ export class CustomersService {
     return customer;
   }
 
-  async update(id: bigint, updateCustomerDto: UpdateCustomerDto) {
+  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
     await this.findOne(id);
 
     return this.prisma.customer.update({
@@ -65,7 +65,7 @@ export class CustomersService {
     });
   }
 
-  async remove(id: bigint) {
+  async remove(id: string) {
     await this.findOne(id);
 
     return this.prisma.customer.delete({

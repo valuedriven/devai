@@ -72,7 +72,7 @@ export class ProductController {
   @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const product = await this.productService.findOne(+id);
+    const product = await this.productService.findOne(id);
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
@@ -82,12 +82,12 @@ export class ProductController {
   @Patch(':id')
   @Roles('admin')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+    return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')
   @Roles('admin')
   remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+    return this.productService.remove(id);
   }
 }

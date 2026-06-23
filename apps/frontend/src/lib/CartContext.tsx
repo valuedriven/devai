@@ -18,36 +18,33 @@ interface CartContextType {
     clearCart: () => void;
     itemCount: number;
     totalAmount: number;
-    isInitialized: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = 'devai_cart_items';
 
+function getInitialItems(): CartItem[] {
+    if (typeof window === 'undefined') {
+        return [];
+    }
+    try {
+        const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+        if (savedCart) {
+            return JSON.parse(savedCart);
+        }
+    } catch (e) {
+        console.error('Failed to parse cart from localStorage:', e);
+    }
+    return [];
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
-    const [items, setItems] = useState<CartItem[]>([]);
-    const [isInitialized, setIsInitialized] = useState(false);
+    const [items, setItems] = useState<CartItem[]>(getInitialItems);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-            if (savedCart) {
-                try {
-                    setItems(JSON.parse(savedCart));
-                } catch (e) {
-                    console.error('Failed to parse cart from localStorage:', e);
-                }
-            }
-            setIsInitialized(true);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (isInitialized && typeof window !== 'undefined') {
-            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-        }
-    }, [items, isInitialized]);
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    }, [items]);
 
     const addItem = (newItem: CartItem) => {
         setItems((prevItems) => {
@@ -94,7 +91,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 clearCart,
                 itemCount,
                 totalAmount,
-                isInitialized,
             }}
         >
             {children}
