@@ -3,9 +3,11 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { ClerkService } from '../auth/clerk.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -24,24 +26,16 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     if (!user) {
-      return false;
+      throw new UnauthorizedException('Authentication required');
     }
 
-    // Normalizing roles from publicMetadata
-    let userRoles: string[] = [];
-    const metadata = user.publicMetadata || {};
+    const userRoles = ClerkService.extractRoles(user.publicMetadata);
 
-    if (Array.isArray(metadata.roles)) {
-      userRoles = metadata.roles;
-    } else if (typeof metadata.roles === 'string') {
-      userRoles = [metadata.roles];
-    } else if (Array.isArray(metadata.role)) {
-      userRoles = metadata.role;
-    } else if (typeof metadata.role === 'string') {
-      userRoles = [metadata.role];
-    }
-
-    const hasRole = requiredRoles.some((role) => userRoles.includes(role));
+    const normalizedRequired = requiredRoles.map((r) => r.toLowerCase());
+    const normalizedUser = userRoles.map((r) => r.toLowerCase());
+    const hasRole = normalizedRequired.some((role) =>
+      normalizedUser.includes(role),
+    );
 
     if (!hasRole) {
       throw new ForbiddenException('User does not have the required roles');

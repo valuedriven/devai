@@ -1,46 +1,54 @@
 import * as dotenv from 'dotenv';
 import { join } from 'path';
 
-// In Vercel/Production, environment variables are injected directly into process.env.
-// dotenv is mainly for local development.
 dotenv.config();
-// Second attempt with hardcoded path for local dev flexibility
-try {
-  dotenv.config({ path: join(process.cwd(), '.env') });
-  dotenv.config({ path: join(process.cwd(), '../../.env') });
-} catch {
-  // Ignore errors as env might already be set in Vercel
-}
+dotenv.config({ path: join(process.cwd(), '.env') });
+dotenv.config({ path: join(process.cwd(), '../../.env') });
 
+import { Logger } from 'nestjs-pino';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './core/filters/http-exception.filter';
+import { initializeOpenTelemetry } from './core/observability/opentelemetry';
+
+initializeOpenTelemetry();
 
 async function bootstrap() {
   (BigInt.prototype as any).toJSON = function (this: bigint) {
     return this.toString();
   };
 
-  console.log('--- Environment Check ---');
-  console.log('CLERK_SECRET_KEY present:', !!process.env.CLERK_SECRET_KEY);
-  console.log(
-    'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY present:',
-    !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-  );
-  console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
-  console.log('DIRECT_URL present:', !!process.env.DIRECT_URL);
-  console.log('JWT_SECRET present:', !!process.env.JWT_SECRET);
-  console.log('-------------------------');
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+    bufferLogs: true,
+  });
+  const logger = app.get(Logger);
+  const configService = app.get(ConfigService);
 
-  const app = await NestFactory.create(AppModule, { rawBody: true });
-  app.enableCors();
+  app.useLogger(logger);
+
+  const corsOrigins = configService.get<string[]>('cors.origins') ?? [
+    'http://localhost:3000',
+  ];
+  app.enableCors({
+    origin: corsOrigins,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    credentials: true,
+  });
+
   app.setGlobalPrefix('api/v1');
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
     }),
   );
-  await app.listen(process.env.BACKEND_PORT ?? 3001);
+
+  const port = configService.get<number>('port', 3001);
+  await app.listen(port);
+  logger.log(`Application is running on port ${port}`);
 }
 void bootstrap();

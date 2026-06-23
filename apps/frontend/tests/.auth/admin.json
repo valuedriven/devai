@@ -1,0 +1,15 @@
+{
+  "cookies": [
+    {
+      "name": "devai_auth_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBU0g3WjMwemdaQ0xPTmpLb1ZEN2FDY3FtRyIsImVtYWlsIjoianVuaWxzb25AaG90bWFpbC5jb20iLCJpYXQiOjE3ODIyNDYzMjEsImV4cCI6MTc4MjMzMjcyMX0.7iSvEYWGyoaOcO2lJ0q_N2t8RkY8lZqHV5vaseDP_SI",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1782332721.570369,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

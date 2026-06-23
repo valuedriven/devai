@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
   IsNumber,
   IsOptional,
   IsString,
@@ -34,14 +33,6 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   status?: string;
-
-  @IsDateString()
-  @IsOptional()
-  payment_date?: Date;
-
-  @IsString()
-  @IsOptional()
-  payment_method?: string;
 
   @IsArray()
   @ValidateNested({ each: true })

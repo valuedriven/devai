@@ -294,22 +294,16 @@ Toda alteração em banco de dados deve gerar migration Prisma versionada.
 
 #### Cobertura Mínima
 
-##### Backend
+| Camada   | Linhas | Branches |
+| -------- | ------ | -------- |
+| Backend  | 80%    | 80%      |
+| Frontend | 70%    | 70%      |
 
-* Linhas: 80%
-* Branches: 80%
-
-##### Frontend
-
-* Linhas: 70%
-* Branches: 70%
-
-####  Diretrizes
+#### Diretrizes
 
 * Toda alteração de regra de negócio deve incluir testes automatizados.
 * Testes unitários devem validar regras de negócio de forma isolada.
-* Testes de integração devem validar endpoints, persistência e integração entre componentes.
-
+* Testes de integração devem validar APIs, persistência e integração entre componentes.
 * Testes E2E devem cobrir os fluxos críticos da aplicação.
 * Os testes devem contemplar:
 
@@ -317,15 +311,16 @@ Toda alteração em banco de dados deve gerar migration Prisma versionada.
   * Failure Path
   * Casos limite relevantes
 
-#### Critérios de Qualidade
+#### Critérios de Conclusão
 
-Nenhuma alteração pode ser considerada concluída se:
+Uma alteração somente pode ser considerada concluída quando:
 
-* Existirem erros de lint.
-* Existirem testes falhando.
-* A cobertura mínima não for atingida.
+* Não existirem erros de lint.
+* Todos os testes estiverem aprovados.
+* A cobertura mínima exigida for atingida.
+* Não existirem falhas críticas identificadas nos testes E2E aplicáveis.
 
-### Pipeline Obrigatório
+#### Pipeline Obrigatório
 
 Toda alteração deve executar com sucesso:
 
@@ -335,9 +330,14 @@ Toda alteração deve executar com sucesso:
 4. Testes E2E aplicáveis
 5. Verificação de cobertura
 
-### Diretriz para Agentes de IA
+#### Diretrizes para Agentes de IA
 
-Agentes de IA devem criar ou atualizar os testes necessários juntamente com a implementação e considerar a tarefa concluída somente após todas as validações serem aprovadas.
+Agentes de IA devem:
+
+* Criar ou atualizar os testes necessários juntamente com a implementação.
+* Executar todos os testes aplicáveis antes de concluir uma tarefa.
+* Corrigir falhas de lint, testes ou cobertura identificadas durante a execução.
+* Considerar a tarefa concluída somente após a aprovação de todas as validações obrigatórias.
 
 
 ## Segurança

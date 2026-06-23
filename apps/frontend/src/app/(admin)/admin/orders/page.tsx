@@ -5,7 +5,6 @@ import { AdminDataTable, Column } from "@/components/admin/AdminDataTable";
 import { AdminActions } from "@/components/admin/AdminActions";
 import { Order } from "@/lib/types";
 
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
@@ -14,10 +13,6 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
  
-    if (!token) {
-        redirect("/login");
-    }
-
     const search = (await searchParams).search ?? '';
     const orders = await getOrders(undefined, search, token);
     const statusToneMap: Record<string, "neutral" | "success" | "info" | "error" | "warning"> = {

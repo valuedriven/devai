@@ -5,17 +5,12 @@ import { buttonVariants } from "@/components/ui/Button";
 import { getCustomer } from "@/lib/data";
 import { notFound } from "next/navigation";
 
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export default async function EditCustomerPage({ params }: { params: Promise<{ id: string }> }) {
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
  
-    if (!token) {
-        redirect("/login");
-    }
-
     const { id } = await params;
     const customer = await getCustomer(id, token);
 

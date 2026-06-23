@@ -13,9 +13,7 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const tenantId = '00000000-0000-0000-0000-000000000000';
-
-  console.log(`Starting seed for tenant: ${tenantId}...`);
+  console.log('Starting seed...');
 
   // Ensure we have at least one category
   let category = await prisma.category.findFirst({
@@ -26,13 +24,7 @@ async function main() {
     category = await prisma.category.create({
       data: {
         name: 'Eletrônicos',
-        tenantId,
       },
-    });
-  } else {
-    category = await prisma.category.update({
-      where: { id: category.id },
-      data: { tenantId },
     });
   }
 
@@ -46,7 +38,6 @@ async function main() {
       price: 2500.0,
       stock: 50,
       categoryId: category.id,
-      tenantId,
     },
     {
       name: 'Laptop Pro',
@@ -55,7 +46,6 @@ async function main() {
       price: 5000.0,
       stock: 20,
       categoryId: category.id,
-      tenantId,
     },
     {
       name: 'Fone de Ouvido Bluetooth',
@@ -64,7 +54,6 @@ async function main() {
       price: 450.0,
       stock: 100,
       categoryId: category.id,
-      tenantId,
     },
     {
       name: 'Smartwatch Série 5',
@@ -73,7 +62,6 @@ async function main() {
       price: 1200.0,
       stock: 35,
       categoryId: category.id,
-      tenantId,
     },
     {
       name: 'Câmera Mirrorless',
@@ -81,7 +69,6 @@ async function main() {
       price: 4300.0,
       stock: 15,
       categoryId: category.id,
-      tenantId,
     },
     {
       name: 'Tablet Ultra',
@@ -89,14 +76,12 @@ async function main() {
       price: 3200.0,
       stock: 40,
       categoryId: category.id,
-      tenantId,
     },
   ];
 
   for (const p of products) {
-    // Find or create product to avoid duplicates and identity errors
     const existing = await prisma.product.findFirst({
-      where: { name: p.name, tenantId },
+      where: { name: p.name },
     });
 
     if (!existing) {

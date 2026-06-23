@@ -4,5 +4,4 @@ export class Category {
   active: boolean;
   createdAt: Date;
   updatedAt: Date;
-  tenantId: string;
 }

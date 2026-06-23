@@ -36,25 +36,20 @@ describe('ProductService', () => {
   describe('findAll', () => {
     it('should query prisma findMany without public filtering if publicView is false', async () => {
       mockPrismaService.product.findMany.mockResolvedValueOnce([]);
-      const tenantId = 'test-tenant';
-      await service.findAll(tenantId, undefined, false);
+      await service.findAll(undefined, false);
 
       expect(mockPrismaService.product.findMany).toHaveBeenCalledWith({
-        where: {
-          tenantId,
-        },
+        where: {},
         include: { category: true },
       });
     });
 
     it('should query prisma findMany with active filters if publicView is true', async () => {
       mockPrismaService.product.findMany.mockResolvedValueOnce([]);
-      const tenantId = 'test-tenant';
-      await service.findAll(tenantId, undefined, true);
+      await service.findAll(undefined, true);
 
       expect(mockPrismaService.product.findMany).toHaveBeenCalledWith({
         where: {
-          tenantId,
           active: true,
           category: { active: true },
         },
@@ -64,12 +59,10 @@ describe('ProductService', () => {
 
     it('should include search filter if search parameter is provided', async () => {
       mockPrismaService.product.findMany.mockResolvedValueOnce([]);
-      const tenantId = 'test-tenant';
-      await service.findAll(tenantId, 'phone', true);
+      await service.findAll('phone', true);
 
       expect(mockPrismaService.product.findMany).toHaveBeenCalledWith({
         where: {
-          tenantId,
           name: { contains: 'phone', mode: 'insensitive' },
           active: true,
           category: { active: true },
@@ -89,15 +82,13 @@ describe('ProductService', () => {
         stock: 10,
         active: true,
       };
-      const tenantId = 'tenant-1';
       mockPrismaService.product.create.mockResolvedValueOnce({
         id: 1n,
         ...dto,
         categoryId: 1n,
-        tenantId,
       });
 
-      await service.create(dto, tenantId);
+      await service.create(dto);
       expect(mockPrismaService.product.create).toHaveBeenCalledWith({
         data: {
           name: 'Phone',
@@ -106,7 +97,6 @@ describe('ProductService', () => {
           stock: 10,
           active: true,
           categoryId: 1n,
-          tenantId,
         },
       });
     });
@@ -114,11 +104,10 @@ describe('ProductService', () => {
 
   describe('findOne', () => {
     it('should call prisma.product.findFirst', async () => {
-      const tenantId = 'tenant-1';
       mockPrismaService.product.findFirst.mockResolvedValueOnce(null);
-      await service.findOne(1, tenantId);
+      await service.findOne(1);
       expect(mockPrismaService.product.findFirst).toHaveBeenCalledWith({
-        where: { id: 1n, tenantId },
+        where: { id: 1n },
         include: { category: true },
       });
     });
@@ -128,7 +117,7 @@ describe('ProductService', () => {
     it('should call prisma.product.update', async () => {
       const dto = { name: 'New Name', categoryId: 2 };
       mockPrismaService.product.update.mockResolvedValueOnce({ id: 1n });
-      await service.update(1, dto, 'tenant-1');
+      await service.update(1, dto);
       expect(mockPrismaService.product.update).toHaveBeenCalledWith({
         where: { id: 1n },
         data: {
@@ -142,14 +131,14 @@ describe('ProductService', () => {
   describe('remove', () => {
     it('should return false if product not found', async () => {
       mockPrismaService.product.findFirst.mockResolvedValueOnce(null);
-      const result = await service.remove(1, 'tenant-1');
+      const result = await service.remove(1);
       expect(result).toBe(false);
     });
 
     it('should delete and return true if product found', async () => {
       mockPrismaService.product.findFirst.mockResolvedValueOnce({ id: 1n });
       mockPrismaService.product.delete.mockResolvedValueOnce({ id: 1n });
-      const result = await service.remove(1, 'tenant-1');
+      const result = await service.remove(1);
       expect(mockPrismaService.product.delete).toHaveBeenCalledWith({
         where: { id: 1n },
       });

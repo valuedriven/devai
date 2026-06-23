@@ -1,10 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
+  private readonly logger = new Logger(PrismaService.name);
+
   constructor() {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
@@ -20,24 +22,24 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async onModuleInit() {
-    console.log('Connecting to database with driver adapter...');
+    this.logger.log('Connecting to database with driver adapter...');
     try {
       await this.$connect();
-      console.log('Database connection established successfully.');
+      this.logger.log('Database connection established successfully.');
     } catch (error) {
       const err = error as Error;
-      console.error('Failed to connect to the database:', err.message);
+      this.logger.error('Failed to connect to the database:', err.message);
       if (err.message.toLowerCase().includes('tenant or user not found')) {
-        console.error(
+        this.logger.error(
           'CRITICAL: Supabase/Neon Pooler error "Tenant or user not found".',
         );
-        console.error(
+        this.logger.error(
           'HINT 1: Ensure your DATABASE_URL username follows the format "postgres.[project-ref]".',
         );
-        console.error(
+        this.logger.error(
           'HINT 2: If using the pooler (port 6543), verify the project reference in the Supabase Dashboard.',
         );
-        console.error(
+        this.logger.error(
           'HINT 3: Check if DATABASE_URL is correctly set in Vercel Environment Variables.',
         );
       }

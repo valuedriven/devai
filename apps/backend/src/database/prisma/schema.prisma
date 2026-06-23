@@ -12,7 +12,6 @@ model Category {
   id        BigInt    @id @default(autoincrement())
   name      String
   active    Boolean   @default(true)
-  tenantId  String?   @map("tenant_id") @db.Uuid
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
   products  Product[]
@@ -29,62 +28,74 @@ model Product {
   stock       Int           @default(0)
   active      Boolean       @default(true)
   categoryId  BigInt?       @map("category_id")
-  tenantId    String?       @map("tenant_id") @db.Uuid
   createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
-  order_items order_items[]
+  orderItems  OrderItem[]
   category    Category?     @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([categoryId])
   @@map("products")
 }
 
-model customers {
-  id         BigInt   @id @default(autoincrement())
-  name       String
-  email      String   @unique
-  phone      String?
-  address    String?
-  active     Boolean  @default(true)
-  tenantId   String?  @map("tenant_id") @db.Uuid
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
-  orders     orders[]
+model Customer {
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  orders    Order[]
 
   @@map("customers")
 }
 
-model order_items {
-  id         BigInt   @id @default(autoincrement())
-  orderId    BigInt   @map("order_id")
-  productId  BigInt   @map("product_id")
-  quantity   Int
-  unitPrice  Decimal  @map("unit_price") @db.Decimal(10, 2)
-  tenantId   String?  @map("tenant_id") @db.Uuid
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
-  orders     orders   @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  products   Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model OrderItem {
+  id        BigInt   @id @default(autoincrement())
+  orderId   BigInt   @map("order_id")
+  productId BigInt   @map("product_id")
+  quantity  Int
+  unitPrice Decimal  @map("unit_price") @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([orderId])
   @@index([productId])
   @@map("order_items")
 }
 
-model orders {
-  id               BigInt        @id @default(autoincrement())
-  customerId       BigInt?       @map("customer_id")
-  totalAmount      Decimal       @default(0) @map("total_amount") @db.Decimal(10, 2)
-  shippingAddress  String?       @map("shipping_address")
-  status           String        @default("Novo")
-  payment_date     DateTime?     @db.Timestamptz(6)
-  payment_method   String?
-  tenantId         String?       @map("tenant_id") @db.Uuid
-  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
-  order_items      order_items[]
-  customers        customers?    @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Order {
+  id              BigInt        @id @default(autoincrement())
+  number          String        @unique
+  customerId      BigInt?       @map("customer_id")
+  totalAmount     Decimal       @default(0) @map("total_amount") @db.Decimal(10, 2)
+  shippingAddress String?       @map("shipping_address")
+  status          String        @default("Novo")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+  orderItems      OrderItem[]
+  customer        Customer?     @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payments        Payment[]
 
   @@index([customerId])
   @@map("orders")
+}
+
+model Payment {
+  id        BigInt    @id @default(autoincrement())
+  orderId   BigInt    @map("order_id")
+  value     Decimal   @db.Decimal(10, 2)
+  method    String
+  date      DateTime  @db.Timestamptz(6)
+  status    String    @default("Pendente")
+  notes     String?
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([orderId])
+  @@map("payments")
 }

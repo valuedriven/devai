@@ -310,7 +310,7 @@ Personalize o arquivo config.yaml com base nas informações do projeto disponí
 
 ### Definição de roadmap de mudanças
 
-- Inicie uma nova sessão do agente.
+- Inicie uma nova sessão do agente  . 
 - Na janela do chat, digite o caracter "/" e selecione a skill "opsx-explore".
 - Informe o conteúdo a seguir logo depois da skill (lembre-se de informar o nome do projeto stitch corretamente)
 
@@ -339,7 +339,6 @@ Para cada mudança proposta, informe:
 - Testes E2E necessários
 
 Nenhuma mudança pode ser considerada concluída sem os testes correspondentes.
-
 ```
 
 - Verifique se o agente identificou corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.

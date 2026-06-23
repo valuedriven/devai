@@ -37,18 +37,6 @@ export class ClerkService {
     }
   }
 
-  async verifyClerkToken(token: string): Promise<any> {
-    try {
-      const decoded = await this.clerkClient.verifyToken(token, {
-        jwtKey: process.env.CLERK_JWT_KEY,
-      });
-      return decoded;
-    } catch (error) {
-      this.logger.error('Clerk token verification failed', error);
-      throw error;
-    }
-  }
-
   async signInternalToken(payload: any): Promise<string> {
     const secret = process.env.JWT_SECRET;
     if (!secret) {
@@ -57,26 +45,11 @@ export class ClerkService {
     return jwt.sign(payload, secret, { expiresIn: '24h' });
   }
 
-  async getUserFromToken(token: string): Promise<any> {
-    const decoded = await this.verifyToken(token);
-    return this.getUser(decoded.sub);
-  }
-
   async getUser(userId: string): Promise<any> {
     return this.clerkClient.users.getUser(userId);
   }
 
-  async syncUser(userId: string, tenantId: string) {
-    try {
-      const user = await this.getUser(userId);
-      return this.syncUserWithData(user, tenantId);
-    } catch (error) {
-      this.logger.error(`Failed to sync user ${userId}`, error);
-      throw error;
-    }
-  }
-
-  async syncUserWithData(user: any, tenantId: string) {
+  async syncUserWithData(user: any) {
     try {
       const email = user.emailAddresses[0]?.emailAddress;
       const name =
@@ -92,7 +65,7 @@ export class ClerkService {
       }
 
       this.logger.log(`Syncing user ${email} from Clerk...`);
-      return await this.customersService.syncCustomer(email, name, tenantId);
+      return await this.customersService.syncCustomer(email, name);
     } catch (error) {
       this.logger.error(`Failed to sync user data for ${user.id}`, error);
       throw error;
@@ -140,7 +113,6 @@ export class ClerkService {
     firstName?: string;
     lastName?: string;
     role?: string;
-    tenantId: string;
   }): Promise<any> {
     try {
       const newUser = await this.clerkClient.users.createUser({
@@ -154,13 +126,33 @@ export class ClerkService {
       });
 
       // Sync with local database
-      await this.syncUserWithData(newUser, data.tenantId);
+      await this.syncUserWithData(newUser);
 
       return newUser;
     } catch (error) {
       this.logger.error(`Failed to create user ${data.email}`, error);
       throw error;
     }
+  }
+
+  static extractRoles(
+    publicMetadata: Record<string, unknown> | undefined,
+  ): string[] {
+    let roles: string[] = [];
+
+    if (!publicMetadata) return ['CUSTOMER'];
+
+    if (Array.isArray(publicMetadata.roles)) {
+      roles = publicMetadata.roles;
+    } else if (typeof publicMetadata.roles === 'string') {
+      roles = [publicMetadata.roles];
+    } else if (Array.isArray(publicMetadata.role)) {
+      roles = publicMetadata.role;
+    } else if (typeof publicMetadata.role === 'string') {
+      roles = [publicMetadata.role];
+    }
+
+    return roles.length === 0 ? ['CUSTOMER'] : roles;
   }
 
   async createSignInToken(userId: string): Promise<string> {
@@ -173,6 +165,17 @@ export class ClerkService {
     } catch (error) {
       this.logger.error(`Failed to create sign in token for ${userId}`, error);
       throw error;
+    }
+  }
+
+  async revokeSession(userId: string): Promise<void> {
+    try {
+      const sessions = await this.clerkClient.users.getSessions(userId);
+      for (const session of sessions) {
+        await this.clerkClient.sessions.revokeSession(session.id);
+      }
+    } catch (error) {
+      this.logger.error(`Failed to revoke sessions for ${userId}`, error);
     }
   }
 }

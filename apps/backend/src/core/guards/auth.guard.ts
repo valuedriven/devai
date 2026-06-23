@@ -3,14 +3,31 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { ClerkService } from '../auth/clerk.service';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly clerkService: ClerkService) {}
+  private readonly logger = new Logger(AuthGuard.name);
+
+  constructor(
+    private readonly clerkService: ClerkService,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers['authorization'];
 
@@ -33,21 +50,14 @@ export class AuthGuard implements CanActivate {
       );
     }
 
-    // After token is verified, any further errors (DB connection, etc) should be 500, not 401.
     const userId = decodedToken.sub;
-    const tenantId = request.tenantId || '00000000-0000-0000-0000-000000000000';
-
-    // Attach the full user info to request (from Clerk API)
     const clerkUser = await this.clerkService.getUser(userId);
     request.user = clerkUser;
-
-    // Sync user with local database
-    await this.clerkService.syncUserWithData(clerkUser, tenantId);
 
     return true;
   }
 
   private loggingVerificationError(token: string, error: any) {
-    console.error('AuthGuard verification error:', error);
+    this.logger.error('AuthGuard verification error:', error);
   }
 }

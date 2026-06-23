@@ -7,51 +7,46 @@ import { PrismaService } from '../../../database/prisma.service';
 export class CustomersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createCustomerDto: CreateCustomerDto, tenantId: string) {
-    return this.prisma.customers.create({
-      data: {
-        ...createCustomerDto,
-        tenantId,
-      },
+  async create(createCustomerDto: CreateCustomerDto) {
+    return this.prisma.customer.create({
+      data: createCustomerDto,
     });
   }
 
-  async syncCustomer(email: string, name: string, tenantId: string) {
-    const existingCustomer = await this.prisma.customers.findFirst({
-      where: { email, tenantId },
+  async syncCustomer(email: string, name: string) {
+    const existingCustomer = await this.prisma.customer.findFirst({
+      where: { email },
     });
 
     if (existingCustomer) {
       return existingCustomer;
     }
 
-    return this.prisma.customers.create({
+    return this.prisma.customer.create({
       data: {
         email,
         name,
-        tenantId,
         active: true,
       },
     });
   }
 
-  async findAll(tenantId: string) {
-    return this.prisma.customers.findMany({
-      where: { tenantId },
+  async findAll() {
+    return this.prisma.customer.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findAllActive(tenantId: string) {
-    return this.prisma.customers.findMany({
-      where: { tenantId, active: true },
+  async findAllActive() {
+    return this.prisma.customer.findMany({
+      where: { active: true },
       orderBy: { name: 'asc' },
     });
   }
 
-  async findOne(id: bigint, tenantId: string) {
-    const customer = await this.prisma.customers.findFirst({
-      where: { id, tenantId },
+  async findOne(id: bigint) {
+    const customer = await this.prisma.customer.findFirst({
+      where: { id },
     });
 
     if (!customer) {
@@ -61,23 +56,19 @@ export class CustomersService {
     return customer;
   }
 
-  async update(
-    id: bigint,
-    updateCustomerDto: UpdateCustomerDto,
-    tenantId: string,
-  ) {
-    await this.findOne(id, tenantId); // verify exists
+  async update(id: bigint, updateCustomerDto: UpdateCustomerDto) {
+    await this.findOne(id);
 
-    return this.prisma.customers.update({
+    return this.prisma.customer.update({
       where: { id },
       data: updateCustomerDto,
     });
   }
 
-  async remove(id: bigint, tenantId: string) {
-    await this.findOne(id, tenantId); // verify exists
+  async remove(id: bigint) {
+    await this.findOne(id);
 
-    return this.prisma.customers.delete({
+    return this.prisma.customer.delete({
       where: { id },
     });
   }

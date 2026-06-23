@@ -3,7 +3,6 @@ import { getOrders } from "@/lib/data";
 import { Badge } from "@/components/ui/Badge";
 import { DollarSign, ShoppingBag, Clock } from "lucide-react";
 
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
@@ -11,10 +10,6 @@ export const dynamic = 'force-dynamic';
 export default async function AdminDashboard() {
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
-
-    if (!token) {
-        redirect("/login");
-    }
 
     const orders = await getOrders(undefined, undefined, token);
     const totalSales = orders

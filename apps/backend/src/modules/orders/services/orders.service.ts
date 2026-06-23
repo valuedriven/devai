@@ -7,62 +7,57 @@ import { PrismaService } from '../../../database/prisma.service';
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createOrderDto: CreateOrderDto, tenantId: string) {
-    const { order_items, customerId, ...orderData } = createOrderDto;
+  async create(createOrderDto: CreateOrderDto) {
+    const { order_items, ...orderData } = createOrderDto;
 
-    return this.prisma.orders.create({
+    return this.prisma.order.create({
       data: {
         ...orderData,
-        customerId: customerId ? BigInt(customerId) : null,
-        tenantId,
-        order_items: order_items
+        orderItems: order_items
           ? {
               create: order_items.map((item) => ({
                 productId: BigInt(item.productId),
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
-                tenantId,
               })),
             }
           : undefined,
-      },
+      } as any,
       include: {
-        order_items: true,
-        customers: true,
+        orderItems: true,
+        customer: true,
       },
     });
   }
 
-  async findAll(tenantId: string, customerEmail?: string) {
-    const where: { tenantId: string; customers?: { email: string } } = {
-      tenantId,
-    };
+  async findAll(customerEmail?: string) {
+    const where: { customer?: { email: string } } = {};
     if (customerEmail) {
-      where.customers = {
+      where.customer = {
         email: customerEmail,
       };
     }
 
-    return this.prisma.orders.findMany({
+    return this.prisma.order.findMany({
       where,
       include: {
-        customers: true,
-        order_items: true,
+        customer: true,
+        orderItems: true,
       },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: bigint, tenantId: string) {
-    const order = await this.prisma.orders.findFirst({
-      where: { id, tenantId },
+  async findOne(id: bigint) {
+    const order = await this.prisma.order.findFirst({
+      where: { id },
       include: {
-        order_items: {
+        orderItems: {
           include: {
-            products: true,
+            product: true,
           },
         },
-        customers: true,
+        customer: true,
       },
     });
 
@@ -73,26 +68,26 @@ export class OrdersService {
     return order;
   }
 
-  async updateStatus(id: bigint, status: string, tenantId: string) {
-    await this.findOne(id, tenantId); // verify exists
+  async updateStatus(id: bigint, status: string) {
+    await this.findOne(id);
 
-    return this.prisma.orders.update({
+    return this.prisma.order.update({
       where: { id },
       data: { status },
       include: {
-        order_items: true,
-        customers: true,
+        orderItems: true,
+        customer: true,
       },
     });
   }
 
-  async update(id: bigint, updateOrderDto: UpdateOrderDto, tenantId: string) {
-    await this.findOne(id, tenantId); // verify exists
+  async update(id: bigint, updateOrderDto: UpdateOrderDto) {
+    await this.findOne(id);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { order_items: _, customerId, ...orderData } = updateOrderDto;
 
-    return this.prisma.orders.update({
+    return this.prisma.order.update({
       where: { id },
       data: {
         ...orderData,
@@ -101,10 +96,10 @@ export class OrdersService {
     });
   }
 
-  async remove(id: bigint, tenantId: string) {
-    await this.findOne(id, tenantId); // verify exists
+  async remove(id: bigint) {
+    await this.findOne(id);
 
-    return this.prisma.orders.delete({
+    return this.prisma.order.delete({
       where: { id },
     });
   }

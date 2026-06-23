@@ -7,17 +7,14 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
   Req,
   NotFoundException,
 } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
-import { TenantId } from '../../../core/decorators/tenant-id.decorator';
-import { AuthGuard } from '../../../core/guards/auth.guard';
-import { RolesGuard } from '../../../core/guards/roles.guard';
 import { Roles } from '../../../core/decorators/roles.decorator';
+import { Public } from '../../../core/decorators/public.decorator';
 import { ClerkService } from '../../../core/auth/clerk.service';
 
 @Controller('products')
@@ -28,21 +25,14 @@ export class ProductController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  create(
-    @Body() createProductDto: CreateProductDto,
-    @TenantId() tenantId: string,
-  ) {
-    return this.productService.create(createProductDto, tenantId);
+  create(@Body() createProductDto: CreateProductDto) {
+    return this.productService.create(createProductDto);
   }
 
+  @Public()
   @Get()
-  async findAll(
-    @TenantId() tenantId: string,
-    @Query('search') search?: string,
-    @Req() request?: any,
-  ) {
+  async findAll(@Query('search') search?: string, @Req() request?: any) {
     let isAdmin = false;
     const authHeader = request?.headers['authorization'];
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -70,20 +60,19 @@ export class ProductController {
       }
     }
 
-    return this.productService.findAll(tenantId, search, !isAdmin);
+    return this.productService.findAll(search, !isAdmin);
   }
 
+  @Public()
   @Get('active')
-  findAllActive(
-    @TenantId() tenantId: string,
-    @Query('search') search?: string,
-  ) {
-    return this.productService.findAllActive(tenantId, search);
+  findAllActive(@Query('search') search?: string) {
+    return this.productService.findAllActive(search);
   }
 
+  @Public()
   @Get(':id')
-  async findOne(@Param('id') id: string, @TenantId() tenantId: string) {
-    const product = await this.productService.findOne(+id, tenantId);
+  async findOne(@Param('id') id: string) {
+    const product = await this.productService.findOne(+id);
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
@@ -91,20 +80,14 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  update(
-    @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
-    @TenantId() tenantId: string,
-  ) {
-    return this.productService.update(+id, updateProductDto, tenantId);
+  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+    return this.productService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  remove(@Param('id') id: string, @TenantId() tenantId: string) {
-    return this.productService.remove(+id, tenantId);
+  remove(@Param('id') id: string) {
+    return this.productService.remove(+id);
   }
 }

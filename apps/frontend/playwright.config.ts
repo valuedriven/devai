@@ -4,46 +4,38 @@ import * as path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const projectRoot = path.resolve(__dirname, '../..');
-
 export default defineConfig({
-  testDir: '.',
+  testDir: './tests',
+  globalSetup: require.resolve('./tests/server.setup.ts'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
+  timeout: 30_000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
   },
+  webServer: {
+    command: 'cd ../../ && PORT=3000 npm run dev',
+    url: 'http://127.0.0.1:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 300 * 1000,
+  },
   projects: [
     {
       name: 'setup',
-      testMatch: /global\.setup\.ts/,
+      testMatch: /auth\.setup\.ts/,
     },
     {
       name: 'chromium',
-      testIgnore: '**/*.setup.ts',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: path.resolve(__dirname, 'playwright/.clerk/user.json'),
+        storageState: path.resolve(__dirname, 'tests/.auth/admin.json'),
       },
       dependencies: ['setup'],
-    },
-  ],
-  webServer: [
-    {
-      command: 'npm run dev:backend',
-      url: 'http://localhost:3001/api/v1',
-      reuseExistingServer: !process.env.CI,
-      cwd: projectRoot,
-    },
-    {
-      command: 'npm run dev:frontend',
-      url: 'http://localhost:3000',
-      reuseExistingServer: !process.env.CI,
-      cwd: projectRoot,
+      testIgnore: /auth\.setup\.ts/,
     },
   ],
 });

@@ -36,19 +36,14 @@ describe('CategoryService', () => {
   describe('create', () => {
     it('should call prisma.category.create', async () => {
       const dto = { name: 'Electronics', active: true };
-      const tenantId = 'tenant-1';
       mockPrismaService.category.create.mockResolvedValueOnce({
         id: 1n,
         ...dto,
-        tenantId,
       });
 
-      const result = await service.create(dto, tenantId);
+      const result = await service.create(dto);
       expect(mockPrismaService.category.create).toHaveBeenCalledWith({
-        data: {
-          ...dto,
-          tenantId,
-        },
+        data: dto,
       });
       expect(result).toBeDefined();
     });
@@ -56,22 +51,18 @@ describe('CategoryService', () => {
 
   describe('findAll', () => {
     it('should call prisma.category.findMany', async () => {
-      const tenantId = 'tenant-1';
       mockPrismaService.category.findMany.mockResolvedValueOnce([]);
-      await service.findAll(tenantId);
-      expect(mockPrismaService.category.findMany).toHaveBeenCalledWith({
-        where: { tenantId },
-      });
+      await service.findAll();
+      expect(mockPrismaService.category.findMany).toHaveBeenCalledWith();
     });
   });
 
   describe('findOne', () => {
     it('should call prisma.category.findFirst', async () => {
-      const tenantId = 'tenant-1';
       mockPrismaService.category.findFirst.mockResolvedValueOnce(null);
-      await service.findOne(1, tenantId);
+      await service.findOne(1);
       expect(mockPrismaService.category.findFirst).toHaveBeenCalledWith({
-        where: { id: 1n, tenantId },
+        where: { id: 1n },
       });
     });
   });
@@ -83,7 +74,7 @@ describe('CategoryService', () => {
         id: 1n,
         name: 'Books',
       });
-      await service.update(1, dto, 'tenant-1');
+      await service.update(1, dto);
       expect(mockPrismaService.category.update).toHaveBeenCalledWith({
         where: { id: 1n },
         data: dto,
@@ -94,14 +85,14 @@ describe('CategoryService', () => {
   describe('remove', () => {
     it('should return false if category is not found', async () => {
       mockPrismaService.category.findFirst.mockResolvedValueOnce(null);
-      const result = await service.remove(1, 'tenant-1');
+      const result = await service.remove(1);
       expect(result).toBe(false);
     });
 
     it('should delete and return true if category is found', async () => {
       mockPrismaService.category.findFirst.mockResolvedValueOnce({ id: 1n });
       mockPrismaService.category.delete.mockResolvedValueOnce({ id: 1n });
-      const result = await service.remove(1, 'tenant-1');
+      const result = await service.remove(1);
       expect(mockPrismaService.category.delete).toHaveBeenCalledWith({
         where: { id: 1n },
       });

@@ -99,11 +99,7 @@ describe('ProductController (Integration)', () => {
     mockProductService.findAll.mockResolvedValue([]);
     await request(app.getHttpServer()).get('/products').expect(200);
 
-    expect(mockProductService.findAll).toHaveBeenCalledWith(
-      undefined,
-      undefined,
-      true,
-    );
+    expect(mockProductService.findAll).toHaveBeenCalledWith(undefined, true);
   });
 
   it('should get products as admin (publicView = false)', async () => {
@@ -119,11 +115,7 @@ describe('ProductController (Integration)', () => {
       .set('Authorization', 'Bearer token')
       .expect(200);
 
-    expect(mockProductService.findAll).toHaveBeenCalledWith(
-      undefined,
-      undefined,
-      false,
-    );
+    expect(mockProductService.findAll).toHaveBeenCalledWith(undefined, false);
   });
 
   it('should get active products', async () => {

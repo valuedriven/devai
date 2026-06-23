@@ -4,10 +4,12 @@ const API_BASE_URL = isServer
     : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1');
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000000';
 
-/**
- * Wrapper for fetch that handles API base URL, content types, and auth tokens.
- * All logic sensitive to auth should be handled in the backend.
- */
+let onUnauthorized: (() => void) | null = null;
+
+export function setOnUnauthorized(handler: (() => void) | null) {
+  onUnauthorized = handler;
+}
+
 export async function fetchApi<T>(
     path: string,
     options: RequestInit = {},
@@ -32,8 +34,14 @@ export async function fetchApi<T>(
         });
 
         if (!response.ok) {
+            if (response.status === 401 && onUnauthorized) {
+                onUnauthorized();
+            }
             const error = await response.json().catch(() => ({}));
-            throw new Error(error.message || `API request failed: ${response.status}`);
+            const message = error.detail || error.title || error.message || response.statusText;
+            const err = new Error(message);
+            Object.assign(err, { status: response.status });
+            throw err;
         }
 
         const text = await response.text();
@@ -41,8 +49,6 @@ export async function fetchApi<T>(
     } catch (error: unknown) {
         const err = error as { code?: string; message?: string };
         if (err.code === 'ECONNREFUSED' || err.message?.includes('fetch failed')) {
-            // Em ambiente de build, não queremos que isso trave o processo,
-            // mas queremos logs claros.
             console.warn(`[API] Warning: Could not connect to API at ${url}. ${isServer ? 'Build' : 'Client'} environment.`);
         }
         throw error;

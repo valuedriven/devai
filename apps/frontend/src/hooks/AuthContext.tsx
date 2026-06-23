@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { fetchApi } from '@/lib/api'
+import { request, setOnUnauthorized as setServiceOnUnauthorized } from '@/services/api'
 
 interface UserProfile {
   id: string
@@ -30,18 +30,23 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const TOKEN_KEY = 'devai_auth_token'
+const COOKIE_NAME = 'devai_auth_token'
 
 const setAuthCookie = (token: string | null) => {
   if (typeof document !== 'undefined') {
     if (token) {
-      // Set cookie for 1 day
       const maxAge = 24 * 60 * 60;
-      document.cookie = `${TOKEN_KEY}=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `${COOKIE_NAME}=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
     } else {
-      // Clear cookie
-      document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
+      document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
     }
+  }
+}
+
+function clearAuth() {
+  setAuthCookie(null)
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(COOKIE_NAME)
   }
 }
 
@@ -50,28 +55,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const handleUnauthorized = useCallback(() => {
+    clearAuth()
+    setToken(null)
+    setUser(null)
+    setIsLoading(false)
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
+    }
+  }, [])
+
+  useEffect(() => {
+    setServiceOnUnauthorized(handleUnauthorized)
+    return () => {
+      setServiceOnUnauthorized(null)
+    }
+  }, [handleUnauthorized])
+
   const refreshSession = useCallback(async () => {
-    const savedToken = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null
+    const readToken = () => {
+      if (typeof document === 'undefined') return null
+      const match = document.cookie.match(/(?:^|;\s*)devai_auth_token=([^;]*)/)
+      return match ? decodeURIComponent(match[1]) : null
+    }
+
+    const savedToken = readToken()
     
     if (!savedToken) {
       setToken(null)
       setUser(null)
       setIsLoading(false)
-      setAuthCookie(null)
       return
     }
 
     try {
       setToken(savedToken)
-      setAuthCookie(savedToken)
-      const profile = await fetchApi<UserProfile>('/auth/me', {}, savedToken)
+      const profile = await request<UserProfile>('GET', '/auth/me', undefined, { token: savedToken })
       setUser(profile)
-    } catch (error) {
-      console.error('Failed to refresh auth session:', error)
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(TOKEN_KEY)
-      }
-      setAuthCookie(null)
+    } catch {
+      clearAuth()
       setToken(null)
       setUser(null)
     } finally {
@@ -86,14 +108,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     try {
-      const response = await fetchApi<{ token: string; user: unknown }>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
+      const response = await request<{ token: string; user: unknown }>('POST', '/auth/login', { email, password })
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(TOKEN_KEY, response.token)
-      }
       setToken(response.token)
       setAuthCookie(response.token)
       
@@ -112,14 +128,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setIsLoading(true)
     try {
-      const response = await fetchApi<{ token: string; user: unknown }>('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
+      const response = await request<{ token: string; user: unknown }>('POST', '/auth/register', data)
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(TOKEN_KEY, response.token)
-      }
       setToken(response.token)
       setAuthCookie(response.token)
       
@@ -133,13 +143,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true)
     try {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(TOKEN_KEY)
+      const currentToken = token
+      if (currentToken) {
+        await request('POST', '/auth/logout', undefined, { token: currentToken })
       }
-      setAuthCookie(null)
+    } catch {
+      // Continue with local cleanup even if server logout fails
+    } finally {
+      clearAuth()
       setToken(null)
       setUser(null)
-    } finally {
       setIsLoading(false)
     }
   }

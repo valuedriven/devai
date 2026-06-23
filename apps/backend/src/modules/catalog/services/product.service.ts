@@ -7,27 +7,20 @@ import { UpdateProductDto } from '../dto/update-product.dto';
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createProductDto: CreateProductDto, tenantId: string) {
+  async create(createProductDto: CreateProductDto) {
     const { categoryId, active, ...rest } = createProductDto;
     return this.prisma.product.create({
       data: {
         ...rest,
         active: active ?? true,
         categoryId: BigInt(categoryId),
-        tenantId,
       },
     });
   }
 
-  async findAll(tenantId: string, search?: string, publicView = false) {
-    console.log('ProductService.findAll CALLED:', {
-      tenantId,
-      search,
-      publicView,
-    });
+  async findAll(search?: string, publicView = false) {
     return this.prisma.product.findMany({
       where: {
-        tenantId,
         ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
         ...(publicView ? { active: true, category: { active: true } } : {}),
       },
@@ -35,10 +28,9 @@ export class ProductService {
     });
   }
 
-  async findAllActive(tenantId: string, search?: string) {
+  async findAllActive(search?: string) {
     return this.prisma.product.findMany({
       where: {
-        tenantId,
         active: true,
         ...(search ? { name: { contains: search, mode: 'insensitive' } } : {}),
       },
@@ -46,19 +38,14 @@ export class ProductService {
     });
   }
 
-  async findOne(id: number, tenantId: string) {
+  async findOne(id: number) {
     return this.prisma.product.findFirst({
-      where: { id: BigInt(id), tenantId },
+      where: { id: BigInt(id) },
       include: { category: true },
     });
   }
 
-  async update(
-    id: number,
-    updateProductDto: UpdateProductDto,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    tenantId: string,
-  ) {
+  async update(id: number, updateProductDto: UpdateProductDto) {
     const { categoryId, ...rest } = updateProductDto;
     return this.prisma.product.update({
       where: { id: BigInt(id) },
@@ -69,10 +56,10 @@ export class ProductService {
     });
   }
 
-  async remove(id: number, tenantId: string) {
+  async remove(id: number) {
     const bigIntId = BigInt(id);
     const item = await this.prisma.product.findFirst({
-      where: { id: bigIntId, tenantId },
+      where: { id: bigIntId },
     });
     if (!item) return false;
 

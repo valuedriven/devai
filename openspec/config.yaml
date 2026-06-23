@@ -28,11 +28,11 @@ context: |
       - Fluxos de usuário: obrigatoriamente testes Playwright.
       - Todos os testes devem cobrir Happy Path, Sad Path e Edge Cases.
 
-  Testing Guidelines & Commands:
-    - Unit Tests: `npm run test:unit` (runs Jest in workspace). Isolate functions/components, mock external limits.
-    - Integration Tests: `npm run test:integration` (runs Jest+supertest). Validate multiple modules/services together.
-    - E2E Tests: `npx playwright test`. Validate end-to-end user flows.
-    - Frontend Linting: `npm run lint --workspace=frontend`
+    Testing Commands:
+      - Unit Tests: `npm run test:unit` (runs Jest in workspace). Isolate functions/components, mock external limits.
+      - Integration Tests: `npm run test:integration` (runs Jest+supertest). Validate multiple modules/services together.
+      - E2E Tests: `npx playwright test`. Validate end-to-end user flows.
+      - Frontend Linting: `npm run lint --workspace=frontend`
 
 rules:
   proposal:
@@ -48,6 +48,7 @@ rules:
     - Every business logic task must include Jest/Supertest tests.
     - Database modifications require a Prisma migration versioned change.
     - Ensure lint and tests pass before task completion.
+    - Create or modify tests for any new or changed code.
     - Verify that new files/changes satisfy the testing pyramid and 80% coverage requirements (statements, branches, functions, and lines).
 
 

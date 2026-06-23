@@ -8,6 +8,8 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.clerkService.verifyPassword(email, password);
 
+    await this.clerkService.syncUserWithData(user);
+
     // Create a local JWT for the frontend to use
     const token = await this.clerkService.signInternalToken({
       sub: user.id,
@@ -30,7 +32,6 @@ export class AuthService {
     password?: string;
     firstName?: string;
     lastName?: string;
-    tenantId: string;
   }) {
     const user = await this.clerkService.createUser({
       ...data,

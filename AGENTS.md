@@ -295,25 +295,33 @@ Examples:
 
 # 6. Quality Standards
 
-## Testing
+## Quality Gate
 
-Business logic changes must include tests covering:
+Nunca considere uma tarefa concluída sem:
 
-- Happy path
-- Failure path
-- Relevant edge cases
+* Atualizar ou criar os testes automatizados necessários.
+* Executar lint, testes e cobertura.
+* Corrigir todas as falhas encontradas.
 
----
+Bloqueie a conclusão da tarefa se houver:
 
-## Linting
+* Erros de lint.
+* Testes falhando.
+* Cobertura abaixo do mínimo exigido.
 
-Lint must pass before considering work complete.
+### Diretrizes de Teste
 
----
+* Testes unitários devem ser utilizados apenas no backend para validar regras de negócio, serviços, casos de uso e componentes de forma isolada.
+* Testes de integração devem ser utilizados apenas na API REST do backend para validar endpoints, persistência de dados, autenticação, autorização e integração entre componentes.
+* Testes E2E devem validar os fluxos críticos da aplicação do ponto de vista do usuário, cobrindo a integração entre frontend, backend e demais serviços necessários.
 
-## Build Validation
+Os testes devem contemplar, quando aplicável:
 
-Modified applications must build successfully.
+* Happy Path
+* Failure Path
+* Casos limite relevantes
+
+Toda alteração de regra de negócio deve possuir testes automatizados compatíveis com a camada afetada.
 
 ---
 

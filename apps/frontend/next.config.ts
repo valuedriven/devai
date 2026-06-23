@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 import path from "path";
-import * as dotenv from 'dotenv';
 
-dotenv.config({ path: path.join(__dirname, "../../.env") });
+process.loadEnvFile(path.join(__dirname, "../../.env"));
 
 const nextConfig: NextConfig = {
   /* config options here */

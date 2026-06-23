@@ -9,5 +9,4 @@ export class Product {
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
-  tenantId: string;
 }

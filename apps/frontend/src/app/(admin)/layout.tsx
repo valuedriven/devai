@@ -20,7 +20,7 @@ export default async function AdminLayout({
     const userProfile = await getMe(token);
 
     if (!userProfile?.roles?.includes("admin")) {
-        redirect("/");
+        redirect("/403");
     }
 
 
