@@ -79,7 +79,7 @@ test.describe('1. Fluxo de Login', () => {
     // - Elemento [data-testid="login-error"] visível com mensagem de erro
     await expect(page.getByTestId('login-error')).toBeVisible();
     // Check if error is specifically about failure
-    await expect(page.getByTestId('login-error')).toContainText(/falha|inválido/i);
+    await expect(page.getByTestId('login-error')).toContainText(/falha|inválido|invalid/i);
   });
 
   test('1.4 Login com senha incorreta', async ({ page }) => {

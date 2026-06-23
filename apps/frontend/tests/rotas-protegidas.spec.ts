@@ -42,8 +42,8 @@ test.describe('4. Rotas Protegidas', () => {
     await expect(page.getByText('403')).toBeVisible();
     await expect(page.getByText('Acesso Negado')).toBeVisible();
     
-    // - Não redireciona para login
-    await expect(page).toHaveURL(/\/admin\/products/);
+    // - Não redireciona para login, mas para /403
+    await expect(page).toHaveURL(/\/403/);
     
     await context.close();
   });

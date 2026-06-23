@@ -31,10 +31,11 @@ export async function fetchApi<T>(
         const response = await fetch(url, {
             ...options,
             headers,
+            credentials: isServer ? undefined : 'include',
         });
 
         if (!response.ok) {
-            if (response.status === 401 && onUnauthorized) {
+            if (response.status === 401 && onUnauthorized && !path.includes('/auth/login') && !path.includes('/auth/register')) {
                 onUnauthorized();
             }
             const error = await response.json().catch(() => ({}));

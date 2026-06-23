@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useInternalAuth } from '@/hooks/AuthContext'
 import './LoginForm.css'
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectUrl = searchParams.get('redirect') || '/'
   const { login } = useInternalAuth()
   
   const [email, setEmail] = useState('')
@@ -22,8 +24,9 @@ export function LoginForm() {
 
     try {
       await login(email, password)
-      router.push('/')
-      router.refresh()
+      // Aguarda um curto período para garantir que os cookies sejam persistidos no navegador
+      await new Promise(resolve => setTimeout(resolve, 300))
+      window.location.href = redirectUrl
     } catch (err: unknown) {
       console.error('Login failed:', err)
       const message = err instanceof Error ? err.message : 'Falha ao realizar login. Verifique suas credenciais.';

@@ -37,17 +37,16 @@ const setAuthCookie = (token: string | null) => {
     if (token) {
       const maxAge = 24 * 60 * 60;
       document.cookie = `${COOKIE_NAME}=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      localStorage.setItem(COOKIE_NAME, token);
     } else {
       document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
+      localStorage.removeItem(COOKIE_NAME);
     }
   }
 }
 
 function clearAuth() {
   setAuthCookie(null)
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(COOKIE_NAME)
-  }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -61,7 +60,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
     setIsLoading(false)
     if (typeof window !== 'undefined') {
-      window.location.href = '/login'
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/register') {
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath + window.location.search)}`
+      }
     }
   }, [])
 
@@ -75,8 +77,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshSession = useCallback(async () => {
     const readToken = () => {
       if (typeof document === 'undefined') return null
+      let token = null
       const match = document.cookie.match(/(?:^|;\s*)devai_auth_token=([^;]*)/)
-      return match ? decodeURIComponent(match[1]) : null
+      if (match) {
+        token = decodeURIComponent(match[1])
+      }
+      if (!token && typeof window !== 'undefined') {
+        token = localStorage.getItem('devai_auth_token')
+      }
+      return token
     }
 
     const savedToken = readToken()

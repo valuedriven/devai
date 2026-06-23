@@ -9,10 +9,12 @@ import { cookies } from "next/headers";
 
 export default async function OrdersPage() {
     const cookieStore = await cookies();
+    console.log('OrdersPage cookies:', cookieStore.getAll());
     const token = cookieStore.get("devai_auth_token")?.value;
     
     if (!token) {
-        redirect("/login");
+        console.log('OrdersPage: No token found! Redirecting...');
+        redirect("/login?redirect=/orders");
     }
 
     const orders = await getOrders(undefined, undefined, token);

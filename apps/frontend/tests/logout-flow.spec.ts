@@ -9,11 +9,10 @@ test.describe('3. Fluxo de Logout', () => {
     // 1. Navegar para /
     await page.goto('/');
 
-    // 2. Clicar no botão "Sair da Loja" no sidebar
-    await page.getByRole('button', { name: /Sair da Loja/i }).click();
-
-    // 3. Aguardar navegação/atualização
-    await page.waitForURL('/');
+    // 2. Clicar no botão "Sair da Loja" no sidebar e aguardar a requisição
+    const responsePromise = page.waitForResponse(response => response.url().includes('/auth/logout') && response.status() === 204);
+    await page.getByRole('button', { name: /Sair da Loja/i }).first().click();
+    await responsePromise;
 
     // 4. Recarregar a página para garantir que sessão foi encerrada
     await page.reload();
@@ -38,6 +37,10 @@ test.describe('3. Fluxo de Logout', () => {
 
     // 1. Navegar para /
     await page.goto('/');
+    // Limpar o localStorage que veio do storageState do playwright
+    await page.evaluate(() => localStorage.clear());
+    // Recarregar a página para aplicar a limpeza
+    await page.reload();
 
     // 2. Verificar que botão de logout não está visível
     await expect(page.getByRole('button', { name: /Sair da Loja/i })).not.toBeVisible();

@@ -193,7 +193,7 @@ export default function CartPage() {
                                     {isConfirming ? 'Processando...' : 'Confirmar Pedido'}
                                 </Button>
                             ) : (
-                                <Link href="/login" className="w-full">
+                                <Link href="/login?redirect=/cart" className="w-full">
                                     <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
                                         <LogIn className="icon-sm" style={{ marginRight: '0.5rem' }} />
                                         Faça login para confirmar

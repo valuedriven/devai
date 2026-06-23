@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface CartItem {
     id: string;
@@ -18,12 +18,36 @@ interface CartContextType {
     clearCart: () => void;
     itemCount: number;
     totalAmount: number;
+    isInitialized: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_STORAGE_KEY = 'devai_cart_items';
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+            if (savedCart) {
+                try {
+                    setItems(JSON.parse(savedCart));
+                } catch (e) {
+                    console.error('Failed to parse cart from localStorage:', e);
+                }
+            }
+            setIsInitialized(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isInitialized && typeof window !== 'undefined') {
+            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+        }
+    }, [items, isInitialized]);
 
     const addItem = (newItem: CartItem) => {
         setItems((prevItems) => {
@@ -70,6 +94,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 clearCart,
                 itemCount,
                 totalAmount,
+                isInitialized,
             }}
         >
             {children}
