@@ -13,6 +13,5 @@ playwright-report/
 blob-report/
 playwright/.cache/
 playwright/.auth/
-*/playwright/.clerk/*
 apps/backend/coverage/*
-apps/frontend/playwright/.clerk/user.json
+apps/frontend/playwright/.clerk/*
