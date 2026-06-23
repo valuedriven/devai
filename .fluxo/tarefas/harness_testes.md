@@ -108,7 +108,7 @@ Toda alteração de regra de negócio deve possuir testes automatizados compatí
 - Crie uma skill de testes no projeto.
 - Use o exemplo o arquivo quality-gate-SKILL.md, conforme exemplo abaixo:
 
-```
+``````
 ---
 name: quality-gate
 description: >
@@ -267,7 +267,8 @@ verificar cobertura → escrever mais testes se abaixo do mínimo
 | Unitário    | Jest             | Backend           |
 | Integração  | Jest + Supertest | Backend (API)     |
 | E2E         | Playwright       | Full-stack        |
-```
+``````
+
 - Lembre-se de renomear o arquivo para apenas SKILL.md ao colocá-lo no diretório .agents/skills/<nome da skill>
 
 
@@ -331,6 +332,7 @@ rules:
     - Create or modify tests for any new or changed code.
     - Verify that new files/changes satisfy the testing pyramid and 80% coverage requirements (statements, branches, functions, and lines).
 ```
+
 - Verifique se as principais diretrizes de testes estão contidas no arquivo.
 - Inclua diretrizes específicas na seção tasks, para criação e/ou atualização de testes.
 - Solicite apoio ao agente para realizar a sincronização.
