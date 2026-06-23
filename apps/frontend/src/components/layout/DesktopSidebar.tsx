@@ -10,7 +10,7 @@ import { useInternalAuth } from "@/hooks/AuthContext";
 export function DesktopSidebar() {
     const pathname = usePathname();
     const { user, isAuthenticated, logout } = useInternalAuth();
-    const isAdmin = user?.roles?.includes('admin');
+    const isAdmin = user?.roles?.some(role => role.toLowerCase() === 'admin');
     const isLoggedIn = isAuthenticated;
 
     return (

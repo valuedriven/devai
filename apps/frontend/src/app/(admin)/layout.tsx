@@ -19,7 +19,7 @@ export default async function AdminLayout({
 
     const userProfile = await getMe(token);
 
-    if (!userProfile?.roles?.includes("admin")) {
+    if (!userProfile?.roles?.some((role: string) => role.toLowerCase() === 'admin')) {
         redirect("/403");
     }
 

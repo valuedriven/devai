@@ -28,7 +28,9 @@ export function ProtectedRoute({
 
     if (allowedRoles && user) {
       const userRoles = user.roles || []
-      const hasRole = allowedRoles.some(role => userRoles.includes(role))
+      const hasRole = allowedRoles.some(requiredRole =>
+        userRoles.some(userRole => userRole.toLowerCase() === requiredRole.toLowerCase())
+      )
       if (!hasRole) {
         router.replace('/403')
       }
@@ -45,7 +47,9 @@ export function ProtectedRoute({
 
   if (allowedRoles && user) {
     const userRoles = user.roles || []
-    const hasRole = allowedRoles.some(role => userRoles.includes(role))
+    const hasRole = allowedRoles.some(requiredRole =>
+      userRoles.some(userRole => userRole.toLowerCase() === requiredRole.toLowerCase())
+    )
     if (!hasRole) {
       router.replace('/403')
       return null
