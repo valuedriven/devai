@@ -141,11 +141,13 @@ describe('Auth (e2e)', () => {
       customerApp.setGlobalPrefix('api/v1');
       await customerApp.init();
 
-      return request(customerApp.getHttpServer())
+      await request(customerApp.getHttpServer())
         .post('/api/v1/products')
         .send({ name: 'Test', price: 10, stock: 1, categoryId: 1 })
         .set('Authorization', 'Bearer customer-token')
         .expect(403);
+        
+      await customerApp.close();
     });
   });
 });

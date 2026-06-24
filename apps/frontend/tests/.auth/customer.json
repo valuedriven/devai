@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "devai_auth_token",
-      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBVGFNODhFTHpUZ0xOcXpqTWFJWmNPam9TUSIsImVtYWlsIjoianBzMDEyMDA5QHlhaG9vLmNvbS5iciIsImlhdCI6MTc4MjMxNDQyNywiZXhwIjoxNzgyNDAwODI3fQ.683o_AcpR1TiCsM5mC_-RvRJ5BLSWQKOhBGl1xItEnc",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBVGFNODhFTHpUZ0xOcXpqTWFJWmNPam9TUSIsImVtYWlsIjoianBzMDEyMDA5QHlhaG9vLmNvbS5iciIsImlhdCI6MTc4MjMyMDU3NCwiZXhwIjoxNzgyNDA2OTc0fQ.9EEZVbSh3CMccBgx7GgDdx7rX7tpoLi7kBfGGF2sYpI",
       "domain": "localhost",
       "path": "/",
-      "expires": 1782400827.075116,
+      "expires": 1782406974.384456,
       "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"
@@ -17,7 +17,7 @@
       "localStorage": [
         {
           "name": "devai_auth_token",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBVGFNODhFTHpUZ0xOcXpqTWFJWmNPam9TUSIsImVtYWlsIjoianBzMDEyMDA5QHlhaG9vLmNvbS5iciIsImlhdCI6MTc4MjMxNDQyNywiZXhwIjoxNzgyNDAwODI3fQ.683o_AcpR1TiCsM5mC_-RvRJ5BLSWQKOhBGl1xItEnc"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzNBVGFNODhFTHpUZ0xOcXpqTWFJWmNPam9TUSIsImVtYWlsIjoianBzMDEyMDA5QHlhaG9vLmNvbS5iciIsImlhdCI6MTc4MjMyMDU3NCwiZXhwIjoxNzgyNDA2OTc0fQ.9EEZVbSh3CMccBgx7GgDdx7rX7tpoLi7kBfGGF2sYpI"
         },
         {
           "name": "devai_cart_items",

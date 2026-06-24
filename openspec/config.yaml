@@ -50,5 +50,6 @@ rules:
     - Ensure lint and tests pass before task completion.
     - Create or modify tests for any new or changed code.
     - Verify that new files/changes satisfy the testing pyramid and 80% coverage requirements (statements, branches, functions, and lines).
-
+    - Use `.agents/prompts/playwright-test-planner.md` to create the test plan. Use the specs created on prepare the change.
+    - Use `.agents/prompts/playwright-test-generator.md` to create the tests. Use the test plan created.
 

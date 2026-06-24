@@ -63,6 +63,7 @@ describe('Catalog (e2e)', () => {
 
   afterAll(async () => {
     await cleanDatabase();
+    await prisma.$disconnect();
     await app.close();
   });
 

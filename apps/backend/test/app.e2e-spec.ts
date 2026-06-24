@@ -21,6 +21,12 @@ describe('Health Check (e2e)', () => {
     await app.init();
   });
 
+  afterEach(async () => {
+    if (app) {
+      await app.close();
+    }
+  });
+
   it('GET /api/v1/health returns 200 with status ok', () => {
     return request(app.getHttpServer())
       .get('/api/v1/health')

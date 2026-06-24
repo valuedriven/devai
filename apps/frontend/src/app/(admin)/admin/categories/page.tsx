@@ -1,69 +1,36 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { buttonVariants } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { getCategories } from "@/lib/data";
-import { deleteCategoryAction } from "@/lib/actions";
-import { Plus } from "lucide-react";
+import { getPaginatedCategories } from "@/lib/data";
 import { AdminSearchBar } from "@/components/admin/AdminSearchBar";
-import { AdminDataTable, Column } from "@/components/admin/AdminDataTable";
-import { AdminActions } from "@/components/admin/AdminActions";
-import { Category } from "@/lib/types";
+import { CategoryManager } from "@/components/admin/CategoryManager";
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminCategoriesPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+export default async function AdminCategoriesPage({ searchParams }: { searchParams: Promise<{ search?: string; page?: string; limit?: string; includeInactive?: string }> }) {
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
 
-    const search = (await searchParams).search ?? '';
-    const categories = await getCategories(search, token);
+    const params = await searchParams;
+    const search = params.search ?? '';
+    const page = parseInt(params.page ?? '1');
+    const limit = parseInt(params.limit ?? '20');
+    const includeInactive = params.includeInactive === 'true';
 
-
-    const columns: Column<Category>[] = [
-        {
-            header: "Nome",
-            accessor: "name",
-            className: "font-medium",
-        },
-        {
-            header: "Status",
-            cell: (category) => (
-                <Badge tone={category.active ? "success" : "neutral"}>
-                    {category.active ? "Ativo" : "Inativo"}
-                </Badge>
-            ),
-        },
-        {
-            header: "Ações",
-            align: "right",
-            cell: (category) => (
-                <AdminActions
-                    id={category.id}
-                    editHref={`/admin/categories/${category.id}/edit`}
-                    deleteAction={deleteCategoryAction}
-                    deleteConfirmMessage={`Tem certeza que deseja excluir a categoria "${category.name}"?`}
-                />
-            ),
-        },
-    ];
+    const { data: categories, total } = await getPaginatedCategories({ search, page, limit, includeInactive }, token);
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Categorias</h1>
-                <Link href="/admin/categories/new" className={buttonVariants()}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nova Categoria
-                </Link>
             </div>
 
             <AdminSearchBar placeholder="Pesquisar categorias..." />
 
-            <AdminDataTable
-                columns={columns}
-                data={categories}
-                keyField="id"
+            <CategoryManager 
+                initialData={categories}
+                total={total}
+                currentPage={page}
+                limit={limit}
+                includeInactive={includeInactive}
             />
         </div>
     );

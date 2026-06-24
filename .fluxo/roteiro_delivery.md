@@ -482,7 +482,6 @@ npm run build
 npm run dev
 ```
 
-
 - Acesse os endpoints da aplicação:
 
 ```

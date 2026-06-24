@@ -23,6 +23,49 @@ export async function getCategories(search?: string, token?: string): Promise<Ca
     }
 }
 
+export async function getPaginatedCategories(
+    options: { search?: string; page?: number; limit?: number; includeInactive?: boolean },
+    token?: string
+): Promise<{ data: Category[]; total: number }> {
+    try {
+        const params = new URLSearchParams();
+        if (options.search) params.append('search', options.search);
+        if (options.page) params.append('page', String(options.page));
+        if (options.limit) params.append('limit', String(options.limit));
+        if (options.includeInactive) params.append('includeInactive', 'true');
+
+        const url = `/admin/categories?${params.toString()}`;
+        
+        // We need custom fetch to get headers
+        const isServer = typeof window === 'undefined';
+        const API_BASE_URL = isServer
+            ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1')
+            : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1');
+            
+        const fullUrl = `${API_BASE_URL.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            'X-Tenant-ID': '00000000-0000-0000-0000-000000000000',
+        };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const response = await fetch(fullUrl, { headers, cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const total = parseInt(response.headers.get('X-Total-Count') || '0', 10);
+        const data = await response.json();
+        const categories = (data.data || data || []).map((cat: any) => ({
+            ...cat,
+            id: String(cat.id),
+        })) as Category[];
+        
+        return { data: categories, total };
+    } catch (error) {
+        console.error('Error fetching paginated categories:', error);
+        return { data: [], total: 0 };
+    }
+}
+
 export async function getCategory(id: string, token?: string): Promise<Category | null> {
     try {
         const data = await fetchApi<any>(`/admin/categories/${id}`, {}, token);

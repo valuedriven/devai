@@ -13,9 +13,11 @@ import { useInternalAuth } from "@/hooks/AuthContext";
 
 interface CategoryFormProps {
     initialData?: Category | null;
+    onSuccess?: () => void;
+    onCancel?: () => void;
 }
 
-export function CategoryForm({ initialData }: CategoryFormProps) {
+export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormProps) {
     const router = useRouter();
     const { token } = useInternalAuth();
     const [name, setName] = useState(initialData?.name || "");
@@ -43,7 +45,11 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
             }
 
             if (result) {
-                router.push("/admin/categories");
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    router.push("/admin/categories");
+                }
                 router.refresh();
             } else {
                 alert("Erro ao salvar categoria. Verifique o console.");
@@ -86,10 +92,14 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
                     <label htmlFor="active" className="text-sm font-medium cursor-pointer">Categoria Ativa</label>
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-between">
-                <Link href="/admin/categories">
-                    <Button variant="outline" disabled={isLoading}>Cancelar</Button>
-                </Link>
+            <CardFooter className="flex justify-between pt-4">
+                {onCancel ? (
+                    <Button variant="outline" disabled={isLoading} onClick={onCancel}>Cancelar</Button>
+                ) : (
+                    <Link href="/admin/categories">
+                        <Button variant="outline" disabled={isLoading}>Cancelar</Button>
+                    </Link>
+                )}
                 <Button onClick={handleSave} disabled={isLoading || !name.trim()}>
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isEditing ? "Salvar Alterações" : "Salvar Categoria"}
