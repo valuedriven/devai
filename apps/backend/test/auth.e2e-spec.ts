@@ -26,23 +26,19 @@ describe('Auth (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideGuard(AuthGuard)
+      .overrideProvider(require('./../src/core/auth/clerk.service').ClerkService)
       .useValue({
-        canActivate: (context: ExecutionContext) => {
-          const req = context.switchToHttp().getRequest();
-          req.user = {
-            id: 'test-user-id',
-            publicMetadata: { roles: ['admin'] },
-            emailAddresses: [{ emailAddress: 'admin@test.com' }],
-            firstName: 'Admin',
-            lastName: 'User',
-            imageUrl: 'https://example.com/avatar.png',
-          };
-          return true;
-        },
+        verifyToken: jest.fn().mockResolvedValue({ sub: 'test-user-id' }),
+        getUser: jest.fn().mockResolvedValue({
+          id: 'test-user-id',
+          publicMetadata: { roles: ['admin'] },
+          emailAddresses: [{ emailAddress: 'admin@test.com' }],
+          firstName: 'Admin',
+          lastName: 'User',
+          imageUrl: 'https://example.com/avatar.png',
+        }),
+        revokeSession: jest.fn().mockResolvedValue(true),
       })
-      .overrideGuard(RolesGuard)
-      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -130,30 +126,15 @@ describe('Auth (e2e)', () => {
       const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideGuard(AuthGuard)
+        .overrideProvider(require('./../src/core/auth/clerk.service').ClerkService)
         .useValue({
-          canActivate: (context: ExecutionContext) => {
-            const req = context.switchToHttp().getRequest();
-            req.user = mockUser;
-            return true;
-          },
+          verifyToken: jest.fn().mockResolvedValue({ sub: 'customer-user-id' }),
+          getUser: jest.fn().mockResolvedValue({
+            id: 'customer-user-id',
+            publicMetadata: { roles: ['customer'] },
+            emailAddresses: [{ emailAddress: 'customer@test.com' }],
+          }),
         })
-        .overrideGuard(RolesGuard)
-        .useClass(
-          class MockRolesGuard {
-            canActivate(context: ExecutionContext) {
-              const req = context.switchToHttp().getRequest();
-              const user = req.user;
-              const roles = user.publicMetadata?.roles || [];
-              if (!roles.includes('admin')) {
-                throw new ForbiddenException(
-                  'User does not have the required roles',
-                );
-              }
-              return true;
-            }
-          },
-        )
         .compile();
 
       const customerApp = moduleFixture.createNestApplication();

@@ -3,34 +3,34 @@
 import { Category, Product, Customer, Order } from './types';
 import { fetchApi } from './api';
 
-export async function getCategories(search?: string): Promise<Category[]> {
+export async function getCategories(search?: string, token?: string): Promise<Category[]> {
     try {
-        const categories = await fetchApi<any[]>('/categories');
-        const mapped = categories.map(cat => ({
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        params.append('limit', '100'); // fetch up to 100 for client-side table pagination
+
+        const url = `/admin/categories?${params.toString()}`;
+        const response = await fetchApi<any>(url, {}, token);
+        const categories = response?.data || [];
+        
+        return categories.map((cat: any) => ({
             ...cat,
             id: String(cat.id),
-            active: true
         })) as Category[];
-        if (search) {
-            const lower = search.toLowerCase();
-            return mapped.filter(c => c.name.toLowerCase().includes(lower));
-        }
-        return mapped;
     } catch (error) {
         console.error('Error fetching categories:', error);
         return [];
     }
 }
 
-export async function getCategory(id: string): Promise<Category | null> {
+export async function getCategory(id: string, token?: string): Promise<Category | null> {
     try {
-        const data = await fetchApi<any>(`/categories/${id}`);
+        const data = await fetchApi<any>(`/admin/categories/${id}`, {}, token);
         if (!data) return null;
 
         return {
             ...data,
             id: String(data.id),
-            active: true
         } as Category;
     } catch (error) {
         console.error('Error fetching category:', error);
@@ -40,7 +40,7 @@ export async function getCategory(id: string): Promise<Category | null> {
 
 export async function createCategory(category: Omit<Category, 'id'>, token?: string): Promise<Category | null> {
     try {
-        const data = await fetchApi<any>('/categories', {
+        const data = await fetchApi<any>('/admin/categories', {
             method: 'POST',
             body: JSON.stringify({ name: category.name })
         }, token);
@@ -57,9 +57,10 @@ export async function createCategory(category: Omit<Category, 'id'>, token?: str
 export async function updateCategory(id: string, category: Partial<Omit<Category, 'id'>>, token?: string): Promise<Category | null> {
     try {
         const dto: any = {};
-        if (category.name) dto.name = category.name;
+        if (category.name !== undefined) dto.name = category.name;
+        if (category.active !== undefined) dto.active = category.active;
 
-        const data = await fetchApi<any>(`/categories/${id}`, {
+        const data = await fetchApi<any>(`/admin/categories/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(dto)
         }, token);
@@ -75,7 +76,7 @@ export async function updateCategory(id: string, category: Partial<Omit<Category
 
 export async function deleteCategory(id: string, token?: string): Promise<boolean> {
     try {
-        await fetchApi(`/categories/${id}`, {
+        await fetchApi(`/admin/categories/${id}`, {
             method: 'DELETE'
         }, token);
         return true;

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines the operational rules for AI coding agents working in this repository (Claude Code, Cursor Agent, Antigravity, OpenCode, Aider and similar tools).
+This document defines the operational rules for AI coding agents working in this repository (Claude Code, Cursor Agent, Antigravity, OpenCode, Aider, and similar tools).
 
 When rules conflict, follow the order of precedence:
 
@@ -20,10 +20,10 @@ When rules conflict, follow the order of precedence:
 
 Before implementing:
 
-- Analyze the request.
-- State assumptions when uncertainty exists.
-- Present alternatives and tradeoffs when relevant.
-- Ask for clarification if requirements are ambiguous.
+* Analyze the request.
+* State assumptions when uncertainty exists.
+* Present alternatives and tradeoffs when relevant.
+* Ask for clarification if requirements are ambiguous.
 
 Never start coding before understanding the problem.
 
@@ -33,15 +33,15 @@ Never start coding before understanding the problem.
 
 Prefer:
 
-- Simple solutions
-- Existing patterns
-- Minimal changes
+* Simple solutions
+* Existing patterns
+* Minimal changes
 
 Avoid:
 
-- Premature abstractions
-- Speculative features
-- Unnecessary refactoring
+* Premature abstractions
+* Speculative features
+* Unnecessary refactoring
 
 Implement only what is required.
 
@@ -53,9 +53,9 @@ Modify only files directly related to the task.
 
 Do not:
 
-- Reformat unrelated files
-- Rename unrelated symbols
-- Refactor adjacent code without explicit justification
+* Reformat unrelated files
+* Rename unrelated symbols
+* Refactor adjacent code without explicit justification
 
 Keep diffs small and focused.
 
@@ -78,22 +78,22 @@ Whenever possible:
 
 Technology:
 
-- Next.js (App Router)
-- TypeScript
-- Vanilla CSS
+* Next.js (App Router)
+* TypeScript
+* Vanilla CSS
 
 Responsibilities:
 
-- UI rendering
-- User interaction
-- API consumption
+* UI rendering
+* User interaction
+* API consumption
 
 Forbidden:
 
-- Business rules
-- Authorization logic
-- Database access
-- Prisma usage
+* Business rules
+* Authorization logic
+* Database access
+* Prisma usage
 
 Frontend must remain a presentation layer.
 
@@ -103,17 +103,17 @@ Frontend must remain a presentation layer.
 
 Technology:
 
-- NestJS
-- TypeScript
-- Prisma
-- PostgreSQL
+* NestJS
+* TypeScript
+* Prisma
+* PostgreSQL
 
 Responsibilities:
 
-- Business rules
-- Authorization
-- Validation
-- Persistence
+* Business rules
+* Authorization
+* Validation
+* Persistence
 
 All business decisions must be enforced on the backend.
 
@@ -123,26 +123,26 @@ All business decisions must be enforced on the backend.
 
 Primary database:
 
-- PostgreSQL
+* PostgreSQL
 
 Requirements:
 
-- Use Prisma as the access layer.
-- All schema changes must be versioned through migrations.
+* Use Prisma as the data access layer.
+* All schema changes must be versioned through migrations.
 
 Forbidden:
 
-- Manual production schema changes
-- Vendor-specific database features that reduce portability
+* Manual production schema changes
+* Vendor-specific database features that reduce portability
 
 The system must remain compatible with:
 
-- Local PostgreSQL (Docker)
-- Managed PostgreSQL providers
+* Local PostgreSQL (Docker)
+* Managed PostgreSQL providers:
 
-  - Supabase
-  - AWS RDS
-  - Similar services
+  * Supabase
+  * AWS RDS
+  * Similar services
 
 ---
 
@@ -177,17 +177,17 @@ For every non-trivial task:
 
 ## Phase 1 — Analysis
 
-- Understand requirements.
-- Inspect affected files.
-- Identify risks.
+* Understand requirements.
+* Inspect affected files.
+* Identify risks.
 
 ## Phase 2 — Planning
 
 Describe:
 
-- Files to modify
-- Expected behavior
-- Validation strategy
+* Files to modify
+* Expected behavior
+* Validation strategy
 
 ## Phase 3 — Implementation
 
@@ -209,10 +209,10 @@ Execute only what is relevant to the scope of the change.
 
 Summarize:
 
-- What changed
-- Validation performed
-- Remaining risks
-- Assumptions made
+* What changed
+* Validation performed
+* Remaining risks
+* Assumptions made
 
 ---
 
@@ -222,9 +222,9 @@ Summarize:
 
 Commands should:
 
-- Be reproducible
-- Be non-interactive
-- Have predictable outcomes
+* Be reproducible
+* Be non-interactive
+* Have predictable outcomes
 
 Prefer:
 
@@ -242,8 +242,8 @@ when appropriate.
 
 When the tool supports it:
 
-- Use an explicit working directory.
-- Avoid chained navigation commands.
+* Use an explicit working directory.
+* Avoid chained navigation commands.
 
 Prefer:
 
@@ -259,37 +259,37 @@ cd apps/backend && ...
 
 ---
 
-## Long Running Processes
+## Long-Running Processes
 
 Do not start processes that block execution unless explicitly requested.
 
 Examples:
 
-- Development servers
-- Watch mode
-- Interactive shells
+* Development servers
+* Watch mode
+* Interactive shells
 
 ---
 
 ## Port and Service Conflict Management
 
-- **Conflict Detection**: Before starting services that bind to host ports (such as PostgreSQL on `5432`, Next.js on `3000`, or NestJS on `3001`), verify if these ports are already in use.
-- **Docker Container Management**: If a port is occupied by conflicting or legacy Docker containers (e.g., leftover containers like `devai-db`), safely check (`docker ps`), inspect, and stop them (`docker stop`) to free up resource ports.
-- **Port Mapping Verification**: After starting containerized services, always verify the port mapping (e.g., via `docker ps`) to ensure the host port is mapped correctly and no binding failures occurred.
+* **Conflict Detection**: Before starting services that bind to host ports (such as PostgreSQL on `5432`, Next.js on `3000`, or NestJS on `3001`), verify whether those ports are already in use.
+* **Docker Container Management**: If a port is occupied by conflicting or legacy Docker containers (e.g., leftover containers such as `devai-db`), safely inspect (`docker ps`) and stop (`docker stop`) them to free the required resources.
+* **Port Mapping Verification**: After starting containerized services, always verify port mappings (e.g., using `docker ps`) to ensure host ports are correctly bound and that no binding failures occurred.
 
 ---
 
-## Tool CLI Diagnostics
+## CLI Diagnostics
 
-- **Error Output Analysis**: When CLI tools fail (such as database migrations or npm installations), inspect the command output carefully to identify version-specific constraint changes (e.g., Prisma 7 config structure updates) before attempting to re-run the command.
+* **Error Output Analysis**: When CLI tools fail (such as database migrations or npm installations), carefully inspect command output to identify version-specific changes or constraints (e.g., Prisma 7 configuration structure updates) before attempting to rerun the command.
 
 ---
 
 ## Autonomy in File Operations and Validation
 
-- **Proactive File Modifications**: The agent is fully authorized to proactively read, create, modify, and delete files in the workspace to complete tasks. It should apply edits directly rather than asking for permission before each operation.
-- **Handling Permission Failures**: In case of file read/write permission errors, the agent must proactively request the narrowest required permission scope using the appropriate system tools to proceed without interrupting the user.
-- **Autonomous Testing**: After modifying files, the agent should proactively run validation tests or linters without requiring prior user consent, reporting findings and fixing errors dynamically.
+* **Proactive File Modifications**: The agent is fully authorized to proactively read, create, modify, and delete files within the workspace to complete tasks. It should apply edits directly rather than requesting permission before each operation.
+* **Handling Permission Failures**: If file read/write permission errors occur, the agent must proactively request the minimum required permission scope using the appropriate system tools to continue without unnecessarily interrupting the user.
+* **Autonomous Testing**: After modifying files, the agent should proactively run validation checks, tests, or linters without requiring prior user approval, report findings, and fix issues whenever possible.
 
 ---
 
@@ -297,31 +297,32 @@ Examples:
 
 ## Quality Gate
 
-Nunca considere uma tarefa concluída sem:
+Never consider a task complete without:
 
-* Atualizar ou criar os testes automatizados necessários.
-* Executar lint, testes e cobertura.
-* Corrigir todas as falhas encontradas.
+* Creating or updating the necessary automated tests.
+* Running lint, tests, and coverage checks.
+* Fixing all detected failures.
 
-Bloqueie a conclusão da tarefa se houver:
+Block task completion if any of the following exist:
 
-* Erros de lint.
-* Testes falhando.
-* Cobertura abaixo do mínimo exigido.
+* Lint errors.
+* Failing tests.
+* Coverage below the required minimum threshold.
 
-### Diretrizes de Teste
+### Testing Guidelines
 
-* Testes unitários devem ser utilizados apenas no backend para validar regras de negócio, serviços, casos de uso e componentes de forma isolada.
-* Testes de integração devem ser utilizados apenas na API REST do backend para validar endpoints, persistência de dados, autenticação, autorização e integração entre componentes.
-* Testes E2E devem validar os fluxos críticos da aplicação do ponto de vista do usuário, cobrindo a integração entre frontend, backend e demais serviços necessários.
+* Never ignore and never change the linter config files. 
+* Unit tests must be used exclusively in the backend to validate business rules, services, use cases, and components in isolation.
+* Integration tests must be used exclusively for the backend REST API to validate endpoints, data persistence, authentication, authorization, and component integration.
+* End-to-end (E2E) tests must validate the application's critical user journeys, covering the integration between frontend, backend, and any required supporting services.
 
-Os testes devem contemplar, quando aplicável:
+Tests should cover, when applicable:
 
 * Happy Path
 * Failure Path
-* Casos limite relevantes
+* Relevant edge cases
 
-Toda alteração de regra de negócio deve possuir testes automatizados compatíveis com a camada afetada.
+Every business rule change must be accompanied by automated tests appropriate to the affected layer.
 
 ---
 
@@ -329,17 +330,17 @@ Toda alteração de regra de negócio deve possuir testes automatizados compatí
 
 A task is complete when:
 
-- Requirements are satisfied.
-- Relevant tests pass.
-- Lint passes.
-- Build succeeds.
-- No known regression was introduced.
+* Requirements are satisfied.
+* Relevant tests pass.
+* Lint passes.
+* Build succeeds.
+* No known regression has been introduced.
 
 ---
 
 # 7. Documentation Usage
 
-Before implementing significant changes, review relevant documents in `/docs`.
+Before implementing significant changes, review the relevant documents in `/docs`.
 
 Priority order:
 
@@ -361,10 +362,10 @@ Use MCP tools to retrieve authoritative documentation.
 
 Preferred sources:
 
-- Context7
-- Official documentation
-- Official RFCs
-- Vendor documentation
+* Context7
+* Official documentation
+* Official RFCs
+* Vendor documentation
 
 Avoid relying on memory when documentation can be queried.
 
@@ -374,18 +375,18 @@ Avoid relying on memory when documentation can be queried.
 
 At the end of significant tasks:
 
-- Identify recurring issues.
-- Identify obsolete rules.
-- Suggest improvements to this AGENTS.md.
+* Identify recurring issues.
+* Identify obsolete rules.
+* Suggest improvements to this AGENTS.md.
 
-The operating constitution should evolve with the project.s
+The operating constitution should evolve alongside the project.
 
 ---
 
-## Variáveis de Ambiente
+# Environment Variables
 
-* Tanto o módulo frontend quanto o backend devem sempre ler as variáveis de ambiente a partir do único arquivo `.env` localizado no diretório raiz do projeto.
-* É estritamente proibido criar arquivos `.env`, `.env.local` ou links simbólicos apontando para arquivos `.env` em quaisquer subpastas ou diretórios de módulos do workspace (como `apps/frontend/` ou `apps/backend/`).
-* As variáveis de ambiente devem ser carregadas de forma programática a partir da raiz (por exemplo, utilizando `process.loadEnvFile` no `next.config.ts` do Next.js, ou o `ConfigModule` do NestJS com o caminho do `envFilePath` resolvido para o diretório raiz).
+* Both the frontend and backend modules must always load environment variables from the single `.env` file located at the project root.
+* Creating `.env`, `.env.local`, or symbolic links to `.env` files within any workspace subdirectory or module directory (such as `apps/frontend/` or `apps/backend/`) is strictly prohibited.
+* Environment variables must be loaded programmatically from the root directory (for example, using `process.loadEnvFile` in `next.config.ts` for Next.js, or NestJS `ConfigModule` with `envFilePath` explicitly resolved to the project root).
 
 ---

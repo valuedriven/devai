@@ -32,6 +32,7 @@ export async function fetchApi<T>(
             ...options,
             headers,
             credentials: isServer ? undefined : 'include',
+            cache: 'no-store',
         });
 
         if (!response.ok) {

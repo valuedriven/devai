@@ -62,7 +62,7 @@ describe('ProductController (Integration)', () => {
         name: 'Invalid Price Product',
         description: 'Test description',
         price: 0,
-        categoryId: 1,
+        categoryId: '1',
         stock: 10,
       })
       .expect(400);
@@ -75,7 +75,7 @@ describe('ProductController (Integration)', () => {
         name: 'Invalid Stock Product',
         description: 'Test description',
         price: 100,
-        categoryId: 1,
+        categoryId: '1',
         stock: -5,
       })
       .expect(400);
@@ -89,7 +89,7 @@ describe('ProductController (Integration)', () => {
         name: 'Valid Product',
         description: 'Test description',
         price: 99.99,
-        categoryId: 1,
+        categoryId: '1',
         stock: 5,
       })
       .expect(201);

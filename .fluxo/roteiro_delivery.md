@@ -653,11 +653,11 @@ npx playwright test --headed
 npx playwright show-report
 ```
 
-Os procedimentos de planejamento -> geração -> ajustes devem ser realzados para cada nova mudança implementada.
+Os procedimentos de planejamento -> geração -> ajustes devem ser realizados para cada nova mudança implementada.
 
 ---
 
-### Inspeção de código
+### 7. Inspeção de código
 
 - Acesse o terminal.
 - Inicialize o servidor Sonar:

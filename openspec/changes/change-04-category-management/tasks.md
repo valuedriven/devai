@@ -34,7 +34,7 @@
 - [x] 4.4 Configure `X-Total-Count` header for list endpoint
 - [x] 4.5 Create exception filter for Prisma P2002 error → 409 Conflict
 - [x] 4.6 Write integration tests for CRUD endpoints (admin authenticated, non-admin → 403, validation errors)
-- [ ] 4.7 Ensure lint passes: `npm run lint --workspace=backend`
+- [x] 4.7 Ensure lint passes: `npm run lint --workspace=backend`
 
 ## 5. Backend - Module Registration
 
@@ -66,22 +66,22 @@
 - [x] 8.3 Connect Edit button to pre-filled edit dialog
 - [x] 8.4 Connect Delete button to confirmation dialog
 - [x] 8.5 Implement toast notifications on success/error
-- [ ] 8.6 Add admin authorization check (redirect non-admins)
-- [ ] 8.7 Ensure lint passes: `npm run lint --workspace=frontend`
+- [x] 8.6 Add admin authorization check (redirect non-admins)
+- [x] 8.7 Ensure lint passes: `npm run lint --workspace=frontend`
 
 ## 9. End-to-End Tests
 
-- [ ] 9.1 Create Playwright test for admin creates category successfully
-- [ ] 9.2 Create Playwright test for admin edits category
-- [ ] 9.3 Create Playwright test for admin deletes category
-- [ ] 9.4 Create Playwright test for non-admin cannot access `/admin/categories`
-- [ ] 9.5 Run `npx playwright test` and verify all tests pass
+- [x] 9.1 Create Playwright test for admin creates category successfully
+- [x] 9.2 Create Playwright test for admin edits category
+- [x] 9.3 Create Playwright test for admin deletes category
+- [x] 9.4 Create Playwright test for non-admin cannot access `/admin/categories`
+- [x] 9.5 Run `npx playwright test` and verify all tests pass
 
 ## 10. Final Verification
 
-- [ ] 10.1 Run unit tests: `npm run test:unit`
-- [ ] 10.2 Run integration tests: `npm run test:integration`
-- [ ] 10.3 Run E2E tests: `npx playwright test`
-- [ ] 10.4 Verify 80% code coverage on new code
-- [ ] 10.5 Ensure all lint checks pass
-- [ ] 10.6 Verify application starts and runs correctly
+- [x] 10.1 Run unit tests: `npm run test:unit`
+- [x] 10.2 Run integration tests: `npm run test:integration`
+- [x] 10.3 Run E2E tests: `npx playwright test`
+- [x] 10.4 Verify 80% code coverage on new code
+- [x] 10.5 Ensure all lint checks pass
+- [x] 10.6 Verify application starts and runs correctly

@@ -12,8 +12,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from './../src/database/prisma.service';
-import { AuthGuard } from './../src/core/guards/auth.guard';
-import { RolesGuard } from './../src/core/guards/roles.guard';
+import { ClerkService } from './../src/core/auth/clerk.service';
 
 describe('Catalog (e2e)', () => {
   let app: INestApplication<App>;
@@ -27,24 +26,28 @@ describe('Catalog (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideGuard(AuthGuard)
+      .overrideProvider(ClerkService)
       .useValue({
-        canActivate: (context: ExecutionContext) => {
-          const req = context.switchToHttp().getRequest();
-          req.user = {
-            id: 'e2e-admin-user-id',
-            publicMetadata: { roles: ['admin'] },
-            emailAddresses: [{ emailAddress: 'admin@e2e-test.com' }],
-          };
-          return true;
-        },
+        verifyToken: jest.fn().mockResolvedValue({ sub: 'e2e-admin-user-id' }),
+        getUser: jest.fn().mockResolvedValue({
+          id: 'e2e-admin-user-id',
+          publicMetadata: { roles: ['admin'] },
+          emailAddresses: [{ emailAddress: 'admin@e2e-test.com' }],
+        }),
       })
-      .overrideGuard(RolesGuard)
-      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
+    
+    // Inject auth header for testing
+    app.use((req: any, res: any, next: any) => {
+      if (!req.headers['authorization']) {
+        req.headers['authorization'] = 'Bearer test-token';
+      }
+      next();
+    });
+
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,

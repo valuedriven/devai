@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import { getCategory } from "@/lib/data";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 
 interface EditCategoryPageProps {
     params: Promise<{
@@ -13,7 +14,9 @@ interface EditCategoryPageProps {
 
 export default async function EditCategoryPage({ params }: EditCategoryPageProps) {
     const { id } = await params;
-    const category = await getCategory(id);
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+    const category = await getCategory(id, token);
 
     if (!category) {
         notFound();

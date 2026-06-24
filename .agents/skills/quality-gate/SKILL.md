@@ -1,158 +1,180 @@
 ---
+
 name: quality-gate
 description: >
-  Garante que toda implementação atenda aos critérios obrigatórios de qualidade antes de ser considerada concluída.
-  Use esta skill sempre que estiver implementando qualquer funcionalidade, corrigindo bugs, refatorando código ou fazendo qualquer alteração que envolva regras de negócio.
-  Também deve ser acionada quando o usuário pedir para "finalizar uma tarefa", "commitar", "criar PR", "revisar código" ou qualquer variação de "terminar" uma implementação.
-  Esta skill é OBRIGATÓRIA e deve ser consultada em toda tarefa de desenvolvimento — nunca considere uma tarefa concluída sem executar o pipeline completo descrito aqui.
----
+Ensures that every implementation meets the mandatory quality criteria before being considered complete.
+Use this skill whenever implementing any feature, fixing bugs, refactoring code, or making any change involving business rules.
+It must also be triggered when the user asks to "finish a task", "commit", "create a PR", "review code", or any variation of "complete" an implementation.
+This skill is MANDATORY and must be consulted for every development task — never consider a task completed without executing the full pipeline described here.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Quality Gate
 
-Esta skill define o pipeline obrigatório de qualidade que todo agente de IA deve seguir antes de considerar qualquer tarefa concluída.
+This skill defines the mandatory quality pipeline that every AI agent must follow before considering any task complete.
 
-> **Regra absoluta:** Uma tarefa está concluída **somente** quando todas as etapas do pipeline abaixo forem executadas com sucesso.
+> **Absolute rule:** A task is considered complete **only** when all stages of the pipeline below have been successfully executed.
 
 ---
 
-## Pipeline Obrigatório
+## Mandatory Pipeline
 
-Execute sempre nesta ordem:
+Always execute in the following order:
 
+```text
+1. ESLint                  → zero errors allowed
+2. Unit Tests              → all passing
+3. Integration Tests       → all passing
+4. E2E Tests (when applicable) → zero critical failures
+5. Coverage Verification   → minimum thresholds achieved
 ```
-1. ESLint          → zero erros permitidos
-2. Testes Unitários    → todos aprovados
-3. Testes de Integração → todos aprovados
-4. Testes E2E (aplicáveis) → zero falhas críticas
-5. Verificação de Cobertura → mínimos atingidos
-```
 
-### Comandos de referência
+### Reference Commands
 
 ```bash
 # Lint
 npx eslint .
 
-# Testes unitários
+# Unit tests
 npx jest --testPathPattern="unit|spec" --coverage
 
-# Testes de integração
+# Integration tests
 npx jest --testPathPattern="integration" --coverage
 
-# Testes E2E
+# E2E tests
 npx playwright test
 
-# Cobertura consolidada
+# Consolidated coverage
 npx jest --coverage --coverageReporters=text-summary
 ```
 
-> Os comandos exatos podem variar por projeto. Consulte `package.json` para os scripts configurados (ex: `npm run test`, `npm run test:unit`, `npm run lint`).
+> Exact commands may vary by project. Check `package.json` for the configured scripts (e.g., `npm run test`, `npm run test:unit`, `npm run lint`).
 
 ---
 
-## Critérios de Cobertura Mínima
+## Minimum Coverage Requirements
 
-| Camada   | Linhas | Branches |
-| -------- | ------ | -------- |
-| Backend  | 80%    | 80%      |
-| Frontend | 70%    | 70%      |
+| Layer    | Lines | Branches |
+| -------- | ----- | -------- |
+| Backend  | 80%   | 80%      |
+| Frontend | 70%   | 70%      |
 
-Se a cobertura estiver abaixo do mínimo, **escreva mais testes** antes de concluir.
-
----
-
-## Diretrizes de Teste por Camada
-
-### Testes Unitários (Backend apenas)
-- Validam regras de negócio, serviços, casos de uso e componentes **de forma isolada**
-- Usam mocks para dependências externas (banco, APIs, etc.)
-- **Não** devem ser criados no frontend
-
-### Testes de Integração (API REST do Backend apenas)
-- Validam endpoints, persistência de dados, autenticação, autorização
-- Validam integração entre componentes do backend
-- Usam banco de dados de teste real ou in-memory
-- Ferramentas: Jest + Supertest
-
-### Testes E2E (Fluxos críticos)
-- Validam a aplicação do ponto de vista do usuário
-- Cobrem a integração frontend ↔ backend ↔ serviços externos
-- Ferramenta: Playwright
-- Foco nos fluxos de negócio mais importantes
-
-### O que todo teste deve cobrir (quando aplicável)
-- ✅ Happy Path — fluxo principal funcionando
-- ✅ Failure Path — erros esperados tratados corretamente
-- ✅ Casos limite relevantes — bordas e valores extremos
+If coverage is below the minimum threshold, **write more tests** before completing the task.
 
 ---
 
-## Quando Criar ou Atualizar Testes
+## Testing Guidelines by Layer
 
-| Situação                          | Ação obrigatória                              |
-| --------------------------------- | --------------------------------------------- |
-| Nova regra de negócio             | Criar testes unitários (backend)              |
-| Novo endpoint REST                | Criar testes de integração                    |
-| Novo fluxo crítico de usuário     | Criar/atualizar testes E2E                    |
-| Alteração em regra de negócio     | Atualizar testes existentes da camada afetada |
-| Correção de bug                   | Adicionar teste que reproduz o bug corrigido  |
-| Refatoração                       | Garantir que os testes existentes continuem passando |
+### Unit Tests (Backend Only)
 
----
+* Validate business rules, services, use cases, and components **in isolation**
+* Use mocks for external dependencies (databases, APIs, etc.)
+* **Must not** be created for the frontend
 
-## Checklist de Conclusão
+### Integration Tests (Backend REST API Only)
 
-Antes de declarar uma tarefa como concluída, confirme:
+* Validate endpoints, data persistence, authentication, and authorization
+* Validate integration between backend components
+* Use a real test database or an in-memory database
+* Tools: Jest + Supertest
 
-- [ ] ESLint executado — **zero erros**
-- [ ] Testes unitários criados/atualizados para a camada afetada
-- [ ] Testes de integração criados/atualizados para APIs afetadas
-- [ ] Testes E2E criados/atualizados para fluxos críticos impactados
-- [ ] Todos os testes passando — **zero falhas**
-- [ ] Cobertura de backend ≥ 80% linhas e branches
-- [ ] Cobertura de frontend ≥ 70% linhas e branches
-- [ ] Nenhuma falha crítica nos testes E2E aplicáveis
+### E2E Tests (Critical User Flows)
 
----
+* Validate the application from the user's perspective
+* Cover frontend ↔ backend ↔ external service integrations
+* Tool: Playwright
+* Focus on the most important business workflows
 
-## Bloqueios — Não Conclua se:
+### What Every Test Should Cover (When Applicable)
 
-- ❌ Existirem erros de lint
-- ❌ Qualquer teste estiver falhando
-- ❌ A cobertura estiver abaixo do mínimo exigido
-- ❌ Houver falhas críticas nos testes E2E
-
-**Corrija todos os problemas encontrados antes de finalizar.**
+* ✅ Happy Path — primary flow working correctly
+* ✅ Failure Path — expected errors handled correctly
+* ✅ Relevant Edge Cases — boundaries and extreme values
 
 ---
 
-## Fluxo de Trabalho do Agente
+## When to Create or Update Tests
 
+| Situation                  | Required Action                             |
+| -------------------------- | ------------------------------------------- |
+| New business rule          | Create unit tests (backend)                 |
+| New REST endpoint          | Create integration tests                    |
+| New critical user workflow | Create/update E2E tests                     |
+| Business rule modification | Update existing tests in the affected layer |
+| Bug fix                    | Add a test that reproduces the fixed bug    |
+| Refactoring                | Ensure existing tests continue to pass      |
+
+---
+
+### Mocking Rules for Unit Tests
+
+- Unit tests MUST execute in complete isolation from external systems.
+- All infrastructure dependencies MUST be mocked, including:
+  - Databases and repositories
+  - External APIs and SDKs
+  - Message brokers and queues
+  - Cache providers
+  - File storage services
+  - Email and notification services
+- Use NestJS Dependency Injection to replace providers with mocks in the testing module.
+- Use Jest (`jest.fn`, `jest.spyOn`, `jest.mock`) as the standard mocking framework.
+- Unit tests MUST NOT perform network calls, database access, file system operations, or communication with external services.
+- Mock only direct dependencies of the unit under test.
+- Avoid complex mocks that replicate production behavior; integration between components must be validated through integration tests.
+- Mocks should be deterministic and explicitly configured within each test scenario.
+
+## Completion Checklist
+
+Before declaring a task complete, confirm:
+
+* [ ] ESLint executed — **zero errors**
+* [ ] Unit tests created/updated for the affected layer
+* [ ] Integration tests created/updated for affected APIs
+* [ ] E2E tests created/updated for impacted critical workflows
+* [ ] All tests passing — **zero failures**
+* [ ] Backend coverage ≥ 80% lines and branches
+* [ ] Frontend coverage ≥ 70% lines and branches
+* [ ] No critical failures in applicable E2E tests
+
+---
+
+## Blocking Conditions — Do Not Complete If:
+
+* ❌ Lint errors exist
+* ❌ Any test is failing
+* ❌ Coverage is below the required minimum
+* ❌ Critical failures exist in E2E tests
+
+**Fix all identified issues before finalizing.**
+
+---
+
+## Agent Workflow
+
+```text
+implement change
+       ↓
+create/update tests for the affected layer
+       ↓
+run lint → fix errors → repeat until zero errors
+       ↓
+run unit tests → fix failures → repeat until all pass
+       ↓
+run integration tests → fix failures → repeat until all pass
+       ↓
+run E2E tests (when applicable) → fix critical failures
+       ↓
+verify coverage → write additional tests if below threshold
+       ↓
+✅ task completed
 ```
-implementar alteração
-       ↓
-criar/atualizar testes da camada afetada
-       ↓
-executar lint → corrigir erros → repetir até zero erros
-       ↓
-executar testes unitários → corrigir falhas → repetir até tudo passar
-       ↓
-executar testes de integração → corrigir falhas → repetir até tudo passar
-       ↓
-executar testes E2E (quando aplicável) → corrigir falhas críticas
-       ↓
-verificar cobertura → escrever mais testes se abaixo do mínimo
-       ↓
-✅ tarefa concluída
-```
 
 ---
 
-## Referência Rápida de Ferramentas
+## Quick Tool Reference
 
-| Categoria   | Ferramenta       | Camada            |
-| ----------- | ---------------- | ----------------- |
-| Lint        | ESLint           | Todas             |
-| Unitário    | Jest             | Backend           |
-| Integração  | Jest + Supertest | Backend (API)     |
-| E2E         | Playwright       | Full-stack        |
+| Category    | Tool             | Layer         |
+| ----------- | ---------------- | ------------- |
+| Lint        | ESLint           | All           |
+| Unit        | Jest             | Backend       |
+| Integration | Jest + Supertest | Backend (API) |
+| E2E         | Playwright       | Full-stack    |

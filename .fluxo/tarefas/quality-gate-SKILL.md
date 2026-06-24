@@ -100,6 +100,23 @@ Se a cobertura estiver abaixo do mínimo, **escreva mais testes** antes de concl
 
 ---
 
+#### Mocking Rules for Unit Tests
+
+- Unit tests MUST execute in complete isolation from external systems.
+- All infrastructure dependencies MUST be mocked, including:
+  - Databases and repositories
+  - External APIs and SDKs
+  - Message brokers and queues
+  - Cache providers
+  - File storage services
+  - Email and notification services
+- Use NestJS Dependency Injection to replace providers with mocks in the testing module.
+- Use Jest (`jest.fn`, `jest.spyOn`, `jest.mock`) as the standard mocking framework.
+- Unit tests MUST NOT perform network calls, database access, file system operations, or communication with external services.
+- Mock only direct dependencies of the unit under test.
+- Avoid complex mocks that replicate production behavior; integration between components must be validated through integration tests.
+- Mocks should be deterministic and explicitly configured within each test scenario.
+
 ## Checklist de Conclusão
 
 Antes de declarar uma tarefa como concluída, confirme:

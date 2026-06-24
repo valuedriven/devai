@@ -2,12 +2,11 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useInternalAuth } from '@/hooks/AuthContext'
 import './LoginForm.css'
 
 export function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirectUrl = searchParams.get('redirect') || '/'
   const { login } = useInternalAuth()

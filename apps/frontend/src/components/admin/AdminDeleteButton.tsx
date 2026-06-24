@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useInternalAuth } from "@/hooks/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Trash, Loader2 } from "lucide-react";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 
 interface AdminDeleteButtonProps {
     id: string;
@@ -22,10 +23,9 @@ export function AdminDeleteButton({
 }: AdminDeleteButtonProps) {
     const { token } = useInternalAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleDelete = async () => {
-        if (!confirm(confirmMessage)) return;
-
         setIsLoading(true);
         try {
             const success = await onDelete(id, token ?? undefined);
@@ -41,15 +41,25 @@ export function AdminDeleteButton({
     };
 
     return (
-        <Button
-            variant="ghost"
-            size="icon"
-            className="text-red-500 hover:text-red-600 hover:bg-red-50"
-            onClick={handleDelete}
-            disabled={isLoading}
-            title={label || "Excluir"}
-        >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash className="h-4 w-4" />}
-        </Button>
+        <>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                onClick={() => setIsDialogOpen(true)}
+                disabled={isLoading}
+                title={label || "Excluir"}
+            >
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash className="h-4 w-4" />}
+            </Button>
+
+            <DeleteConfirmDialog
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                onConfirm={handleDelete}
+                message={confirmMessage}
+            />
+        </>
     );
 }
+

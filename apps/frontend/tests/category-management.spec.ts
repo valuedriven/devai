@@ -9,88 +9,103 @@ test.describe('Category Management', () => {
   });
 
   test('9.1 Admin can create a category successfully', async ({ page }) => {
-    // Click "Add Category" button
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
+    const catName = `Eletrônicos Teste ${Date.now()}`;
+    
+    // Click "Nova Categoria" link to open the form page
+    await page.getByRole('link', { name: /Nova Categoria/i }).click();
+
+    // Wait for navigation to the form page
+    await page.waitForURL(/\/admin\/categories\/new/);
 
     // Fill in category name
-    const nameInput = page.getByLabel(/Nome da categoria/i);
-    await nameInput.fill('Eletrônicos Teste');
+    await page.getByLabel(/Nome da Categoria/i).fill(catName);
 
     // Submit the form
-    await page.getByRole('button', { name: /Nova Categoria/i }).last().click();
+    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
 
-    // Should show success message
-    await expect(page.getByText(/categoria criada com sucesso/i)).toBeVisible();
+    // Should navigate back to list with success message
+    await page.waitForURL('**/admin/categories');
 
     // Category should appear in the table
-    await expect(page.locator('table').getByText('Eletrônicos Teste')).toBeVisible();
+    await expect(page.locator('table').getByText(catName)).toBeVisible();
   });
 
   test('9.2 Admin can edit a category', async ({ page }) => {
+    const baseName = `Categoria para Editar ${Date.now()}`;
+    const editName = `Categoria Editada ${Date.now()}`;
+
     // First create a category to edit
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
-    const nameInput = page.getByLabel(/Nome da categoria/i);
-    await nameInput.fill('Categoria para Editar');
-    await page.getByRole('button', { name: /Nova Categoria/i }).last().click();
-    await expect(page.getByText(/categoria criada com sucesso/i)).toBeVisible();
+    await page.getByRole('link', { name: /Nova Categoria/i }).click();
+    await page.waitForURL(/\/admin\/categories\/new/);
+    await page.getByLabel(/Nome da Categoria/i).fill(baseName);
+    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
+    await page.waitForURL('**/admin/categories');
 
     // Wait for table to update
     await page.waitForTimeout(500);
 
-    // Find the edit button for this category and click it
-    const editButton = page.locator('tr', { hasText: 'Categoria para Editar' }).getByRole('button', { name: /Editar/i });
+    // Find the edit link (pencil icon with title "Editar") for this category
+    const editButton = page.locator('tr', { hasText: baseName }).getByTitle('Editar');
     await editButton.click();
 
+    // Wait for navigation to the edit page
+    await page.waitForURL(/\/admin\/categories\/.*\/edit/);
+
     // Clear and fill new name
-    const editNameInput = page.getByLabel(/Nome da categoria/i);
+    const editNameInput = page.getByLabel(/Nome da Categoria/i);
     await editNameInput.clear();
-    await editNameInput.fill('Categoria Editada');
+    await editNameInput.fill(editName);
 
     // Submit the form
-    await page.getByRole('button', { name: /Salvar/i }).click();
+    await page.getByRole('button', { name: /Salvar Alterações/i }).click();
 
-    // Should show success message
-    await expect(page.getByText(/categoria atualizada com sucesso/i)).toBeVisible();
+    // Should navigate back to list
+    await page.waitForURL('**/admin/categories');
 
     // Updated category should appear in the table
-    await expect(page.locator('table').getByText('Categoria Editada')).toBeVisible();
+    await expect(page.locator('table').getByText(editName)).toBeVisible();
   });
 
   test('9.3 Admin can delete a category', async ({ page }) => {
+    const delName = `Categoria para Excluir ${Date.now()}`;
+
     // First create a category to delete
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
-    const nameInput = page.getByLabel(/Nome da categoria/i);
-    await nameInput.fill('Categoria para Excluir');
-    await page.getByRole('button', { name: /Nova Categoria/i }).last().click();
-    await expect(page.getByText(/categoria criada com sucesso/i)).toBeVisible();
+    await page.getByRole('link', { name: /Nova Categoria/i }).click();
+    await page.waitForURL(/\/admin\/categories\/new/);
+    await page.getByLabel(/Nome da Categoria/i).fill(delName);
+    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
+    await page.waitForURL('**/admin/categories');
 
     // Wait for table to update
     await page.waitForTimeout(500);
 
-    // Find the delete button for this category and click it
-    const deleteButton = page.locator('tr', { hasText: 'Categoria para Excluir' }).getByRole('button', { name: /Excluir/i });
+    // Find the delete button for this category
+    const deleteButton = page.locator('tr', { hasText: delName }).getByTitle('Excluir');
     await deleteButton.click();
 
-    // Confirm deletion in dialog
-    await page.getByRole('button', { name: /Confirmar/i }).click();
+    // Click confirm in the custom React dialog
+    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).click();
 
-    // Should show success message
-    await expect(page.getByText(/categoria excluída com sucesso/i)).toBeVisible();
+    // Wait for the delete to complete and refresh
+    await page.waitForTimeout(1000);
 
-    // Category should no longer appear in the table (or be shown as inactive)
-    await page.waitForTimeout(500);
+    // Category should no longer appear in the table
+    await expect(page.locator('table').getByText(delName)).not.toBeVisible();
   });
 
   test('9.4 Non-admin user cannot access /admin/categories', async ({ page }) => {
     // First log out if logged in
-    await page.goto('/logout');
-    await page.waitForTimeout(500);
+    await page.context().clearCookies();
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
 
     // Log in as a non-admin user
     await page.goto('/login');
-    await page.getByLabel(/Email/i).fill('user@example.com');
-    await page.getByLabel(/Senha/i).fill('userpassword');
-    await page.getByRole('button', { name: /Entrar/i }).click();
+    await page.getByLabel('E-mail').fill(process.env.CUSTOMER_EMAIL || 'jps012009@yahoo.com.br');
+    await page.getByLabel('Senha', { exact: true }).fill(process.env.CUSTOMER_PASSWORD || 'jps012009@yahoo.com.br');
+    await page.getByRole('button', { name: 'Entrar' }).click();
+    await page.waitForURL('/');
 
     // Try to access admin categories page
     await page.goto('/admin/categories');
@@ -100,28 +115,34 @@ test.describe('Category Management', () => {
   });
 
   test('9.5 All category management tests pass', async ({ page }) => {
+    const metaName = `Teste Completo ${Date.now()}`;
+    const metaEditName = `Teste Editado ${Date.now()}`;
+
     // This is a meta-test that verifies all category functionality works together
     // Create
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
-    await page.getByLabel(/Nome da categoria/i).fill('Teste Completo');
-    await page.getByRole('button', { name: /Nova Categoria/i }).last().click();
-    await expect(page.getByText(/categoria criada com sucesso/i)).toBeVisible();
+    await page.getByRole('link', { name: /Nova Categoria/i }).click();
+    await page.waitForURL(/\/admin\/categories\/new/);
+    await page.getByLabel(/Nome da Categoria/i).fill(metaName);
+    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
+    await page.waitForURL('**/admin/categories');
 
     // Verify in list
-    await expect(page.locator('table').getByText('Teste Completo')).toBeVisible();
+    await expect(page.locator('table').getByText(metaName)).toBeVisible();
 
     // Edit
-    const editButton = page.locator('tr', { hasText: 'Teste Completo' }).getByRole('button', { name: /Editar/i });
+    const editButton = page.locator('tr', { hasText: metaName }).getByTitle('Editar');
     await editButton.click();
-    await page.getByLabel(/Nome da categoria/i).fill('Teste Editado');
-    await page.getByRole('button', { name: /Salvar/i }).click();
-    await expect(page.getByText(/categoria atualizada com sucesso/i)).toBeVisible();
+    await page.waitForURL(/\/admin\/categories\/.*\/edit/);
+    await page.getByLabel(/Nome da Categoria/i).fill(metaEditName);
+    await page.getByRole('button', { name: /Salvar Alterações/i }).click();
+    await page.waitForURL('**/admin/categories');
 
     // Delete
-    const deleteButton = page.locator('tr', { hasText: 'Teste Editado' }).getByRole('button', { name: /Excluir/i });
+    const deleteButton = page.locator('tr', { hasText: metaEditName }).getByTitle('Excluir');
     await deleteButton.click();
-    await page.getByRole('button', { name: /Confirmar/i }).click();
-    await expect(page.getByText(/categoria excluída com sucesso/i)).toBeVisible();
+    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).click();
+    await page.waitForTimeout(1000);
+    await expect(page.locator('table').getByText(metaEditName)).not.toBeVisible();
   });
 
 });

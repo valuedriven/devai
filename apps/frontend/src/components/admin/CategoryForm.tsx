@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Loader2 } from "lucide-react";
 import { Category } from "@/lib/types";
-import { createCategory, updateCategory } from "@/lib/data";
+import { createCategoryAction, updateCategoryAction } from "@/lib/actions";
 import { useInternalAuth } from "@/hooks/AuthContext";
 
 interface CategoryFormProps {
@@ -31,12 +31,12 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
         try {
             let result;
             if (isEditing && initialData?.id) {
-                result = await updateCategory(initialData.id, {
+                result = await updateCategoryAction(initialData.id, {
                     name,
                     active: isActive
                 }, token ?? undefined);
             } else {
-                result = await createCategory({
+                result = await createCategoryAction({
                     name,
                     active: isActive
                 }, token ?? undefined);
@@ -63,8 +63,10 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Nome da Categoria</label>
+                    <label htmlFor="category-name" className="text-sm font-medium">Nome da Categoria</label>
                     <Input
+                        id="category-name"
+                        name="category-name"
                         placeholder="Ex: Informática"
                         value={name}
                         onChange={(e) => setName(e.target.value)}

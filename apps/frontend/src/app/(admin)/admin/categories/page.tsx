@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { buttonVariants } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { getCategories } from "@/lib/data";
@@ -12,8 +13,11 @@ import { Category } from "@/lib/types";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminCategoriesPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+
     const search = (await searchParams).search ?? '';
-    const categories = await getCategories(search);
+    const categories = await getCategories(search, token);
 
 
     const columns: Column<Category>[] = [
