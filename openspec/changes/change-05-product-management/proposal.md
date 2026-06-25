@@ -46,10 +46,14 @@ Full CRUD for products. Admin-only endpoints. Products reference categories and 
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `ProductService` — CRUD, stock validation, category validation
 - Edge cases: negative stock, inactive category reference, duplicate name
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - CRUD endpoints — happy path (admin)
 - 403 for non-admin
@@ -57,6 +61,9 @@ Full CRUD for products. Admin-only endpoints. Products reference categories and 
 - Image upload endpoint
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Admin creates product with image, edits price, deactivates
 - Product appears/disappears correctly based on active flag

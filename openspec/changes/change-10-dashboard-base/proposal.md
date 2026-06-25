@@ -45,14 +45,21 @@ Admin dashboard with key performance indicators: total sales, received amount, a
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `DashboardService` — aggregation queries, edge cases: empty data, all cancelled, mixed statuses
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - `GET /v1/admin/dashboard` — returns correct KPIs for seeded data
 - 403 for non-admin / unauthenticated
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Admin views dashboard with correct KPI values
 - KPIs update after new order is created and paid

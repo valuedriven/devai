@@ -43,10 +43,14 @@ Full CRUD for customers. Admin-only endpoints. Customers represent the people wh
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `CustomerService` — create, update, soft delete, list with search
 - Edge cases: duplicate email, delete with orders (blocked), delete without orders (allowed)
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - CRUD endpoints — happy path (admin)
 - 403 for non-admin
@@ -54,6 +58,9 @@ Full CRUD for customers. Admin-only endpoints. Customers represent the people wh
 - Delete endpoint: customer with orders returns 409
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Admin creates, edits, and deactivates a customer
 - Attempt to delete customer with orders (blocked)

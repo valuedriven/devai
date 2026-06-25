@@ -53,11 +53,15 @@ Customer-facing order flow: shopping cart, order creation with stock validation,
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `OrderService` — order creation, stock validation, price calculation, cancel rules
 - Edge cases: empty order (rejected), inactive product (rejected), insufficient stock (rejected), duplicate SKU
 - Order state transitions (New → Cancelled)
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - `POST /v1/orders` — happy path (authenticated customer)
 - `POST /v1/orders` — unauthenticated (401)
@@ -66,6 +70,9 @@ Customer-facing order flow: shopping cart, order creation with stock validation,
 - Cancel paid order (blocked)
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Customer browses catalog → adds to cart → creates order → sees confirmation
 - Customer views order history

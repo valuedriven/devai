@@ -43,10 +43,14 @@ Public-facing product showcase. No authentication required. Products can be brow
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `CatalogService` — product listing, filtering by category, search
 - Edge cases: empty catalog, only inactive products, out-of-stock flag
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - `GET /v1/catalog/products` — returns only active products
 - `GET /v1/catalog/products/:id` — returns product detail
@@ -54,6 +58,9 @@ Public-facing product showcase. No authentication required. Products can be brow
 - No auth required (public access)
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Browse catalog as unauthenticated user
 - Search for products

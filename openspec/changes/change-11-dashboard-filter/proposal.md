@@ -40,15 +40,22 @@ Add period filter to the admin dashboard, allowing the admin to select a custom 
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `DashboardService` — filter by date range, edge cases: future dates, zero-length range, very old dates
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - `GET /v1/admin/dashboard?startDate=...&endDate=...` — returns filtered KPIs
 - Invalid date parameters return 422
 - Missing parameters default to 30 days
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Admin selects date range, applies filter, sees updated KPIs
 - Admin uses preset buttons

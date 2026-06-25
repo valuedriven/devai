@@ -60,12 +60,16 @@ Payment registration:
 
 ### Unit Tests
 
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
+
 - `OrderManagementService` — all valid/invalid state transitions
 - `PaymentService` — register, confirm, refund
 - `AuditService` — log creation with all required fields
 - Edge cases: transition from invalid state, duplicate payment, payment > order total
 
 ### Integration Tests
+
+- **Coverage**: Minimum 80% coverage (statements, branches, functions, lines).
 
 - `PATCH /v1/admin/orders/:id/status` — valid transitions
 - `PATCH /v1/admin/orders/:id/status` — invalid transitions (422)
@@ -75,6 +79,9 @@ Payment registration:
 - Audit entries created on every mutation
 
 ### E2E Tests
+
+- **Planning**: Use `.agents/prompts/playwright-test-planner.md`
+- **Generation**: Use `.agents/prompts/playwright-test-generator.md`
 
 - Admin lists orders, filters by status
 - Admin advances order through full state chain
