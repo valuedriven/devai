@@ -41,6 +41,7 @@ describe('CategoryController (Integration)', () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await app.close();
   });
 

@@ -3,11 +3,14 @@ import { test, expect } from '@playwright/test';
 
 test.describe('1. Fluxo de Login', () => {
 
-  test('1.1 Login com credenciais válidas (ADMIN)', async ({ page }) => {
-    // Estado inicial: Não autenticado
-    // Remove storage state since this test is testing the login form itself
+  test.beforeEach(async ({ page }) => {
+    // Clear cookies and local storage before each test
     await page.context().clearCookies();
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+  });
 
+  test('1.1 Login com credenciais válidas (ADMIN)', async ({ page }) => {
     // 2. Navegar para /login
     await page.goto('/login');
 
@@ -28,7 +31,7 @@ test.describe('1. Fluxo de Login', () => {
     await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
     
     // - Nenhum erro exibido
-    await expect(page.getByTestId('login-error')).not.toBeVisible();
+    await expect(page.getByTestId('login-error')).toBeHidden();
   });
 
   test('1.2 Login com credenciais válidas (CUSTOMER)', async ({ page }) => {
@@ -53,8 +56,8 @@ test.describe('1. Fluxo de Login', () => {
     const sidebar = page.locator('.sidebar-desktop');
     await expect(sidebar.getByText(/meus pedidos/i)).toBeVisible();
     // - Menu ADMIN não aparece
-    await expect(sidebar.getByText(/administração/i)).not.toBeVisible();
-    await expect(sidebar.getByText(/dashboard/i)).not.toBeVisible();
+    await expect(sidebar.getByText(/administração/i)).toBeHidden();
+    await expect(sidebar.getByText(/dashboard/i)).toBeHidden();
   });
 
   test('1.3 Login com e-mail inválido', async ({ page }) => {

@@ -43,6 +43,10 @@ describe('AuthGuard', () => {
     guard = module.get<AuthGuard>(AuthGuard);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should bypass auth for public endpoints', async () => {
     mockReflector.getAllAndOverride.mockReturnValue(true);
     const result = await guard.canActivate(mockExecutionContext() as any);

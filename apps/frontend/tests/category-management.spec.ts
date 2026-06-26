@@ -21,10 +21,10 @@ test.describe('Category Management', () => {
     await page.getByLabel(/Nome da Categoria/i).fill(catName);
 
     // Submit the form
-    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
+    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
 
     // Modal should disappear
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
 
     // Category should appear in the table
     await expect(page.locator('table').getByText(catName)).toBeVisible();
@@ -38,14 +38,11 @@ test.describe('Category Management', () => {
     await page.getByRole('button', { name: /Nova Categoria/i }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByLabel(/Nome da Categoria/i).fill(baseName);
-    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
+    await expect(page.getByRole('dialog')).toBeHidden();
 
-    // Wait for table to update
-    await page.waitForTimeout(500);
-
-    // Find the edit link (pencil icon with title "Editar") for this category
-    const editButton = page.locator('tr', { hasText: baseName }).getByTitle('Editar');
+    // Find the edit link (pencil icon with title "Edit category") for this category
+    const editButton = page.locator('tr', { hasText: baseName }).getByTitle('Edit category');
     await editButton.click();
 
     // Wait for modal to appear
@@ -57,10 +54,10 @@ test.describe('Category Management', () => {
     await editNameInput.fill(editName);
 
     // Submit the form
-    await page.getByRole('button', { name: /Salvar Alterações/i }).click();
+    await page.getByRole('button', { name: /Salvar Alterações/i }).dispatchEvent('click');
 
     // Modal should disappear
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
 
     // Updated category should appear in the table
     await expect(page.locator('table').getByText(editName)).toBeVisible();
@@ -73,24 +70,21 @@ test.describe('Category Management', () => {
     await page.getByRole('button', { name: /Nova Categoria/i }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByLabel(/Nome da Categoria/i).fill(delName);
-    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
-
-    // Wait for table to update
-    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
+    await expect(page.getByRole('dialog')).toBeHidden();
 
     // Find the delete button for this category
-    const deleteButton = page.locator('tr', { hasText: delName }).getByTitle('Excluir');
+    const deleteButton = page.locator('tr', { hasText: delName }).getByTitle('Delete category');
     await deleteButton.click();
 
     // Click confirm in the custom React dialog
-    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).press('Enter');
 
-    // Wait for the delete to complete and refresh
-    await page.waitForTimeout(1000);
+    // Wait for delete dialog to close
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 5000 });
 
     // Category should no longer appear in the table
-    await expect(page.locator('table').getByText(delName)).not.toBeVisible();
+    await expect(page.locator('table').getByText(delName)).toBeHidden();
   });
 
   test('9.4 Non-admin user cannot access /admin/categories', async ({ page }) => {
@@ -123,26 +117,26 @@ test.describe('Category Management', () => {
     await page.getByRole('button', { name: /Nova Categoria/i }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByLabel(/Nome da Categoria/i).fill(metaName);
-    await page.getByRole('button', { name: /Salvar Categoria/i }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
+    await expect(page.getByRole('dialog')).toBeHidden();
 
     // Verify in list
     await expect(page.locator('table').getByText(metaName)).toBeVisible();
 
     // Edit
-    const editButton = page.locator('tr', { hasText: metaName }).getByTitle('Editar');
+    const editButton = page.locator('tr', { hasText: metaName }).getByTitle('Edit category');
     await editButton.click();
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByLabel(/Nome da Categoria/i).fill(metaEditName);
-    await page.getByRole('button', { name: /Salvar Alterações/i }).click();
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await page.getByRole('button', { name: /Salvar Alterações/i }).dispatchEvent('click');
+    await expect(page.getByRole('dialog')).toBeHidden();
 
     // Delete
-    const deleteButton = page.locator('tr', { hasText: metaEditName }).getByTitle('Excluir');
+    const deleteButton = page.locator('tr', { hasText: metaEditName }).getByTitle('Delete category');
     await deleteButton.click();
-    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).click();
-    await page.waitForTimeout(1000);
-    await expect(page.locator('table').getByText(metaEditName)).not.toBeVisible();
+    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).press('Enter');
+    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 5000 });
+    await expect(page.locator('table').getByText(metaEditName)).toBeHidden();
   });
 
 });

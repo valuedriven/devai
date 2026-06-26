@@ -11,9 +11,8 @@ setup('authenticate as admin', async ({ page }) => {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
 
-  if (!email || !password) {
-    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env');
-  }
+  expect(email).toBeTruthy();
+  expect(password).toBeTruthy();
 
   // 1. Navegar para /login
   await page.goto('/login');
@@ -41,9 +40,8 @@ setup('authenticate as customer', async ({ page }) => {
   const email = process.env.CUSTOMER_EMAIL;
   const password = process.env.CUSTOMER_PASSWORD;
 
-  if (!email || !password) {
-    throw new Error('CUSTOMER_EMAIL and CUSTOMER_PASSWORD must be set in .env');
-  }
+  expect(email).toBeTruthy();
+  expect(password).toBeTruthy();
 
   // 1. Navegar para /login
   await page.goto('/login');

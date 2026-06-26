@@ -44,7 +44,7 @@ export function CategoryManager({ initialData, total, currentPage, limit, includ
 
     const handleDeleteConfirm = async () => {
         if (!deleteCategory) return;
-        const success = await deleteCategoryAction(deleteCategory.id);
+        const success = await deleteCategoryAction(deleteCategory.id, token || undefined);
         if (success) {
             router.refresh();
         } else {
@@ -104,8 +104,8 @@ export function CategoryManager({ initialData, total, currentPage, limit, includ
             {/* We will modify CategoryForm to handle its own dialog logic or we wrap it here */}
             {/* I will add an isOpen prop to CategoryForm later, for now let's wrap it in a modal div */}
             {(isCreateOpen || editCategory) && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" role="dialog">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
                         <button 
                             onClick={() => { setIsCreateOpen(false); setEditCategory(null); }}
                             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"

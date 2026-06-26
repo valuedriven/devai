@@ -3,17 +3,11 @@ import { resolve } from 'path';
 dotenv.config({ path: resolve(__dirname, '../../../.env') });
 
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  INestApplication,
-  ValidationPipe,
-  ExecutionContext,
-  ForbiddenException,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
-import { AuthGuard } from './../src/core/guards/auth.guard';
-import { RolesGuard } from './../src/core/guards/roles.guard';
+import { ClerkService } from './../src/core/auth/clerk.service';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
@@ -26,7 +20,7 @@ describe('Auth (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(require('./../src/core/auth/clerk.service').ClerkService)
+      .overrideProvider(ClerkService)
       .useValue({
         verifyToken: jest.fn().mockResolvedValue({ sub: 'test-user-id' }),
         getUser: jest.fn().mockResolvedValue({
@@ -117,16 +111,10 @@ describe('Auth (e2e)', () => {
 
   describe('Role enforcement', () => {
     it('should enforce ADMIN role on admin endpoints', async () => {
-      const mockUser = {
-        id: 'customer-user-id',
-        publicMetadata: { roles: ['customer'] },
-        emailAddresses: [{ emailAddress: 'customer@test.com' }],
-      };
-
       const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideProvider(require('./../src/core/auth/clerk.service').ClerkService)
+        .overrideProvider(ClerkService)
         .useValue({
           verifyToken: jest.fn().mockResolvedValue({ sub: 'customer-user-id' }),
           getUser: jest.fn().mockResolvedValue({
@@ -146,7 +134,7 @@ describe('Auth (e2e)', () => {
         .send({ name: 'Test', price: 10, stock: 1, categoryId: 1 })
         .set('Authorization', 'Bearer customer-token')
         .expect(403);
-        
+
       await customerApp.close();
     });
   });

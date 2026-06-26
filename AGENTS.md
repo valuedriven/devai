@@ -336,6 +336,12 @@ A task is complete when:
 * Build succeeds.
 * No known regression has been introduced.
 
+### Task Completion Criteria: Linting Requirement
+
+- **Mandatory Check**: You must run `npm run lint` before marking any task as complete.
+- **Zero Tolerance**: Do not conclude a task if the linter returns any errors or warnings.
+- **Resolution**: You must fix all identified linting issues before final submission.
+
 ---
 
 # 7. Documentation Usage

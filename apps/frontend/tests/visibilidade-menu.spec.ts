@@ -38,9 +38,9 @@ test.describe('5. Visibilidade Baseada em Papel (UI)', () => {
     await expect(sidebar.getByText('Meus pedidos')).toBeVisible();
     
     // - Itens ADMIN não visíveis
-    await expect(sidebar.getByText('Administração')).not.toBeVisible();
-    await expect(sidebar.getByText('Dashboard')).not.toBeVisible();
-    await expect(sidebar.getByText('Categorias')).not.toBeVisible();
+    await expect(sidebar.getByText('Administração')).toBeHidden();
+    await expect(sidebar.getByText('Dashboard')).toBeHidden();
+    await expect(sidebar.getByText('Categorias')).toBeHidden();
 
     await context.close();
   });
@@ -59,10 +59,10 @@ test.describe('5. Visibilidade Baseada em Papel (UI)', () => {
     await expect(page.getByRole('link', { name: /Login/i }).first()).toBeVisible();
     
     // - Itens ADMIN ausentes
-    await expect(sidebar.getByText('Administração')).not.toBeVisible();
+    await expect(sidebar.getByText('Administração')).toBeHidden();
     
     // - Itens CUSTOMER ausentes
-    await expect(sidebar.getByText('Meus pedidos')).not.toBeVisible();
+    await expect(sidebar.getByText('Meus pedidos')).toBeHidden();
   });
 
 });

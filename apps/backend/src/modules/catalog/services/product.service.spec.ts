@@ -29,6 +29,10 @@ describe('ProductService', () => {
     service = module.get<ProductService>(ProductService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

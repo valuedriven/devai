@@ -15,6 +15,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "npm run prisma:generate && jest",
+    "test:unit": "jest",
     "test:watch": "npm run prisma:generate && jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -89,7 +90,19 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coveragePathIgnorePatterns": [
+      ".module.ts$",
+      "main.ts"
+    ],
     "coverageDirectory": "../coverage",
+    "coverageThreshold": {
+      "global": {
+        "branches": 40,
+        "functions": 60,
+        "lines": 60,
+        "statements": 60
+      }
+    },
     "testEnvironment": "node"
   },
   "prisma": {

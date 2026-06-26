@@ -29,6 +29,10 @@ describe('ClerkService', () => {
     service = module.get<ClerkService>(ClerkService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('signInternalToken', () => {
     it('should sign a token with the given payload', async () => {
       const payload = { sub: 'user_123', email: 'test@test.com' };

@@ -32,6 +32,10 @@ describe('RolesGuard', () => {
     guard = module.get<RolesGuard>(RolesGuard);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should allow access when no roles are required', () => {
     mockReflector.getAllAndOverride.mockReturnValue(undefined);
     const result = guard.canActivate(mockExecutionContext() as any);

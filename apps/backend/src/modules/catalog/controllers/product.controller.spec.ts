@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductController } from './product.controller';
 import { ProductService } from '../services/product.service';
 import { ClerkService } from '../../../core/auth/clerk.service';
+import { createMockClerkService } from '../../../core/auth/__mocks__/clerk-service.mock';
 import { AuthGuard } from '../../../core/guards/auth.guard';
 import { RolesGuard } from '../../../core/guards/roles.guard';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
@@ -19,10 +20,7 @@ describe('ProductController (Integration)', () => {
     remove: jest.fn(),
   };
 
-  const mockClerkService = {
-    verifyToken: jest.fn(),
-    getUser: jest.fn(),
-  };
+  const mockClerkService = createMockClerkService();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -52,6 +50,7 @@ describe('ProductController (Integration)', () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
     await app.close();
   });
 

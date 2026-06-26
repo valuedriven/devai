@@ -2,7 +2,10 @@ import { IsString, IsBoolean, IsOptional, MaxLength } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateCategoryDto {
-  @ApiPropertyOptional({ description: 'The updated name of the category', maxLength: 100 })
+  @ApiPropertyOptional({
+    description: 'The updated name of the category',
+    maxLength: 100,
+  })
   @IsString()
   @IsOptional()
   @MaxLength(100)

@@ -23,7 +23,7 @@ test.describe('3. Fluxo de Logout', () => {
     await expect(page.getByRole('link', { name: /Login/i }).first()).toBeVisible();
     
     // - user-dropdown-container não visível
-    await expect(page.getByTestId('user-dropdown-container')).not.toBeVisible();
+    await expect(page.getByTestId('user-dropdown-container')).toBeHidden();
 
     // Verifica cookie (não deve existir ou deve estar vazio)
     const cookies = await page.context().cookies();
@@ -43,7 +43,7 @@ test.describe('3. Fluxo de Logout', () => {
     await page.reload();
 
     // 2. Verificar que botão de logout não está visível
-    await expect(page.getByRole('button', { name: /Sair da Loja/i })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: /Sair da Loja/i })).toBeHidden();
 
     // - Link para /login visível
     await expect(page.getByRole('link', { name: /Login/i }).first()).toBeVisible();

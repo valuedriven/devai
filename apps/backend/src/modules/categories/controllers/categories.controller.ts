@@ -12,7 +12,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { UpdateCategoryDto } from '../dto/update-category.dto';
@@ -29,7 +29,10 @@ export class CategoriesController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new category' })
   @ApiResponse({ status: 201, description: 'Category successfully created.' })
-  @ApiResponse({ status: 409, description: 'Category with this name already exists.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Category with this name already exists.',
+  })
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
@@ -61,7 +64,10 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Update an existing category' })
   @ApiResponse({ status: 200, description: 'Category successfully updated.' })
   @ApiResponse({ status: 404, description: 'Category not found.' })
-  @ApiResponse({ status: 409, description: 'Category with this name already exists.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Category with this name already exists.',
+  })
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -73,7 +79,10 @@ export class CategoriesController {
   @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Soft delete a category' })
-  @ApiResponse({ status: 204, description: 'Category successfully soft deleted or already inactive.' })
+  @ApiResponse({
+    status: 204,
+    description: 'Category successfully soft deleted or already inactive.',
+  })
   @ApiResponse({ status: 404, description: 'Category not found.' })
   async remove(@Param('id') id: string) {
     await this.categoriesService.remove(id);
