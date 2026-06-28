@@ -1,34 +1,40 @@
 import { Badge } from "@/components/ui/Badge";
-import { getOrders } from "@/lib/data";
+import { getAdminOrders } from "@/lib/data";
 import { AdminSearchBar } from "@/components/admin/AdminSearchBar";
 import { AdminDataTable, Column } from "@/components/admin/AdminDataTable";
 import { AdminActions } from "@/components/admin/AdminActions";
 import { Order } from "@/lib/types";
+import { OrderFilters } from "./OrderFilters";
 
 import { cookies } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminOrdersPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+export default async function AdminOrdersPage({ 
+    searchParams 
+}: { 
+    searchParams: Promise<{ status?: string; startDate?: string; endDate?: string; search?: string }> 
+}) {
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
  
-    const search = (await searchParams).search ?? '';
-    const orders = await getOrders(undefined, search, token);
+    const filters = await searchParams;
+    const orders = await getAdminOrders(token || '', filters);
+    
     const statusToneMap: Record<string, "neutral" | "success" | "info" | "error" | "warning"> = {
-        "Novo": "neutral",
-        "Pago": "success",
-        "Preparação": "info",
-        "Faturado": "info",
-        "Despachado": "info",
-        "Entregue": "success",
-        "Cancelado": "error",
+        "New": "neutral",
+        "Paid": "success",
+        "Preparation": "info",
+        "Invoiced": "info",
+        "Shipped": "info",
+        "Delivered": "success",
+        "Cancelled": "error",
     };
 
     const columns: Column<Order>[] = [
         {
             header: "ID",
-            cell: (order) => <span className="font-medium">#{order.id}</span>,
+            cell: (order) => <span className="font-medium">#{order.number || order.id.slice(0, 8)}</span>,
         },
         {
             header: "Cliente",
@@ -71,7 +77,18 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
                 <h1 className="text-3xl font-bold">Pedidos</h1>
             </div>
 
-            <AdminSearchBar placeholder="Pesquisar pedidos..." />
+            <div className="flex flex-wrap gap-4 items-end bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
+                <AdminSearchBar placeholder="Pesquisar pedidos..." />
+                
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</label>
+                    <OrderFilters 
+                        currentStatus={filters.status} 
+                        currentStartDate={filters.startDate}
+                        currentEndDate={filters.endDate}
+                    />
+                </div>
+            </div>
 
             <AdminDataTable
                 columns={columns}

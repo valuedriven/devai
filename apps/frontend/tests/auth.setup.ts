@@ -8,8 +8,8 @@ const ADMIN_AUTH_FILE = path.resolve(__dirname, '.auth/admin.json');
 const CUSTOMER_AUTH_FILE = path.resolve(__dirname, '.auth/customer.json');
 
 setup('authenticate as admin', async ({ page }) => {
-  const email = process.env.ADMIN_EMAIL;
-  const password = process.env.ADMIN_PASSWORD;
+  const email = process.env.ADMIN_EMAIL!;
+  const password = process.env.ADMIN_PASSWORD!;
 
   expect(email).toBeTruthy();
   expect(password).toBeTruthy();
@@ -37,8 +37,8 @@ setup('authenticate as admin', async ({ page }) => {
 });
 
 setup('authenticate as customer', async ({ page }) => {
-  const email = process.env.CUSTOMER_EMAIL;
-  const password = process.env.CUSTOMER_PASSWORD;
+  const email = process.env.CUSTOMER_EMAIL!;
+  const password = process.env.CUSTOMER_PASSWORD!;
 
   expect(email).toBeTruthy();
   expect(password).toBeTruthy();

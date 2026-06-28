@@ -5,6 +5,7 @@ import { useInternalAuth } from "@/hooks/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Trash, Loader2 } from "lucide-react";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { useToast } from "@/components/ui/toast-context";
 
 interface AdminDeleteButtonProps {
     id: string;
@@ -25,16 +26,28 @@ export function AdminDeleteButton({
     const [isLoading, setIsLoading] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    const { addToast } = useToast();
+
     const handleDelete = async () => {
         setIsLoading(true);
         try {
             const success = await onDelete(id, token ?? undefined);
-            if (success && onSuccess) {
-                onSuccess();
+            if (success) {
+                addToast("Item excluído com sucesso!", "success");
+                if (onSuccess) {
+                    onSuccess();
+                }
+            } else {
+                addToast("Erro ao excluir item.", "error");
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Delete error:", error);
-            alert("Erro ao excluir item.");
+            const err = error as { status?: number; message?: string };
+            if (err.status === 409 || err.message?.includes("associated") || err.message?.includes("associado")) {
+                addToast("Não é possível excluir o cliente pois ele possui pedidos associados.", "error");
+            } else {
+                addToast(err.message || "Erro ao excluir item.", "error");
+            }
         } finally {
             setIsLoading(false);
         }

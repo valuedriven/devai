@@ -5,15 +5,22 @@ import { buttonVariants } from "@/components/ui/Button";
 import { getProduct, getCategories } from "@/lib/data";
 import { notFound } from "next/navigation";
 
+import { cookies } from "next/headers";
+
+export const dynamic = 'force-dynamic';
+
 interface EditProductPageProps {
     params: { id: string };
 }
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
     const { id } = await params;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("devai_auth_token")?.value;
+    
     const [product, categories] = await Promise.all([
-        getProduct(id),
-        getCategories()
+        getProduct(id, token),
+        getCategories(undefined, token)
     ]);
 
     if (!product) {

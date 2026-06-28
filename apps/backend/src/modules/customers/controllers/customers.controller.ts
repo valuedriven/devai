@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CustomersService } from '../services/customers.service';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
@@ -33,8 +34,8 @@ export class CustomersController {
 
   @Roles('admin')
   @Get()
-  findAll() {
-    return this.customersService.findAll();
+  findAll(@Query('search') search?: string) {
+    return this.customersService.findAll(search);
   }
 
   @Roles('admin')

@@ -11,7 +11,7 @@ export default async function AdminDashboard() {
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
 
-    const orders = await getOrders(undefined, undefined, token);
+    const { data: orders } = await getOrders(undefined, undefined, token);
     const totalSales = orders
         .filter(o => o.status !== 'Cancelado')
         .reduce((acc, curr) => acc + curr.total, 0);

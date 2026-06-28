@@ -5,6 +5,7 @@ const ALL_MODELS = [
   'order',
   'orderItem',
   'payment',
+  'auditLog',
 ] as const;
 const ALL_METHODS = [
   'create',

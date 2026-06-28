@@ -1,52 +1,48 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/baseTest';
 
 test.describe('3. Fluxo de Logout', () => {
 
-  test('3.1 Logout bem-sucedido', async ({ page }) => {
-    // Estado inicial: Autenticado (usa o storageState default de admin)
-    
-    // 1. Navegar para /
-    await page.goto('/');
+  test('3.1 Logout bem-sucedido', async ({ page, navigationComponent }) => {
+    await test.step('navigate to homepage', async () => {
+      await page.goto('/');
+    });
 
-    // 2. Clicar no botão "Sair da Loja" no sidebar e aguardar a requisição
-    const responsePromise = page.waitForResponse(response => response.url().includes('/auth/logout') && response.status() === 204);
-    await page.getByRole('button', { name: /Sair da Loja/i }).first().click();
-    await responsePromise;
+    await test.step('perform logout', async () => {
+      const responsePromise = page.waitForResponse(response => 
+        response.url().includes('/auth/logout') && response.status() === 204
+      );
+      await navigationComponent.logout();
+      await responsePromise;
+    });
 
-    // 4. Recarregar a página para garantir que sessão foi encerrada
-    await page.reload();
+    await test.step('reload page to verify session cleanup', async () => {
+      await page.reload();
+    });
 
-    // Resultado esperado:
-    // - Sessão encerrada
-    // - Link de login visível na navegação
-    await expect(page.getByRole('link', { name: /Login/i }).first()).toBeVisible();
-    
-    // - user-dropdown-container não visível
-    await expect(page.getByTestId('user-dropdown-container')).toBeHidden();
+    await test.step('verify logged out state in UI and cookies', async () => {
+      await expect(navigationComponent.loginLink.first()).toBeVisible();
+      await expect(navigationComponent.userDropdownContainer).toBeHidden();
 
-    // Verifica cookie (não deve existir ou deve estar vazio)
-    const cookies = await page.context().cookies();
-    const authCookie = cookies.find(c => c.name === 'devai_auth_token');
-    expect(!authCookie || authCookie.value === '').toBeTruthy();
+      const cookies = await page.context().cookies();
+      const authCookie = cookies.find(c => c.name === 'devai_auth_token');
+      expect(!authCookie || authCookie.value === '').toBeTruthy();
+    });
   });
 
-  test('3.2 Logout sem sessão ativa', async ({ page }) => {
-    // Estado inicial: Não autenticado
-    await page.context().clearCookies();
+  test('3.2 Logout sem sessão ativa', async ({ page, navigationComponent }) => {
+    await test.step('clear authentication session and reload', async () => {
+      await page.context().clearCookies();
+      await page.goto('/');
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+    });
 
-    // 1. Navegar para /
-    await page.goto('/');
-    // Limpar o localStorage que veio do storageState do playwright
-    await page.evaluate(() => localStorage.clear());
-    // Recarregar a página para aplicar a limpeza
-    await page.reload();
-
-    // 2. Verificar que botão de logout não está visível
-    await expect(page.getByRole('button', { name: /Sair da Loja/i })).toBeHidden();
-
-    // - Link para /login visível
-    await expect(page.getByRole('link', { name: /Login/i }).first()).toBeVisible();
+    await test.step('verify logout button is hidden and login link is visible', async () => {
+      await expect(navigationComponent.logoutButton).toBeHidden();
+      await expect(navigationComponent.loginLink.first()).toBeVisible();
+    });
   });
 
 });
+

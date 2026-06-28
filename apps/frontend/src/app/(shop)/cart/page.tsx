@@ -1,98 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthMe } from "@/hooks/useAuthMe";
-import { useInternalAuth } from "@/hooks/AuthContext";
 import { useCart } from "@/lib/CartContext";
-import { createOrder, syncCustomerApi } from "@/lib/data";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Trash2, CheckCircle, LogIn } from "lucide-react";
-
-
+import { Trash2, LogIn } from "lucide-react";
 
 export default function CartPage() {
-    const router = useRouter();
-    const { isLoggedIn, authMe } = useAuthMe();
-    const { token } = useInternalAuth();
-    const { items: cartItems, updateQuantity, removeItem, clearCart, totalAmount: total } = useCart();
-    const [isConfirming, setIsConfirming] = useState(false);
-    const [orderConfirmed, setOrderConfirmed] = useState(false);
-    const [orderId, setOrderId] = useState("");
+    const { isLoggedIn } = useAuthMe();
+    const { items: cartItems, updateQuantity, removeItem, totalAmount: total } = useCart();
 
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-
-    const handleConfirmOrder = async () => {
-        setIsConfirming(true);
-        try {
-            let customerId = undefined;
-            if (authMe?.id) {
-                const email = authMe.email;
-                const name = authMe.firstName ? `${authMe.firstName} ${authMe.lastName || ""}` : email;
-
-                if (email) {
-                    const customer = await syncCustomerApi({ email, name }, token ?? undefined);
-                    if (customer?.id) {
-                        customerId = Number(customer.id);
-                    }
-                }
-            }
-
-            const orderDto = {
-                customerId,
-                totalAmount: total,
-                order_items: cartItems.map(item => ({
-                    productId: Number(item.id),
-                    quantity: Number(item.quantity),
-                    unitPrice: Number(item.price)
-                })),
-                status: "Novo"
-            };
-
-            const order = await createOrder(orderDto, token ?? undefined);
-
-            if (order) {
-                setOrderId(String(order.id));
-                setOrderConfirmed(true);
-                clearCart();
-            } else {
-                alert("Ocorreu um erro ao processar seu pedido. Tente novamente.");
-            }
-        } catch (error) {
-            console.error("Erro ao confirmar pedido", error);
-            alert("Ocorreu um erro ao processar seu pedido.");
-        } finally {
-            setIsConfirming(false);
-        }
-    };
-
-    if (orderConfirmed) {
-        return (
-            <div className="container py-8">
-                <div className="order-success-container" data-testid="order-success-container">
-                    <CheckCircle className="order-success-icon" />
-                    <h1 className="order-success-title" data-testid="order-success-title">Pedido Confirmado!</h1>
-                    <p className="order-success-text">
-                        Seu pedido <strong>#{orderId}</strong> foi realizado com sucesso.
-                    </p>
-                    <p className="order-success-subtext">
-                        Você receberá uma confirmação por e-mail em breve.
-                    </p>
-                    <div className="order-success-actions">
-                        <Button size="lg" onClick={() => router.push("/orders")}>
-                            Ver Meus Pedidos
-                        </Button>
-                        <Link href="/" className="text-primary hover:underline text-sm">
-                            Continuar comprando
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="container py-8">
@@ -183,20 +103,16 @@ export default function CartPage() {
                         </CardContent>
                         <CardFooter>
                             {isLoggedIn ? (
-                                <Button
-                                    className="w-full"
-                                    size="lg"
-                                    disabled={cartItems.length === 0 || isConfirming}
-                                    loading={isConfirming}
-                                    onClick={handleConfirmOrder}
-                                >
-                                    {isConfirming ? 'Processando...' : 'Confirmar Pedido'}
-                                </Button>
+                                <Link href="/checkout" className="w-full">
+                                    <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
+                                        Ir para o Checkout
+                                    </Button>
+                                </Link>
                             ) : (
                                 <Link href="/login?redirect=/cart" className="w-full">
                                     <Button className="w-full" size="lg" disabled={cartItems.length === 0}>
                                         <LogIn className="icon-sm" style={{ marginRight: '0.5rem' }} />
-                                        Faça login para confirmar
+                                        Faça login para comprar
                                     </Button>
                                 </Link>
                             )}

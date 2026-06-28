@@ -64,47 +64,49 @@ export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormP
 
     return (
         <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-                <CardTitle>Dados da Categoria</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <label htmlFor="category-name" className="text-sm font-medium">Nome da Categoria</label>
-                    <Input
-                        id="category-name"
-                        name="category-name"
-                        placeholder="Ex: Informática"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        disabled={isLoading}
-                    />
-                </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                <CardHeader>
+                    <CardTitle>Dados da Categoria</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <label htmlFor="category-name" className="text-sm font-medium">Nome da Categoria</label>
+                        <Input
+                            id="category-name"
+                            name="category-name"
+                            placeholder="Ex: Informática"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            disabled={isLoading}
+                        />
+                    </div>
 
-                <div className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        id="active"
-                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                        checked={isActive}
-                        onChange={(e) => setIsActive(e.target.checked)}
-                        disabled={isLoading}
-                    />
-                    <label htmlFor="active" className="text-sm font-medium cursor-pointer">Categoria Ativa</label>
-                </div>
-            </CardContent>
-            <CardFooter className="flex justify-between pt-4">
-                {onCancel ? (
-                    <Button variant="outline" disabled={isLoading} onClick={onCancel}>Cancelar</Button>
-                ) : (
-                    <Link href="/admin/categories">
-                        <Button variant="outline" disabled={isLoading}>Cancelar</Button>
-                    </Link>
-                )}
-                <Button onClick={handleSave} disabled={isLoading || !name.trim()}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isEditing ? "Salvar Alterações" : "Salvar Categoria"}
-                </Button>
-            </CardFooter>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="active"
+                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                            checked={isActive}
+                            onChange={(e) => setIsActive(e.target.checked)}
+                            disabled={isLoading}
+                        />
+                        <label htmlFor="active" className="text-sm font-medium cursor-pointer">Categoria Ativa</label>
+                    </div>
+                </CardContent>
+                <CardFooter className="flex justify-between pt-4">
+                    {onCancel ? (
+                        <Button type="button" variant="outline" disabled={isLoading} onClick={onCancel}>Cancelar</Button>
+                    ) : (
+                        <Link href="/admin/categories">
+                            <Button type="button" variant="outline" disabled={isLoading}>Cancelar</Button>
+                        </Link>
+                    )}
+                    <Button type="submit" disabled={isLoading || !name.trim()}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isEditing ? "Salvar Alterações" : "Salvar Categoria"}
+                    </Button>
+                </CardFooter>
+            </form>
         </Card>
     );
 }

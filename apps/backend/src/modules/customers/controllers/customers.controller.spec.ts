@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomersController } from './customers.controller';
 import { CustomersService } from '../services/customers.service';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { AuthGuard } from '../../../core/guards/auth.guard';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -115,6 +115,18 @@ describe('CustomersController (Integration)', () => {
 
       return request(app.getHttpServer()).get('/customers').expect(200);
     });
+
+    it('should support search query parameter', async () => {
+      mockCustomersService.findAll.mockResolvedValue([
+        { id: '1', name: 'John' },
+      ]);
+
+      await request(app.getHttpServer())
+        .get('/customers?search=John')
+        .expect(200);
+
+      expect(mockCustomersService.findAll).toHaveBeenCalledWith('John');
+    });
   });
 
   describe('GET /customers/active', () => {
@@ -172,6 +184,16 @@ describe('CustomersController (Integration)', () => {
       return request(app.getHttpServer())
         .delete('/customers/uuid-1')
         .expect(200);
+    });
+
+    it('should return 409 conflict when customer has associated orders', async () => {
+      mockCustomersService.remove.mockRejectedValue(
+        new ConflictException('Cannot delete customer with associated orders'),
+      );
+
+      return request(app.getHttpServer())
+        .delete('/customers/uuid-1')
+        .expect(409);
     });
   });
 });

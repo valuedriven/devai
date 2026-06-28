@@ -1,142 +1,110 @@
 // E2E tests for category management (change-04-category-management)
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/baseTest';
+import { createCategory, SeededCategory } from './utils/api';
+import { makeCategory } from './utils/data';
 
 test.describe('Category Management', () => {
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ categoryPage }) => {
     // Navigate to categories page
-    await page.goto('/admin/categories');
+    await categoryPage.goto();
   });
 
-  test('9.1 Admin can create a category successfully', async ({ page }) => {
+  test('9.1 Admin can create a category successfully', async ({ categoryPage }) => {
     const catName = `Eletrônicos Teste ${Date.now()}`;
     
-    // Click "Nova Categoria" button to open the modal form
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
+    await test.step('create category via UI', async () => {
+      await categoryPage.createCategory(catName);
+    });
 
-    // Wait for the modal to appear
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    // Fill in category name
-    await page.getByLabel(/Nome da Categoria/i).fill(catName);
-
-    // Submit the form
-    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
-
-    // Modal should disappear
-    await expect(page.getByRole('dialog')).toBeHidden();
-
-    // Category should appear in the table
-    await expect(page.locator('table').getByText(catName)).toBeVisible();
+    await test.step('verify category is visible in list', async () => {
+      await expect(categoryPage.dialog).toBeHidden();
+      await expect(categoryPage.categoryTable.getByText(catName)).toBeVisible();
+    });
   });
 
-  test('9.2 Admin can edit a category', async ({ page }) => {
-    const baseName = `Categoria para Editar ${Date.now()}`;
+  test('9.2 Admin can edit a category', async ({ request, authToken, categoryPage }) => {
     const editName = `Categoria Editada ${Date.now()}`;
+    let category: SeededCategory;
 
-    // First create a category to edit
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel(/Nome da Categoria/i).fill(baseName);
-    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
-    await expect(page.getByRole('dialog')).toBeHidden();
+    await test.step('seed category via API', async () => {
+      category = await createCategory(request, authToken, makeCategory());
+      await categoryPage.goto();
+    });
 
-    // Find the edit link (pencil icon with title "Edit category") for this category
-    const editButton = page.locator('tr', { hasText: baseName }).getByTitle('Edit category');
-    await editButton.click();
+    await test.step('edit category via UI', async () => {
+      await categoryPage.editCategory(category.name, editName);
+    });
 
-    // Wait for modal to appear
-    await expect(page.getByRole('dialog')).toBeVisible();
-
-    // Clear and fill new name
-    const editNameInput = page.getByLabel(/Nome da Categoria/i);
-    await editNameInput.clear();
-    await editNameInput.fill(editName);
-
-    // Submit the form
-    await page.getByRole('button', { name: /Salvar Alterações/i }).dispatchEvent('click');
-
-    // Modal should disappear
-    await expect(page.getByRole('dialog')).toBeHidden();
-
-    // Updated category should appear in the table
-    await expect(page.locator('table').getByText(editName)).toBeVisible();
+    await test.step('verify updated category name in list', async () => {
+      await expect(categoryPage.dialog).toBeHidden();
+      await expect(categoryPage.categoryTable.getByText(editName)).toBeVisible();
+    });
   });
 
-  test('9.3 Admin can delete a category', async ({ page }) => {
-    const delName = `Categoria para Excluir ${Date.now()}`;
+  test('9.3 Admin can delete a category', async ({ request, authToken, categoryPage }) => {
+    let category: SeededCategory;
 
-    // First create a category to delete
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel(/Nome da Categoria/i).fill(delName);
-    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
-    await expect(page.getByRole('dialog')).toBeHidden();
 
-    // Find the delete button for this category
-    const deleteButton = page.locator('tr', { hasText: delName }).getByTitle('Delete category');
-    await deleteButton.click();
+    await test.step('seed category via API', async () => {
+      category = await createCategory(request, authToken, makeCategory());
+      await categoryPage.goto();
+    });
 
-    // Click confirm in the custom React dialog
-    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).press('Enter');
+    await test.step('delete category via UI', async () => {
+      await categoryPage.deleteCategory(category.name);
+    });
 
-    // Wait for delete dialog to close
-    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 5000 });
-
-    // Category should no longer appear in the table
-    await expect(page.locator('table').getByText(delName)).toBeHidden();
+    await test.step('verify category is removed from list', async () => {
+      await expect(categoryPage.dialog).toBeHidden({ timeout: 5000 });
+      await expect(categoryPage.categoryTable.getByText(category.name)).toBeHidden();
+    });
   });
 
-  test('9.4 Non-admin user cannot access /admin/categories', async ({ page }) => {
-    // First log out if logged in
-    await page.context().clearCookies();
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
+  test('9.4 Non-admin user cannot access /admin/categories', async ({ page, loginPage, categoryPage }) => {
+    await test.step('log out from admin session', async () => {
+      await page.context().clearCookies();
+      await page.goto('/');
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+    });
 
-    // Log in as a non-admin user
-    await page.goto('/login');
-    await page.getByLabel('E-mail').fill(process.env.CUSTOMER_EMAIL || 'jps012009@yahoo.com.br');
-    await page.getByLabel('Senha', { exact: true }).fill(process.env.CUSTOMER_PASSWORD || 'jps012009@yahoo.com.br');
-    await page.getByRole('button', { name: 'Entrar' }).click();
-    await page.waitForURL('/');
+    await test.step('log in as non-admin user', async () => {
+      await loginPage.goto();
+      await loginPage.login(
+        process.env.CUSTOMER_EMAIL || 'jps012009@yahoo.com.br',
+        process.env.CUSTOMER_PASSWORD || 'jps012009@yahoo.com.br'
+      );
+      await page.waitForURL('/');
+    });
 
-    // Try to access admin categories page
-    await page.goto('/admin/categories');
-
-    // Should be redirected to 403 page
-    await expect(page.getByText(/403/i)).toBeVisible({ timeout: 5000 });
+    await test.step('attempt to access admin categories page and verify 403', async () => {
+      await categoryPage.goto();
+      await expect(page.getByText(/403/i)).toBeVisible({ timeout: 5000 });
+    });
   });
 
-  test('9.5 All category management tests pass', async ({ page }) => {
+  test('9.5 All category management tests pass', async ({ categoryPage }) => {
     const metaName = `Teste Completo ${Date.now()}`;
     const metaEditName = `Teste Editado ${Date.now()}`;
 
-    // This is a meta-test that verifies all category functionality works together
-    // Create
-    await page.getByRole('button', { name: /Nova Categoria/i }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel(/Nome da Categoria/i).fill(metaName);
-    await page.getByRole('button', { name: /Salvar Categoria/i }).dispatchEvent('click');
-    await expect(page.getByRole('dialog')).toBeHidden();
+    await test.step('create category via UI', async () => {
+      await categoryPage.createCategory(metaName);
+      await expect(categoryPage.dialog).toBeHidden();
+      await expect(categoryPage.categoryTable.getByText(metaName)).toBeVisible();
+    });
 
-    // Verify in list
-    await expect(page.locator('table').getByText(metaName)).toBeVisible();
+    await test.step('edit category via UI', async () => {
+      await categoryPage.editCategory(metaName, metaEditName);
+      await expect(categoryPage.dialog).toBeHidden();
+      await expect(categoryPage.categoryTable.getByText(metaEditName)).toBeVisible();
+    });
 
-    // Edit
-    const editButton = page.locator('tr', { hasText: metaName }).getByTitle('Edit category');
-    await editButton.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.getByLabel(/Nome da Categoria/i).fill(metaEditName);
-    await page.getByRole('button', { name: /Salvar Alterações/i }).dispatchEvent('click');
-    await expect(page.getByRole('dialog')).toBeHidden();
-
-    // Delete
-    const deleteButton = page.locator('tr', { hasText: metaEditName }).getByTitle('Delete category');
-    await deleteButton.click();
-    await page.getByRole('dialog').getByRole('button', { name: 'Excluir', exact: true }).press('Enter');
-    await expect(page.getByRole('dialog')).toBeHidden({ timeout: 5000 });
-    await expect(page.locator('table').getByText(metaEditName)).toBeHidden();
+    await test.step('delete category via UI', async () => {
+      await categoryPage.deleteCategory(metaEditName);
+      await expect(categoryPage.dialog).toBeHidden({ timeout: 5000 });
+      await expect(categoryPage.categoryTable.getByText(metaEditName)).toBeHidden();
+    });
   });
 
 });

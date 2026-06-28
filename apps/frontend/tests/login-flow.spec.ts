@@ -1,5 +1,5 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/baseTest';
 
 test.describe('1. Fluxo de Login', () => {
 
@@ -10,146 +10,111 @@ test.describe('1. Fluxo de Login', () => {
     await page.evaluate(() => localStorage.clear());
   });
 
-  test('1.1 Login com credenciais válidas (ADMIN)', async ({ page }) => {
-    // 2. Navegar para /login
-    await page.goto('/login');
+  test('1.1 Login com credenciais válidas (ADMIN)', async ({ page, loginPage }) => {
+    await test.step('navigate to login page', async () => {
+      await loginPage.goto();
+    });
 
-    // 3. Preencher campo "E-mail" com ADMIN_EMAIL
-    await page.getByLabel(/e-?mail/i).fill(process.env.ADMIN_EMAIL!);
+    await test.step('fill credentials and submit', async () => {
+      await loginPage.login(process.env.ADMIN_EMAIL!, process.env.ADMIN_PASSWORD!);
+    });
 
-    // 4. Preencher campo "Senha" com ADMIN_PASSWORD
-    await page.getByLabel(/senha/i).fill(process.env.ADMIN_PASSWORD!);
-
-    // 5. Clicar no botão "Entrar"
-    await page.getByRole('button', { name: /entrar/i }).click();
-
-    // Resultado esperado:
-    // - Redirecionar para /
-    await expect(page).toHaveURL('/');
-    
-    // - user-dropdown-container visível
-    await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
-    
-    // - Nenhum erro exibido
-    await expect(page.getByTestId('login-error')).toBeHidden();
+    await test.step('verify success redirect and dropdown container visibility', async () => {
+      await expect(page).toHaveURL('/');
+      await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
+      await expect(loginPage.loginError).toBeHidden();
+    });
   });
 
-  test('1.2 Login com credenciais válidas (CUSTOMER)', async ({ page }) => {
+  test('1.2 Login com credenciais válidas (CUSTOMER)', async ({ page, loginPage, navigationComponent }) => {
     await page.context().clearCookies();
 
-    // 3. Navegar para /login
-    await page.goto('/login');
+    await test.step('navigate to login page', async () => {
+      await loginPage.goto();
+    });
 
-    // 4. Preencher e-mail e senha do CUSTOMER
-    await page.getByLabel(/e-?mail/i).fill(process.env.CUSTOMER_EMAIL!);
-    await page.getByLabel(/senha/i).fill(process.env.CUSTOMER_PASSWORD!);
+    await test.step('fill customer credentials and submit', async () => {
+      await loginPage.login(process.env.CUSTOMER_EMAIL!, process.env.CUSTOMER_PASSWORD!);
+    });
 
-    // 5. Clicar em "Entrar"
-    await page.getByRole('button', { name: /entrar/i }).click();
-
-    // Resultado esperado:
-    // - Redirecionar para /
-    await expect(page).toHaveURL('/');
-
-    // - Menu lateral exibe apenas opções CUSTOMER
-    // Check desktop sidebar
-    const sidebar = page.locator('.sidebar-desktop');
-    await expect(sidebar.getByText(/meus pedidos/i)).toBeVisible();
-    // - Menu ADMIN não aparece
-    await expect(sidebar.getByText(/administração/i)).toBeHidden();
-    await expect(sidebar.getByText(/dashboard/i)).toBeHidden();
+    await test.step('verify customer elements in navigation sidebar', async () => {
+      await expect(page).toHaveURL('/');
+      await expect(navigationComponent.desktopSidebar.getByText(/meus pedidos/i)).toBeVisible();
+      await expect(navigationComponent.desktopSidebar.getByText(/administração/i)).toBeHidden();
+      await expect(navigationComponent.desktopSidebar.getByText(/dashboard/i)).toBeHidden();
+    });
   });
 
-  test('1.3 Login com e-mail inválido', async ({ page }) => {
+  test('1.3 Login com e-mail inválido', async ({ page, loginPage }) => {
     await page.context().clearCookies();
 
-    // 2. Navegar para /login
-    await page.goto('/login');
+    await test.step('navigate to login page', async () => {
+      await loginPage.goto();
+    });
 
-    // 3. Preencher "E-mail" com inexistente@email.com
-    await page.getByLabel(/e-?mail/i).fill('inexistente@email.com');
+    await test.step('login with non-existent email', async () => {
+      await loginPage.login('inexistente@email.com', 'qualquer123');
+    });
 
-    // 4. Preencher "Senha" com qualquer123
-    await page.getByLabel(/senha/i).fill('qualquer123');
-
-    // 5. Clicar em "Entrar"
-    await page.getByRole('button', { name: /entrar/i }).click();
-
-    // Resultado esperado:
-    // - Permanecer em /login
-    await expect(page).toHaveURL(/\/login/);
-    
-    // - Elemento [data-testid="login-error"] visível com mensagem de erro
-    await expect(page.getByTestId('login-error')).toBeVisible();
-    // Check if error is specifically about failure
-    await expect(page.getByTestId('login-error')).toContainText(/falha|inválido|invalid/i);
+    await test.step('verify login error', async () => {
+      await expect(page).toHaveURL(/\/login/);
+      await expect(loginPage.loginError).toBeVisible();
+      await expect(loginPage.loginError).toContainText(/falha|inválido|invalid/i);
+    });
   });
 
-  test('1.4 Login com senha incorreta', async ({ page }) => {
+  test('1.4 Login com senha incorreta', async ({ page, loginPage }) => {
     await page.context().clearCookies();
 
-    // 2. Navegar para /login
-    await page.goto('/login');
+    await test.step('navigate to login page', async () => {
+      await loginPage.goto();
+    });
 
-    // 3. Preencher "E-mail" com ADMIN_EMAIL
-    await page.getByLabel(/e-?mail/i).fill(process.env.ADMIN_EMAIL!);
+    await test.step('login with wrong password', async () => {
+      await loginPage.login(process.env.ADMIN_EMAIL!, 'senha_errada_123');
+    });
 
-    // 4. Preencher "Senha" com senha_errada_123
-    await page.getByLabel(/senha/i).fill('senha_errada_123');
-
-    // 5. Clicar em "Entrar"
-    await page.getByRole('button', { name: /entrar/i }).click();
-
-    // Resultado esperado:
-    // - Permanecer em /login
-    await expect(page).toHaveURL(/\/login/);
-    
-    // - Elemento [data-testid="login-error"] visível
-    await expect(page.getByTestId('login-error')).toBeVisible();
+    await test.step('verify login error', async () => {
+      await expect(page).toHaveURL(/\/login/);
+      await expect(loginPage.loginError).toBeVisible();
+    });
   });
 
-  test('1.5 Login com campos vazios', async ({ page }) => {
+  test('1.5 Login com campos vazios', async ({ page, loginPage }) => {
     await page.context().clearCookies();
 
-    // 1. Navegar para /login
-    await page.goto('/login');
+    await test.step('navigate to login page', async () => {
+      await loginPage.goto();
+    });
 
-    // 2. Clicar em "Entrar" sem preencher campos
-    await page.getByRole('button', { name: /entrar/i }).click();
+    await test.step('click submit without filling fields', async () => {
+      await loginPage.submitButton.click();
+    });
 
-    // Resultado esperado:
-    // - Validação HTML5 impede submissão
-    const emailInput = page.getByLabel(/e-?mail/i);
-    const isEmailInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
-    expect(isEmailInvalid).toBeTruthy();
-
-    // - Permanecer em /login
-    await expect(page).toHaveURL(/\/login/);
+    await test.step('verify HTML5 validation prevents submission', async () => {
+      const isEmailInvalid = await loginPage.emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+      expect(isEmailInvalid).toBeTruthy();
+      await expect(page).toHaveURL(/\/login/);
+    });
   });
 
-  test('1.6 Login com e-mail mal formatado', async ({ page }) => {
+  test('1.6 Login com e-mail mal formatado', async ({ page, loginPage }) => {
     await page.context().clearCookies();
 
-    // 1. Navegar para /login
-    await page.goto('/login');
+    await test.step('navigate to login page', async () => {
+      await loginPage.goto();
+    });
 
-    // 2. Preencher "E-mail" com email-invalido
-    await page.getByLabel(/e-?mail/i).fill('email-invalido');
+    await test.step('login with malformed email', async () => {
+      await loginPage.login('email-invalido', 'qualquer123');
+    });
 
-    // 3. Preencher "Senha" com qualquer123
-    await page.getByLabel(/senha/i).fill('qualquer123');
-
-    // 4. Clicar em "Entrar"
-    await page.getByRole('button', { name: /entrar/i }).click();
-
-    // Resultado esperado:
-    // - Validação HTML5 impede submissão
-    const emailInput = page.getByLabel(/e-?mail/i);
-    const isEmailInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
-    expect(isEmailInvalid).toBeTruthy();
-
-    // - Permanecer em /login
-    await expect(page).toHaveURL(/\/login/);
+    await test.step('verify HTML5 validation prevents submission', async () => {
+      const isEmailInvalid = await loginPage.emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+      expect(isEmailInvalid).toBeTruthy();
+      await expect(page).toHaveURL(/\/login/);
+    });
   });
 
 });
+

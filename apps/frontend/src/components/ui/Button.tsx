@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 
 export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: "primary" | "secondary" | "outline" | "ghost" | "link";
+    variant?: "primary" | "secondary" | "outline" | "ghost" | "link" | "destructive";
     size?: "default" | "sm" | "lg" | "icon";
     loading?: boolean;
 }
@@ -19,6 +19,7 @@ export const buttonVariants = ({ variant = "primary", size = "default", classNam
         outline: "btn-outline",
         ghost: "btn-ghost",
         link: "btn-link",
+        destructive: "btn-destructive",
     };
 
     const sizes = {

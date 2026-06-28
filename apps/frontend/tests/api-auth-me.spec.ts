@@ -1,5 +1,5 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/baseTest';
 
 test.describe('6. Endpoint GET /v1/auth/me', () => {
 

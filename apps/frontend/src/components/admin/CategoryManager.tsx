@@ -114,7 +114,7 @@ export function CategoryManager({ initialData, total, currentPage, limit, includ
                         </button>
                         <CategoryForm 
                             initialData={editCategory} 
-                            onSuccess={() => { setIsCreateOpen(false); setEditCategory(null); }} 
+                            onSuccess={() => { setIsCreateOpen(false); setEditCategory(null); router.refresh(); }} 
                             onCancel={() => { setIsCreateOpen(false); setEditCategory(null); }}
                         />
                     </div>

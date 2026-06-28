@@ -19,7 +19,7 @@
     "test:integration": "npm run test:e2e --workspace=backend -- --coverage"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
+    "@omniroute/opencode-provider": "^0.1.0",
     "concurrently": "^10.0.3"
   }
 }

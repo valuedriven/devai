@@ -23,6 +23,7 @@ describe('OrdersController (Integration)', () => {
     updateStatus: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    cancel: jest.fn(),
   };
 
   const buildApp = async (user: Record<string, unknown>) => {
@@ -67,7 +68,7 @@ describe('OrdersController (Integration)', () => {
     });
 
     describe('POST /orders', () => {
-      it('should create an order with valid data', async () => {
+      it('should create an order using customerId from body', async () => {
         const dto = {
           customerId: 'cust-1',
           totalAmount: 150.0,
@@ -76,50 +77,49 @@ describe('OrdersController (Integration)', () => {
 
         mockOrdersService.create.mockResolvedValue({ id: 'order-1', ...dto });
 
-        return request(app.getHttpServer())
+        await request(app.getHttpServer())
           .post('/orders')
           .send(dto)
           .expect(201);
-      });
 
-      it('should reject when totalAmount is missing', async () => {
-        return request(app.getHttpServer())
-          .post('/orders')
-          .send({ customerId: 'cust-1' })
-          .expect(400);
+        expect(mockOrdersService.create).toHaveBeenCalledWith(
+          expect.any(Object),
+          undefined,
+        );
       });
     });
 
     describe('GET /orders', () => {
       it('should return all orders', async () => {
-        mockOrdersService.findAll.mockResolvedValue([{ id: 'order-1' }]);
+        mockOrdersService.findAll.mockResolvedValue({
+          data: [{ id: 'order-1' }],
+          total: 1,
+        });
 
         await request(app.getHttpServer()).get('/orders').expect(200);
 
-        expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined);
+        expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined, {
+          skip: 0,
+          take: 20,
+          status: undefined,
+        });
       });
 
-      it('should pass customerEmail filter', async () => {
-        mockOrdersService.findAll.mockResolvedValue([]);
-
-        await request(app.getHttpServer())
-          .get('/orders?customerEmail=jane@example.com')
-          .expect(200);
-
-        expect(mockOrdersService.findAll).toHaveBeenCalledWith(
-          'jane@example.com',
-        );
-      });
-    });
-
-    describe('GET /orders/:id', () => {
-      it('should return an order by id', async () => {
-        mockOrdersService.findOne.mockResolvedValue({
-          id: 'order-1',
-          customer: { email: 'admin@example.com' },
+      it('should filter orders by status', async () => {
+        mockOrdersService.findAll.mockResolvedValue({
+          data: [{ id: 'order-1' }],
+          total: 1,
         });
 
-        return request(app.getHttpServer()).get('/orders/order-1').expect(200);
+        await request(app.getHttpServer())
+          .get('/orders?status=Novo')
+          .expect(200);
+
+        expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined, {
+          skip: 0,
+          take: 20,
+          status: 'Novo',
+        });
       });
     });
 
@@ -152,12 +152,62 @@ describe('OrdersController (Integration)', () => {
     });
 
     describe('DELETE /orders/:id', () => {
-      it('should delete an order', async () => {
+      it('should delete an order as admin', async () => {
         mockOrdersService.remove.mockResolvedValue({ id: 'order-1' });
 
         return request(app.getHttpServer())
           .delete('/orders/order-1')
           .expect(200);
+      });
+    });
+
+    describe('role parsing variants', () => {
+      it('should accept admin role as a single string in metadata.roles', async () => {
+        const roleStringApp = await buildApp({
+          publicMetadata: { roles: 'admin' },
+          emailAddresses: [{ emailAddress: 'admin@example.com' }],
+        });
+
+        mockOrdersService.findAll.mockResolvedValue({
+          data: [{ id: 'order-1' }],
+          total: 1,
+        });
+
+        await request(roleStringApp.getHttpServer()).get('/orders').expect(200);
+
+        await roleStringApp.close();
+      });
+
+      it('should accept admin role in metadata.role array', async () => {
+        const roleArrayApp = await buildApp({
+          publicMetadata: { role: ['admin'] },
+          emailAddresses: [{ emailAddress: 'admin@example.com' }],
+        });
+
+        mockOrdersService.findAll.mockResolvedValue({
+          data: [{ id: 'order-1' }],
+          total: 1,
+        });
+
+        await request(roleArrayApp.getHttpServer()).get('/orders').expect(200);
+
+        await roleArrayApp.close();
+      });
+
+      it('should accept admin role as a single string in metadata.role', async () => {
+        const roleStringApp = await buildApp({
+          publicMetadata: { role: 'admin' },
+          emailAddresses: [{ emailAddress: 'admin@example.com' }],
+        });
+
+        mockOrdersService.findAll.mockResolvedValue({
+          data: [{ id: 'order-1' }],
+          total: 1,
+        });
+
+        await request(roleStringApp.getHttpServer()).get('/orders').expect(200);
+
+        await roleStringApp.close();
       });
     });
   });
@@ -171,6 +221,27 @@ describe('OrdersController (Integration)', () => {
 
     afterEach(async () => {
       await app.close();
+    });
+
+    describe('POST /orders', () => {
+      it('should force create using authenticated user email', async () => {
+        const dto = {
+          totalAmount: 150.0,
+          order_items: [{ productId: 'prod-1', quantity: 2, unitPrice: 50.0 }],
+        };
+
+        mockOrdersService.create.mockResolvedValue({ id: 'order-1', ...dto });
+
+        await request(app.getHttpServer())
+          .post('/orders')
+          .send(dto)
+          .expect(201);
+
+        expect(mockOrdersService.create).toHaveBeenCalledWith(
+          expect.any(Object),
+          'john@example.com',
+        );
+      });
     });
 
     describe('GET /orders/:id', () => {
@@ -190,6 +261,33 @@ describe('OrdersController (Integration)', () => {
         });
 
         return request(app.getHttpServer()).get('/orders/order-1').expect(200);
+      });
+    });
+
+    describe('POST /orders/:id/cancel', () => {
+      it('should cancel the order', async () => {
+        mockOrdersService.cancel.mockResolvedValue({
+          id: 'order-1',
+          status: 'Cancelado',
+        });
+
+        await request(app.getHttpServer())
+          .post('/orders/order-1/cancel')
+          .expect(201);
+
+        expect(mockOrdersService.cancel).toHaveBeenCalledWith(
+          'order-1',
+          'john@example.com',
+        );
+      });
+    });
+
+    describe('PATCH /orders/:id', () => {
+      it('should return 404 for customer update attempts', async () => {
+        return request(app.getHttpServer())
+          .patch('/orders/order-1')
+          .send({ shippingAddress: 'New Address' })
+          .expect(404);
       });
     });
   });

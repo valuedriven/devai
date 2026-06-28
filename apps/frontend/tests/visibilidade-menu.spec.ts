@@ -1,5 +1,5 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/baseTest';
 import path from 'path';
 
 test.describe('5. Visibilidade Baseada em Papel (UI)', () => {

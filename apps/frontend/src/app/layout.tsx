@@ -3,6 +3,8 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { CartProvider } from "@/lib/CartContext";
 import { AuthProvider } from "@/hooks/AuthContext";
 import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
+import { ToastProvider } from "@/components/ui/toast-context";
+import { ToastContainer } from "@/components/ui/toast-container";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,10 +34,13 @@ export default function RootLayout({
         <body className="font-sans min-h-screen flex">
           <CartProvider>
             <AuthProvider>
-              <DesktopSidebar />
-              <div className="flex-1 flex flex-col min-h-screen min-w-0 lg:ml-64">
-                {children}
-              </div>
+              <ToastProvider>
+                <DesktopSidebar />
+                <div className="flex-1 flex flex-col min-h-screen min-w-0 lg:ml-64">
+                  {children}
+                </div>
+                <ToastContainer />
+              </ToastProvider>
             </AuthProvider>
           </CartProvider>
         </body>

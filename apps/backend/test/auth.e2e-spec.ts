@@ -130,7 +130,7 @@ describe('Auth (e2e)', () => {
       await customerApp.init();
 
       await request(customerApp.getHttpServer())
-        .post('/api/v1/products')
+        .post('/api/v1/admin/products')
         .send({ name: 'Test', price: 10, stock: 1, categoryId: 1 })
         .set('Authorization', 'Bearer customer-token')
         .expect(403);

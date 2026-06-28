@@ -1,5 +1,5 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/baseTest';
 
 test.describe('8. Endpoints Públicos', () => {
 
@@ -35,6 +35,19 @@ test.describe('8. Endpoints Públicos', () => {
     // Resultado esperado:
     // - Status 200
     expect(response.status()).toBe(200);
+  });
+
+  test('8.3 Acesso público a categorias', async ({ request }) => {
+    // 1. Fazer requisição GET /api/v1/categories
+    const response = await request.get('http://localhost:3001/api/v1/categories');
+
+    // Resultado esperado:
+    // - Status 200
+    expect(response.status()).toBe(200);
+
+    // - Lista de categorias retornada
+    const data = await response.json();
+    expect(Array.isArray(data) || Array.isArray(data.items) || Array.isArray(data.data)).toBeTruthy();
   });
 
 });

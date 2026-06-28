@@ -57,11 +57,15 @@ export function ProductCard({ product }: ProductCardProps) {
                         </div>
                     )}
                 </Link>
-                {!product.active && (
+                {!product.active ? (
                     <div className="product-badge">
                         <Badge tone="error">Indisponível</Badge>
                     </div>
-                )}
+                ) : product.stock === 0 ? (
+                    <div className="product-badge">
+                        <Badge tone="error">Esgotado</Badge>
+                    </div>
+                ) : null}
             </div>
 
             <div className="product-content">

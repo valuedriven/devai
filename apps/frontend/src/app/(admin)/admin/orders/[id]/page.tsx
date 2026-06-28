@@ -1,28 +1,24 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { getOrder, getProducts, updateOrderStatus } from "@/lib/data";
+import { getAdminOrder } from "@/lib/data";
 import { ArrowLeft } from "lucide-react";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { OrderTimeline } from "./OrderTimeline";
+import { OrderPayments } from "./OrderPayments";
+import { StatusActions } from "./StatusActions";
 
 export default async function AdminOrderDetailsPage({ params }: { params: { id: string } }) {
     const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
     
-    const order = await getOrder(id, token);
-    const allProducts = await getProducts(); // Usually public
+    const order = await getAdminOrder(id, token || '');
 
     if (!order) {
         return <div>Pedido não encontrado</div>;
     }
-
-    const orderProducts = (order.items || []).map(item => {
-        const product = item.product || allProducts.find(p => String(p.id) === String(item.productId));
-        return { ...item, product };
-    });
 
     const statusToneMap: Record<string, "neutral" | "success" | "info" | "error" | "warning"> = {
         "Novo": "neutral",
@@ -34,19 +30,6 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
         "Cancelado": "error",
     };
 
-    async function handleUpdateStatus(formData: FormData) {
-        "use server";
-        if (!order) return;
-        const cookieStoreAction = await cookies();
-        const actionToken = cookieStoreAction.get("devai_auth_token")?.value;
-        const newStatus = formData.get("status") as string;
-        if (newStatus && newStatus !== order.status) {
-            await updateOrderStatus(id, newStatus, actionToken ?? undefined);
-            revalidatePath(`/admin/orders/${id}`);
-            revalidatePath(`/admin/orders`);
-        }
-    }
-
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
@@ -55,65 +38,69 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                 </Link>
-                <h1 className="text-3xl font-bold">Pedido #{order.id}</h1>
+                <h1 className="text-3xl font-bold">Pedido #{order.number || order.id.slice(0, 8)}</h1>
                 <Badge tone={statusToneMap[order.status] || "neutral"} className="ml-2 text-lg px-3 py-1">
                     {order.status}
                 </Badge>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Detalhes do Pedido</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <div><strong>Data:</strong> {new Date(order.date).toLocaleString()}</div>
-                        <div><strong>Cliente ID:</strong> {order.customerId}</div>
-                        <div><strong>Total:</strong> {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.total)}</div>
-                    </CardContent>
-                    <CardFooter className="flex flex-wrap gap-4">
-                        <form action={handleUpdateStatus}>
-                            <input type="hidden" name="status" value="Cancelado" />
-                            <Button type="submit" variant="outline" disabled={order.status === "Cancelado"}>
-                                Cancelar Pedido
-                            </Button>
-                        </form>
-                        <form action={handleUpdateStatus} className="flex gap-2 ml-auto">
-                            <select name="status" className="border rounded-md px-3 text-sm bg-background" defaultValue={order.status}>
-                                <option value="Novo">Novo</option>
-                                <option value="Pago">Pago</option>
-                                <option value="Preparação">Preparação</option>
-                                <option value="Faturado">Faturado</option>
-                                <option value="Despachado">Despachado</option>
-                                <option value="Entregue">Entregue</option>
-                            </select>
-                            <Button type="submit">Atualizar Status</Button>
-                        </form>
-                    </CardFooter>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Itens</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-4">
-                            {orderProducts.map((item, index) => (
-                                <li key={index} className="flex justify-between items-center border-b pb-2 last:border-0">
-                                    <div>
-                                        <div className="font-medium">{item.product?.name || `Produto ${item.productId}`}</div>
-                                        <div className="text-sm text-muted-foreground">
-                                            {item.quantity} x {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.unitPrice)}
+            <div className="grid gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Itens do Pedido</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ul className="space-y-4">
+                                {order.items?.map((item, index) => (
+                                    <li key={index} className="flex justify-between items-center border-b pb-2 last:border-0">
+                                        <div>
+                                            <div className="font-medium">{item.product?.name || `Produto ${item.productId}`}</div>
+                                            <div className="text-sm text-muted-foreground">
+                                                {item.quantity} x {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.unitPrice)}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="font-bold">
-                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.quantity * item.unitPrice)}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
+                                        <div className="font-bold">
+                                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.quantity * item.unitPrice)}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="mt-4 pt-4 border-t flex justify-between items-center font-bold text-lg">
+                                <span>Total</span>
+                                <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.total)}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <OrderPayments orderId={order.id} payments={order.payments || []} />
+                    
+                    <OrderTimeline logs={order.auditLogs || []} />
+                </div>
+
+                <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Informações do Cliente</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <div><strong>Nome:</strong> {order.customer?.name}</div>
+                            <div><strong>Email:</strong> {order.customer?.email}</div>
+                            <div><strong>Telefone:</strong> {order.customer?.phone || 'Não informado'}</div>
+                            <div className="pt-2"><strong>Endereço de Entrega:</strong></div>
+                            <div className="text-sm text-muted-foreground">{order.shippingAddress || 'Não informado'}</div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Ações do Pedido</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <StatusActions orderId={order.id} currentStatus={order.status} token={token} />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );

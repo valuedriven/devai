@@ -1,16 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { PrismaService } from '../../../database/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CustomersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
-    return this.prisma.customer.create({
-      data: createCustomerDto,
-    });
+    try {
+      return await this.prisma.customer.create({
+        data: createCustomerDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException(
+            'A customer with this email already exists',
+          );
+        }
+      }
+      throw error;
+    }
   }
 
   async syncCustomer(email: string, name: string) {
@@ -31,7 +47,19 @@ export class CustomersService {
     });
   }
 
-  async findAll() {
+  async findAll(search?: string) {
+    if (search) {
+      return this.prisma.customer.findMany({
+        where: {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+            { phone: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    }
     return this.prisma.customer.findMany({
       orderBy: { createdAt: 'desc' },
     });
@@ -66,10 +94,28 @@ export class CustomersService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
-
-    return this.prisma.customer.delete({
+    const customer = await this.prisma.customer.findUnique({
       where: { id },
+      include: {
+        _count: {
+          select: { orders: true },
+        },
+      },
+    });
+
+    if (!customer) {
+      throw new NotFoundException(`Customer with ID ${id} not found`);
+    }
+
+    if (customer._count.orders > 0) {
+      throw new ConflictException(
+        `Cannot delete customer with associated orders`,
+      );
+    }
+
+    return this.prisma.customer.update({
+      where: { id },
+      data: { active: false },
     });
   }
 }

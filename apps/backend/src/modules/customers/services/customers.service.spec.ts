@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { PrismaService } from '../../../database/prisma.service';
 import {
   createMockPrismaService,
   MockPrismaService,
 } from '../../../database/__mocks__/prisma-service.mock';
+import { Prisma } from '@prisma/client';
 
 describe('CustomersService', () => {
   let service: CustomersService;
@@ -47,6 +48,19 @@ describe('CustomersService', () => {
         data: dto,
       });
       expect(result).toEqual(expected);
+    });
+
+    it('should throw ConflictException on duplicate email (P2002)', async () => {
+      const dto = { name: 'John Doe', email: 'existing@example.com' };
+
+      const prismaError = new Prisma.PrismaClientKnownRequestError(
+        'Unique constraint failed',
+        { code: 'P2002', clientVersion: '7.5.0' },
+      );
+
+      prisma.customer.create.mockRejectedValueOnce(prismaError);
+
+      await expect(service.create(dto)).rejects.toThrow(ConflictException);
     });
   });
 
@@ -104,6 +118,28 @@ describe('CustomersService', () => {
       const result = await service.findAll();
 
       expect(prisma.customer.findMany).toHaveBeenCalledWith({
+        orderBy: { createdAt: 'desc' },
+      });
+      expect(result).toEqual(customers);
+    });
+
+    it('should return filtered customers when search query is provided', async () => {
+      const customers = [
+        { id: '1', name: 'John Doe', email: 'john@example.com', phone: '123' },
+      ];
+
+      prisma.customer.findMany.mockResolvedValueOnce(customers);
+
+      const result = await service.findAll('John');
+
+      expect(prisma.customer.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { name: { contains: 'John', mode: 'insensitive' } },
+            { email: { contains: 'John', mode: 'insensitive' } },
+            { phone: { contains: 'John', mode: 'insensitive' } },
+          ],
+        },
         orderBy: { createdAt: 'desc' },
       });
       expect(result).toEqual(customers);
@@ -194,25 +230,50 @@ describe('CustomersService', () => {
   });
 
   describe('remove', () => {
-    it('should delete a customer', async () => {
+    it('should soft delete a customer when they have no associated orders', async () => {
       const customer = {
         id: 'uuid-123',
         name: 'John',
         email: 'john@example.com',
+        _count: { orders: 0 },
       };
 
       prisma.customer.findUnique.mockResolvedValueOnce(customer);
-      prisma.customer.delete.mockResolvedValueOnce(customer);
+      prisma.customer.update.mockResolvedValueOnce({
+        ...customer,
+        active: false,
+      });
 
       const result = await service.remove('uuid-123');
 
       expect(prisma.customer.findUnique).toHaveBeenCalledWith({
         where: { id: 'uuid-123' },
+        include: {
+          _count: {
+            select: { orders: true },
+          },
+        },
       });
-      expect(prisma.customer.delete).toHaveBeenCalledWith({
+      expect(prisma.customer.update).toHaveBeenCalledWith({
         where: { id: 'uuid-123' },
+        data: { active: false },
       });
-      expect(result).toEqual(customer);
+      expect(result.active).toBe(false);
+    });
+
+    it('should throw ConflictException when customer has associated orders', async () => {
+      const customer = {
+        id: 'uuid-123',
+        name: 'John',
+        email: 'john@example.com',
+        _count: { orders: 1 },
+      };
+
+      prisma.customer.findUnique.mockResolvedValueOnce(customer);
+
+      await expect(service.remove('uuid-123')).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should throw NotFoundException when customer to remove not found', async () => {

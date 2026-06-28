@@ -1,5 +1,26 @@
 export type OrderStatus = 'Novo' | 'Pago' | 'Preparação' | 'Faturado' | 'Despachado' | 'Entregue' | 'Cancelado';
 
+export interface Payment {
+    id: string;
+    orderId: string;
+    value: number;
+    method: string;
+    date: string;
+    status: 'Pending' | 'Confirmed' | 'Refunded';
+    notes?: string;
+    createdAt: string;
+}
+
+export interface AuditLog {
+    id: string;
+    entityType: string;
+    entityId: string;
+    action: string;
+    payload?: Record<string, unknown> | null;
+    userId?: string;
+    createdAt: string;
+}
+
 export interface Category {
     id: string;
     name: string;
@@ -47,6 +68,7 @@ export interface OrderItem {
 
 export interface Order {
     id: string;
+    number?: string;
     customer_id: string;
     total_amount: number;
     status: OrderStatus;
@@ -63,4 +85,8 @@ export interface Order {
     date: string;
     total: number;
     customerId: string;
+    // UI helper for shipping address returned from backend
+    shippingAddress?: string;
+    payments?: Payment[];
+    auditLogs?: AuditLog[];
 }

@@ -15,16 +15,22 @@ export class CreateOrderItemDto {
   quantity: number;
 
   @IsNumber()
-  unitPrice: number;
+  @IsOptional()
+  unitPrice?: number;
 }
 
 export class CreateOrderDto {
   @IsString()
   @IsOptional()
+  number?: string;
+
+  @IsString()
+  @IsOptional()
   customerId?: string;
 
   @IsNumber()
-  totalAmount: number;
+  @IsOptional()
+  totalAmount?: number;
 
   @IsString()
   @IsOptional()
@@ -37,6 +43,5 @@ export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateOrderItemDto)
-  @IsOptional()
-  order_items?: CreateOrderItemDto[];
+  order_items: CreateOrderItemDto[];
 }

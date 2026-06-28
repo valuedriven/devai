@@ -9,6 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Customer } from "@/lib/types";
 import { createCustomer, updateCustomer } from "@/lib/data";
 import { useInternalAuth } from "@/hooks/AuthContext";
+import { useToast } from "@/components/ui/toast-context";
 
 interface CustomerFormProps {
     initialData?: Customer;
@@ -26,20 +27,26 @@ export function CustomerForm({ initialData }: CustomerFormProps) {
         active: initialData ? initialData.active : true,
     });
 
+    const { addToast } = useToast();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
             if (initialData) {
-                await updateCustomer(initialData.id, formData, token ?? undefined);
+                const res = await updateCustomer(initialData.id, formData, token ?? undefined);
+                if (!res) throw new Error("Erro ao atualizar cliente.");
+                addToast("Cliente atualizado com sucesso!", "success");
             } else {
-                await createCustomer(formData as Omit<Customer, 'id' | 'created_at' | 'updated_at'>, token ?? undefined);
+                const res = await createCustomer(formData as Omit<Customer, 'id' | 'created_at' | 'updated_at'>, token ?? undefined);
+                if (!res) throw new Error("Erro ao cadastrar cliente.");
+                addToast("Cliente cadastrado com sucesso!", "success");
             }
             router.push("/admin/customers");
             router.refresh();
         } catch (error) {
             console.error("Error saving customer", error);
-            alert("Erro ao salvar cliente.");
+            addToast("Erro ao salvar cliente.", "error");
         } finally {
             setLoading(false);
         }
@@ -53,8 +60,9 @@ export function CustomerForm({ initialData }: CustomerFormProps) {
             <form onSubmit={handleSubmit}>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Nome Completo</label>
+                        <label htmlFor="name" className="text-sm font-medium">Nome Completo</label>
                         <Input
+                            id="name"
                             placeholder="Ex: João Silva"
                             required
                             value={formData.name}
@@ -64,8 +72,9 @@ export function CustomerForm({ initialData }: CustomerFormProps) {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">E-mail</label>
+                            <label htmlFor="email" className="text-sm font-medium">E-mail</label>
                             <Input
+                                id="email"
                                 type="email"
                                 placeholder="joao@example.com"
                                 required
@@ -74,8 +83,9 @@ export function CustomerForm({ initialData }: CustomerFormProps) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Telefone</label>
+                            <label htmlFor="phone" className="text-sm font-medium">Telefone</label>
                             <Input
+                                id="phone"
                                 placeholder="(11) 99999-9999"
                                 value={formData.phone}
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -84,8 +94,9 @@ export function CustomerForm({ initialData }: CustomerFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Endereço</label>
+                        <label htmlFor="address" className="text-sm font-medium">Endereço</label>
                         <Input
+                            id="address"
                             placeholder="Rua, Número, Bairro, Cidade - UF"
                             value={formData.address}
                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}

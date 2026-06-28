@@ -4,13 +4,14 @@ import { LoggerModule } from 'nestjs-pino';
 import { resolve } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatalogModule } from './modules/catalog/catalog.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
-import { CategoriesModule } from './modules/categories/categories.module';
+import { ProductsModule } from './modules/products/products.module';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './core/auth/auth.module';
 import { HealthModule } from './core/health/health.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import configuration from './core/config/configuration';
 
 @Module({
@@ -20,6 +21,7 @@ import configuration from './core/config/configuration';
       isGlobal: true,
       load: [configuration],
     }),
+    EventEmitterModule.forRoot(),
     LoggerModule.forRoot({
       pinoHttp: {
         customProps: () => ({
@@ -28,13 +30,13 @@ import configuration from './core/config/configuration';
         autoLogging: true,
       },
     }),
-    CatalogModule,
     CustomersModule,
     OrdersModule,
-    CategoriesModule,
+    ProductsModule,
     DatabaseModule,
     AuthModule,
     HealthModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [AppService],

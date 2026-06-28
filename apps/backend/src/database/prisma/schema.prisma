@@ -93,7 +93,7 @@ model Payment {
   value     Decimal   @db.Decimal(10, 2)
   method    String
   date      DateTime  @db.Timestamptz(6)
-  status    String    @default("Pendente")
+  status    String    @default("Pending")
   notes     String?
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -101,4 +101,17 @@ model Payment {
 
   @@index([orderId])
   @@map("payments")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  action      String
+  payload     Json?
+  userId      String?  @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entityId, entityType])
+  @@map("audit_logs")
 }
