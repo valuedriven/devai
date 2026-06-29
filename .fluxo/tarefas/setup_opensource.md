@@ -88,11 +88,21 @@ http://localhost:20128/
 
 ## Configuração do agente
 
-- Para configuração dos MCP servers no Opencode, crie ou abra o arquivo opencode.json no diretório raiz do projeto com o conteúdo a seguir:
+- Para configuração do provider e dos MCP servers no Opencode, crie ou abra o arquivo opencode.json no diretório raiz do projeto com o conteúdo a seguir:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
+     "provider": {
+    "omniroute": {
+      "npm": "@omniroute/opencode-provider",
+      "name": "OmniRoute",
+      "options": {
+        "baseURL": "http://localhost:20128/v1",
+        "apiKey": "$OMNIROUTE_API_KEY"
+      }
+    }
+  },
   "mcp": {
       "$schema": "https://opencode.ai/config.json",
   "mcp": {

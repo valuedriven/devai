@@ -23,8 +23,10 @@ export class OrderPage {
   }
 
     async fillPaymentForm(value: string, method: string) {
-        await this.page.getByPlaceholder('0,00').fill(value);
+        const input = this.page.getByPlaceholder('0,00');
+        await input.waitFor({ state: 'visible' });
+        await input.fill(value);
         await this.page.locator('select').selectOption({ label: method });
-        await this.page.locator('button[type="submit"]').filter({ hasText: /^Registrar$/ }).click();
+        await input.press('Enter');
     }
 }

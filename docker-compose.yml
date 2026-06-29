@@ -71,6 +71,22 @@ services:
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
     ports:
       - "9000:9000"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+    networks:
+      - app-network
+
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    container_name: omniroute
+    restart: unless-stopped
+    stop_grace_period: 40s
+    ports:
+      - "20128:20128"
+    volumes:
+      - omniroute-data:/app/data
     networks:
       - app-network
 
@@ -80,3 +96,7 @@ networks:
 
 volumes:
   postgres_data:
+  omniroute-data:
+  sonar_data:
+  sonar_extensions:
+  sonar_logs:

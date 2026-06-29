@@ -17,3 +17,4 @@ apps/backend/coverage/*
 apps/backend/test/coverage/*
 apps/frontend/playwright/.clerk/*
 apps/frontend/playwright-report/*
+apps/frontend/playwright-report/index.html

@@ -1,5 +1,15 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "omniroute": {
+      "npm": "@omniroute/opencode-provider",
+      "name": "OmniRoute",
+      "options": {
+        "baseURL": "http://localhost:20128/v1",
+        "apiKey": "$OMNIROUTE_API_KEY"
+      }
+    }
+  },
   "mcp": {
     "playwright-test": {
       "type": "local",
@@ -26,7 +36,7 @@
         "CONTEXT7_API_KEY": "$CONTEXT7_API_KEY"
       }
     },
-     "sonarqube": {
+    "sonarqube": {
       "command": "docker",
       "args": [
         "run",
@@ -38,20 +48,10 @@
         "-e",
         "SONAR_TOKEN=$SONARQUBE_TOKEN",
         "-e",
-        "SONAR_HOST_URL=$SONARQUBE_HOST", 
+        "SONAR_HOST_URL=$SONARQUBE_HOST",
         "SonarSource/sonarqube-mcp-server"
       ],
       "enabled": true
-    }
-  },
-  "provider": {
-    "omniroute": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "OmniRoute",
-      "options": {
-        "baseURL": "http://localhost:20128/v1",
-        "apiKey": "$OMNIROUTE_API_KEY"
-      }    
     }
   },
   "tools": {
