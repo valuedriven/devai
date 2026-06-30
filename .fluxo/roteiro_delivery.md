@@ -179,6 +179,10 @@ Adapte as diretrizes ao contexto do projeto, preserve conteúdo válido existent
 Analise o histórico de conversações desta sessão e proponha ajustes no arquivo AGENTS.md, seção Governança e uso de terminal, de forma a aumentar a autonomia do agente na execução de tarefas como leitura e escrita de arquivos.
 ```
 
+[AGENTS.md do projeto de referência](https://github.com/valuedriven/devai/blob/main/AGENTS.md)
+
+
+
 ### Configuração de skills
 
 Os comandos a seguir, criarão a seguinte estrutura de diretórios:
@@ -220,6 +224,15 @@ npx skills add https://github.com/sickn33/antigravity-awesome-skills --yes --age
 Quando necessário, mais skills podem ser encontradas em marketplaces como: https://skillsmp.com/
 
 
+Skills relacionadas aos testes no projeto de referência:
+
+[Testes de unidade](https://github.com/valuedriven/devai/blob/main/.agents/skills/jest-unit-tests/SKILL.md)
+
+[Testes de integração](https://github.com/valuedriven/devai/blob/main/.agents/skills/supertest-integration-test/SKILL.md)
+
+[Testes e2e](https://github.com/valuedriven/devai/blob/main/.agents/skills/playwright-e2e-tests/SKILL.md)
+
+[Gate qualidade](https://github.com/valuedriven/devai/blob/main/.agents/skills/quality-gate/SKILL.md)
 
 ---
 
@@ -307,6 +320,9 @@ Personalize o arquivo config.yaml com base nas informações do projeto disponí
 @docs/prd.md @docs/spec.md @docs/design.md @docs/architecture.md (em especial as diretrizes de testes e qualidade)
 
 ```
+
+[config.yaml do projeto de referência](https://github.com/valuedriven/devai/blob/main/openspec/config.yaml)
+
 
 ### Definição de roadmap de mudanças
 
