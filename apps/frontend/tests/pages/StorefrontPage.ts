@@ -1,4 +1,5 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+import { expect } from '../fixtures/baseTest';
 import { ProductCardComponent } from '../components/ProductCardComponent';
 
 export class StorefrontPage {
@@ -44,10 +45,7 @@ export class StorefrontPage {
     return this;
   }
 
-  async addToCart(): Promise<this> {
-    await this.addToCartButton.first().click();
-    return this;
-  }
+
 
   async gotoProductDetail(productId: string): Promise<this> {
     await this.page.goto(`/products/${productId}`);

@@ -10,8 +10,8 @@ test.describe('Category Management', () => {
     await categoryPage.goTo();
   });
 
-  test('9.1 Admin can create a category successfully', async ({ categoryPage }) => {
-    const catName = `Eletrônicos Teste ${Date.now()}`;
+  test('9.1 Admin can create a category successfully', async ({ categoryPage, faker }) => {
+    const catName = makeCategory(faker).name;
     
     await test.step('create category via UI', async () => {
       await categoryPage.createCategory(catName);
@@ -23,12 +23,12 @@ test.describe('Category Management', () => {
     });
   });
 
-  test('9.2 Admin can edit a category', async ({ request, authToken, categoryPage }) => {
-    const editName = `Categoria Editada ${Date.now()}`;
+  test('9.2 Admin can edit a category', async ({ request, authToken, categoryPage, faker }) => {
+    const editName = makeCategory(faker).name;
     let category: SeededCategory;
 
     await test.step('seed category via API', async () => {
-      category = await createCategory(request, authToken, makeCategory());
+      category = await createCategory(request, authToken, makeCategory(faker));
       await categoryPage.goTo();
     });
 
@@ -42,12 +42,12 @@ test.describe('Category Management', () => {
     });
   });
 
-  test('9.3 Admin can delete a category', async ({ request, authToken, categoryPage }) => {
+  test('9.3 Admin can delete a category', async ({ request, authToken, categoryPage, faker }) => {
     let category: SeededCategory;
 
 
     await test.step('seed category via API', async () => {
-      category = await createCategory(request, authToken, makeCategory());
+      category = await createCategory(request, authToken, makeCategory(faker));
       await categoryPage.goTo();
     });
 
@@ -84,9 +84,9 @@ test.describe('Category Management', () => {
     });
   });
 
-  test('9.5 All category management tests pass', async ({ categoryPage }) => {
-    const metaName = `Teste Completo ${Date.now()}`;
-    const metaEditName = `Teste Editado ${Date.now()}`;
+  test('9.5 All category management tests pass', async ({ categoryPage, faker }) => {
+    const metaName = makeCategory(faker).name;
+    const metaEditName = makeCategory(faker).name;
 
     await test.step('create category via UI', async () => {
       await categoryPage.createCategory(metaName);

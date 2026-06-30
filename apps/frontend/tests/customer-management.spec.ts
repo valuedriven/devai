@@ -4,9 +4,10 @@ import { makeCustomer, makeProduct } from './utils/data';
 
 test.describe('Customer Management', () => {
 
-  test('Admin can create a customer successfully', async ({ page, customerPage, toastComponent }) => {
-    const custName = `Cliente Teste ${Date.now()}`;
-    const custEmail = `cliente-${Date.now()}@example.com`;
+  test('Admin can create a customer successfully', async ({ page, customerPage, toastComponent, faker }) => {
+    const cust = makeCustomer(faker);
+    const custName = cust.name;
+    const custEmail = cust.email;
 
     await test.step('navigate to customers list', async () => {
       await customerPage.goTo();
@@ -22,8 +23,8 @@ test.describe('Customer Management', () => {
       await customerPage.fillCustomerDetails(
         custName,
         custEmail,
-        '11999999999',
-        'Rua de Teste, 123'
+        cust.phone || '11999999999',
+        cust.address || 'Rua de Teste, 123'
       );
     });
 
@@ -37,12 +38,12 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Admin can edit a customer', async ({ page, request, authToken, customerPage, toastComponent }) => {
-    const editName = `Cliente Editado ${Date.now()}`;
+  test('Admin can edit a customer', async ({ page, request, authToken, customerPage, toastComponent, faker }) => {
+    const editName = makeCustomer(faker).name;
     let customer: SeededCustomer;
 
     await test.step('seed customer via API', async () => {
-      customer = await createCustomerApi(request, authToken, makeCustomer());
+      customer = await createCustomerApi(request, authToken, makeCustomer(faker));
       await customerPage.goTo();
       await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
@@ -59,11 +60,11 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Admin can soft delete a customer', async ({ request, authToken, customerPage, toastComponent }) => {
+  test('Admin can soft delete a customer', async ({ request, authToken, customerPage, toastComponent, faker }) => {
     let customer: SeededCustomer;
 
     await test.step('seed customer via API', async () => {
-      customer = await createCustomerApi(request, authToken, makeCustomer());
+      customer = await createCustomerApi(request, authToken, makeCustomer(faker));
       await customerPage.goTo();
       await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
@@ -80,13 +81,13 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Cannot delete a customer that has associated orders', async ({ request, authToken, customerPage, seededCategory, toastComponent }) => {
+  test('Cannot delete a customer that has associated orders', async ({ request, authToken, customerPage, seededCategory, toastComponent, faker }) => {
     let customer: SeededCustomer;
     let product: SeededProduct;
 
     await test.step('seed customer and product via API', async () => {
-      customer = await createCustomerApi(request, authToken, makeCustomer());
-      product = await createProduct(request, authToken, makeProduct(seededCategory.id));
+      customer = await createCustomerApi(request, authToken, makeCustomer(faker));
+      product = await createProduct(request, authToken, makeProduct(seededCategory.id, undefined, faker));
     });
 
     try {
@@ -95,7 +96,7 @@ test.describe('Customer Management', () => {
           customerId: customer.id,
           totalAmount: 10.0,
           order_items: [{ productId: product.id, quantity: 1 }],
-        });
+        }, faker);
       });
 
       await test.step('navigate to customers list', async () => {
@@ -116,22 +117,15 @@ test.describe('Customer Management', () => {
     }
   });
 
-  test('Admin can list and search customers', async ({ page, request, authToken, customerPage }) => {
-    const searchSuffix = Date.now().toString();
-    const nameMatch = `UniqSearchName_${searchSuffix}`;
-    const otherName = `OtherCust_${searchSuffix}`;
+  test('Admin can list and search customers', async ({ page, request, authToken, customerPage, faker }) => {
+    const searchTarget = makeCustomer(faker);
+    const otherTarget = makeCustomer(faker);
+    const nameMatch = searchTarget.name;
+    const otherName = otherTarget.name;
     
     await test.step('seed search target and other customer via API', async () => {
-      await createCustomerApi(request, authToken, {
-        ...makeCustomer(),
-        name: nameMatch,
-        email: `search-${searchSuffix}@example.com`,
-      });
-      await createCustomerApi(request, authToken, {
-        ...makeCustomer(),
-        name: otherName,
-        email: `other-${searchSuffix}@example.com`,
-      });
+      await createCustomerApi(request, authToken, searchTarget);
+      await createCustomerApi(request, authToken, otherTarget);
       await customerPage.goTo();
       await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
@@ -139,20 +133,20 @@ test.describe('Customer Management', () => {
     await test.step('search for unique name and verify list filters correctly', async () => {
       await customerPage.searchInput.fill(nameMatch);
       // Wait for search query URL param to update
-      await page.waitForURL(new RegExp(`search=${nameMatch}`), { timeout: 10000 });
+      await page.waitForURL(new RegExp(`search=${nameMatch.replace(/ /g, '(\\+|%20)')}`), { timeout: 10000 });
       
       await expect(customerPage.table.getByText(nameMatch)).toBeVisible();
       await expect(customerPage.table.getByText(otherName)).toBeHidden();
     });
   });
 
-  test('Admin can view details of a specific customer by ID', async ({ page, request, authToken, customerPage }) => {
-    const uniqueSuffix = Date.now().toString();
+  test('Admin can view details of a specific customer by ID', async ({ page, request, authToken, customerPage, faker }) => {
+    const cust = makeCustomer(faker);
     const customerData = {
-      name: `ViewDetailName_${uniqueSuffix}`,
-      email: `view-${uniqueSuffix}@example.com`,
-      phone: '11988888888',
-      address: 'Rua das Laranjeiras, 456',
+      name: cust.name,
+      email: cust.email,
+      phone: cust.phone || '11988888888',
+      address: cust.address || 'Rua das Laranjeiras, 456',
     };
     let customer: SeededCustomer;
 
@@ -174,14 +168,12 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Block duplicate emails on creation', async ({ request, authToken, customerPage, toastComponent }) => {
-    const email = `duplicate-${Date.now()}@example.com`;
+  test('Block duplicate emails on creation', async ({ request, authToken, customerPage, toastComponent, faker }) => {
+    const targetCust = makeCustomer(faker);
+    const email = targetCust.email;
 
     await test.step('seed customer with target email via API', async () => {
-      await createCustomerApi(request, authToken, {
-        ...makeCustomer(),
-        email,
-      });
+      await createCustomerApi(request, authToken, targetCust);
       await customerPage.goTo();
       await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });

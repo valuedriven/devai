@@ -1,4 +1,5 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+import { expect } from '../fixtures/baseTest';
 
 export class CustomerOrdersPage {
   readonly page: Page;
@@ -26,11 +27,13 @@ export class CustomerOrdersPage {
 
   async goTo(): Promise<this> {
     await this.page.goto('/orders');
+    await expect(this.heading).toBeVisible();
     return this;
   }
 
   async goToOrderDetail(orderId: string): Promise<this> {
     await this.page.goto(`/orders/${orderId}`);
+    await expect(this.page.getByRole('heading', { name: new RegExp(`Pedido #${orderId}`, 'i') })).toBeVisible();
     return this;
   }
 

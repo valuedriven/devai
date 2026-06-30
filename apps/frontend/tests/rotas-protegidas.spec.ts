@@ -7,18 +7,18 @@ test.describe('4. Rotas Protegidas', () => {
   test.describe('Acesso sem autenticação', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test('4.1 Acesso a rota protegida sem autenticação', async ({ page, customerOrdersPage }) => {
+    test('4.1 Acesso a rota protegida sem autenticação', async ({ page }) => {
       // Navegar diretamente para /orders
-      await customerOrdersPage.goTo();
+      await page.goto('/orders');
 
       // Redirecionar para /login com a URL original preservada
       await expect(page).toHaveURL(/\/login/);
       await expect(page).toHaveURL(/redirect=.*orders/);
     });
 
-    test('4.2 Acesso a rota admin sem autenticação', async ({ page, adminDashboardPage }) => {
+    test('4.2 Acesso a rota admin sem autenticação', async ({ page }) => {
       // Navegar diretamente para /admin
-      await adminDashboardPage.goTo();
+      await page.goto('/admin');
 
       // Redirecionar para /login
       await expect(page).toHaveURL(/\/login/);

@@ -1,5 +1,6 @@
-import { expect, Locator, Page } from '@playwright/test';
-import { LoginPage } from './LoginPage';
+import { Locator, Page } from '@playwright/test';
+import { expect } from '../fixtures/baseTest';
+
 
 export class CartPage {
   readonly page: Page;
@@ -27,10 +28,9 @@ export class CartPage {
     return this;
   }
 
-  async clickLogin(): Promise<LoginPage> {
+  async clickLogin(): Promise<void> {
     await this.loginButton.click();
     await this.page.waitForURL(/\/login/);
-    return new LoginPage(this.page);
   }
 
   async confirmOrder(): Promise<this> {

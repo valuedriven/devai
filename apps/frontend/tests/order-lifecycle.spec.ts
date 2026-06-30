@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures/baseTest';
 import { createProduct, createCustomerApi, createOrderApi } from './utils/api';
-import { makeProduct } from './utils/data';
+import { makeProduct, makeCustomer } from './utils/data';
 
 test.describe('Order Lifecycle', () => {
   test.setTimeout(60_000);
@@ -9,19 +9,17 @@ test.describe('Order Lifecycle', () => {
     request,
     authToken,
     seededCategory,
-    orderPage
+    orderPage,
+    faker
   }) => {
     let orderId: string;
     let orderNumber: string;
 
     await test.step('seed customer, product and order', async () => {
-        const customer = await createCustomerApi(request, authToken, {
-            name: 'Lifecycle Test',
-            email: `lifecycle-${Date.now()}@test.com`,
-        });
+        const customer = await createCustomerApi(request, authToken, makeCustomer(faker));
 
         const product = await createProduct(request, authToken, {
-            ...makeProduct(seededCategory.id),
+            ...makeProduct(seededCategory.id, undefined, faker),
             stock: 100
         });
 
@@ -29,7 +27,7 @@ test.describe('Order Lifecycle', () => {
             customerId: customer.id,
             totalAmount: 150,
             order_items: [{ productId: product.id, quantity: 1, unitPrice: 150 }]
-        });
+        }, faker);
         orderId = order.id;
         orderNumber = order.number;
     });

@@ -12,7 +12,7 @@ test.describe('9. Fluxo de Redirecionamento Pós-Login', () => {
     });
 
     await test.step('navigate to protected route and verify redirect to /login', async () => {
-      await customerOrdersPage.goTo();
+      await page.goto('/orders');
       await expect(page).toHaveURL(/.*\/login\?redirect=.*orders/);
       await expect(loginPage.emailInput).toBeVisible();
       await expect(loginPage.emailInput).toBeEditable();
@@ -41,7 +41,7 @@ test.describe('9. Fluxo de Redirecionamento Pós-Login', () => {
     });
 
     await test.step('navigate to protected route and verify redirect to /login', async () => {
-      await customerOrdersPage.goTo();
+      await page.goto('/orders');
       await expect(page).toHaveURL(/.*\/login\?redirect=.*orders/);
       await expect(loginPage.emailInput).toBeVisible();
       await expect(loginPage.emailInput).toBeEditable();

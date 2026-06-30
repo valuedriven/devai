@@ -29,18 +29,14 @@ test.describe('Storefront Public API', () => {
     }
   });
 
-  test('1.3 Public single product retrieval returns HTTP 200 for active product', async ({ request, adminAuthToken }) => {
-    const prodName = `Prod Pub ${Date.now()}`;
-
-    // Create category via API
-    const category = await createCategory(request, adminAuthToken, makeCategory());
+  test('1.3 Public single product retrieval returns HTTP 200 for active product', async ({ request, adminAuthToken, faker }) => {
+    const category = await createCategory(request, adminAuthToken, makeCategory(faker));
+    const prod = makeProduct(category.id, undefined, faker);
+    const prodName = prod.name;
     let product: SeededProduct;
 
     await test.step('create product via API', async () => {
-      product = await createProduct(request, adminAuthToken, {
-        ...makeProduct(category.id),
-        name: prodName
-      });
+      product = await createProduct(request, adminAuthToken, prod);
     });
 
     await test.step('find created product via public API', async () => {
@@ -116,11 +112,11 @@ test.describe('Storefront Frontend Integration', () => {
 
   test('2.3 Non-existent product shows 404', async ({ storefrontPage }) => {
     await storefrontPage.gotoProductDetail('00000000-0000-0000-0000-000000000000');
-    await expect(storefrontPage.notFoundMessage).toBeVisible({ timeout: 10000 });
+    await expect(storefrontPage.notFoundMessage).toBeVisible();
   });
 
-  test('2.4 Out-of-stock product displays "Esgotado" badge and disabled button', async ({ storefrontPage, request, adminAuthToken, seededCategory }) => {
-    const product = await createProduct(request, adminAuthToken, { ...makeProduct(seededCategory.id), stock: 0 });
+  test('2.4 Out-of-stock product displays "Esgotado" badge and disabled button', async ({ storefrontPage, request, adminAuthToken, seededCategory, faker }) => {
+    const product = await createProduct(request, adminAuthToken, { ...makeProduct(seededCategory.id, undefined, faker), stock: 0 });
 
     try {
       await test.step('navigate to storefront', async () => {
@@ -137,12 +133,12 @@ test.describe('Storefront Frontend Integration', () => {
     }
   });
 
-  test('2.5 Category filter navigation updates URL and filters products', async ({ page, storefrontPage, request, adminAuthToken }) => {
-    const catA = await createCategory(request, adminAuthToken, makeCategory());
-    const catB = await createCategory(request, adminAuthToken, makeCategory());
+  test('2.5 Category filter navigation updates URL and filters products', async ({ page, storefrontPage, request, adminAuthToken, faker }) => {
+    const catA = await createCategory(request, adminAuthToken, makeCategory(faker));
+    const catB = await createCategory(request, adminAuthToken, makeCategory(faker));
 
-    const prodA = await createProduct(request, adminAuthToken, { ...makeProduct(catA.id), name: `ProdA ${Date.now()}` });
-    const prodB = await createProduct(request, adminAuthToken, { ...makeProduct(catB.id), name: `ProdB ${Date.now()}` });
+    const prodA = await createProduct(request, adminAuthToken, makeProduct(catA.id, undefined, faker));
+    const prodB = await createProduct(request, adminAuthToken, makeProduct(catB.id, undefined, faker));
 
     try {
       await test.step('navigate to storefront', async () => {

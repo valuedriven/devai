@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures/baseTest';
 import { createProduct, createCustomerApi, createOrderApi } from './utils/api';
-import { makeProduct } from './utils/data';
+import { makeProduct, makeCustomer } from './utils/data';
 
 test.describe('Order Management Lifecycle', () => {
 
@@ -8,19 +8,17 @@ test.describe('Order Management Lifecycle', () => {
     request,
     authToken,
     seededCategory,
-    orderPage
+    orderPage,
+    faker
   }) => {
     const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001/api/v1';
     let orderId: string;
 
     await test.step('seed customer, product, and order via API', async () => {
-      const customer = await createCustomerApi(request, authToken, {
-        name: 'Invalid Transition Test Customer',
-        email: `invalid-transition-${Date.now()}@test.com`,
-      });
+      const customer = await createCustomerApi(request, authToken, makeCustomer(faker));
 
       const product = await createProduct(request, authToken, {
-        ...makeProduct(seededCategory.id),
+        ...makeProduct(seededCategory.id, undefined, faker),
         stock: 100
       });
 
@@ -28,7 +26,7 @@ test.describe('Order Management Lifecycle', () => {
         customerId: customer.id,
         totalAmount: 200,
         order_items: [{ productId: product.id, quantity: 1, unitPrice: 200 }]
-      });
+      }, faker);
       orderId = order.id;
     });
 
@@ -55,19 +53,17 @@ test.describe('Order Management Lifecycle', () => {
     request,
     authToken,
     seededCategory,
-    orderPage
+    orderPage,
+    faker
   }) => {
     let orderAId: string;
     let orderBId: string;
 
     await test.step('seed customer, product, and two orders via API', async () => {
-      const customer = await createCustomerApi(request, authToken, {
-        name: 'Cancellation Test Customer',
-        email: `cancel-test-${Date.now()}@test.com`,
-      });
+      const customer = await createCustomerApi(request, authToken, makeCustomer(faker));
 
       const product = await createProduct(request, authToken, {
-        ...makeProduct(seededCategory.id),
+        ...makeProduct(seededCategory.id, undefined, faker),
         stock: 100
       });
 
@@ -75,14 +71,14 @@ test.describe('Order Management Lifecycle', () => {
         customerId: customer.id,
         totalAmount: 100,
         order_items: [{ productId: product.id, quantity: 1, unitPrice: 100 }]
-      });
+      }, faker);
       orderAId = orderA.id;
 
       const orderB = await createOrderApi(request, authToken, {
         customerId: customer.id,
         totalAmount: 100,
         order_items: [{ productId: product.id, quantity: 1, unitPrice: 100 }]
-      });
+      }, faker);
       orderBId = orderB.id;
     });
 

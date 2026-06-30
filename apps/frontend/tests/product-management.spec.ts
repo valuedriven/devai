@@ -5,8 +5,9 @@ import { makeProduct } from './utils/data';
 
 test.describe('Product Management', () => {
 
-  test('Admin can create a product successfully', async ({ page, seededCategory, productPage }) => {
-    const prodName = `Produto Teste ${Date.now()}`;
+  test('Admin can create a product successfully', async ({ page, seededCategory, productPage, faker }) => {
+    const prod = makeProduct(seededCategory.id, undefined, faker);
+    const prodName = prod.name;
 
     await test.step('navigate to products list', async () => {
       await productPage.goTo();
@@ -21,9 +22,9 @@ test.describe('Product Management', () => {
     await test.step('fill product details', async () => {
       await productPage.fillProductDetails(
         prodName,
-        '199.99',
-        '10',
-        'Descrição do produto de teste com Playwright',
+        prod.price.toString(),
+        prod.stock.toString(),
+        prod.description || 'Descrição do produto',
         seededCategory.id
       );
     });
@@ -37,12 +38,12 @@ test.describe('Product Management', () => {
 
   });
 
-  test('Admin can edit a product', async ({ page, request, authToken, seededCategory, productPage }) => {
-    const editName = `Produto Editado ${Date.now()}`;
+  test('Admin can edit a product', async ({ page, request, authToken, seededCategory, productPage, faker }) => {
+    const editName = makeProduct(seededCategory.id, undefined, faker).name;
     let product: SeededProduct;
 
     await test.step('seed product via API', async () => {
-      product = await createProduct(request, authToken, makeProduct(seededCategory.id));
+      product = await createProduct(request, authToken, makeProduct(seededCategory.id, undefined, faker));
       await productPage.goTo();
       await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
     });
@@ -58,11 +59,11 @@ test.describe('Product Management', () => {
     });
   });
 
-  test('Admin can delete a product', async ({ request, authToken, seededCategory, productPage }) => {
+  test('Admin can delete a product', async ({ request, authToken, seededCategory, productPage, faker }) => {
     let product: SeededProduct;
 
     await test.step('seed product via API', async () => {
-      product = await createProduct(request, authToken, makeProduct(seededCategory.id));
+      product = await createProduct(request, authToken, makeProduct(seededCategory.id, undefined, faker));
       await productPage.goTo();
       await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
     });

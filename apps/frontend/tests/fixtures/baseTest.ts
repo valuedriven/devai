@@ -11,6 +11,7 @@
 import { test as base } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { faker } from '@faker-js/faker';
 import {
   getAuthToken,
   createCategory,
@@ -23,7 +24,7 @@ import {
   deleteCustomerApi,
   SeededCustomer,
 } from '../utils/api';
-import { makeProduct, makeCustomer } from '../utils/data';
+import { makeCategory, makeProduct, makeCustomer } from '../utils/data';
 import { LoginPage } from '../pages/LoginPage';
 import { CategoryPage } from '../pages/CategoryPage';
 import { ProductPage } from '../pages/ProductPage';
@@ -39,6 +40,8 @@ import { NavigationComponent } from '../components/NavigationComponent';
 import { ToastComponent } from '../components/ToastComponent';
 
 type Fixtures = {
+  /** Deterministically seeded Faker instance. */
+  faker: typeof faker;
   /** Valid Clerk JWT extracted from the page context's devai_auth_token cookie. */
   authToken: string;
   /** Admin Clerk JWT extracted from the saved admin auth state. */
@@ -65,6 +68,17 @@ type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
+  faker: async ({}, use, testInfo) => {
+    const seedInput = `${testInfo.file}:${testInfo.title}:${testInfo.project.name}`;
+    let hash = 0;
+    for (let i = 0; i < seedInput.length; i++) {
+      hash = (hash << 5) - hash + seedInput.charCodeAt(i);
+      hash |= 0;
+    }
+    faker.seed(Math.abs(hash));
+    await use(faker);
+  },
+
   authToken: async ({ page }, use) => {
     const token = await getAuthToken(page);
     await use(token);
@@ -82,20 +96,20 @@ export const test = base.extend<Fixtures>({
     }
   },
 
-  seededCategory: async ({ request, adminAuthToken }, use) => {
-    const category = await createCategory(request, adminAuthToken);
+  seededCategory: async ({ request, adminAuthToken, faker }, use) => {
+    const category = await createCategory(request, adminAuthToken, makeCategory(faker));
     await use(category);
     await deleteCategory(request, adminAuthToken, category.id);
   },
 
-  seededProduct: async ({ request, adminAuthToken, seededCategory }, use) => {
-    const product = await createProduct(request, adminAuthToken, makeProduct(seededCategory.id));
+  seededProduct: async ({ request, adminAuthToken, seededCategory, faker }, use) => {
+    const product = await createProduct(request, adminAuthToken, makeProduct(seededCategory.id, undefined, faker));
     await use(product);
     await deleteProduct(request, adminAuthToken, product.id);
   },
 
-  seededCustomer: async ({ request, adminAuthToken }, use) => {
-    const customer = await createCustomerApi(request, adminAuthToken, makeCustomer());
+  seededCustomer: async ({ request, adminAuthToken, faker }, use) => {
+    const customer = await createCustomerApi(request, adminAuthToken, makeCustomer(faker));
     await use(customer);
     await deleteCustomerApi(request, adminAuthToken, customer.id);
   },

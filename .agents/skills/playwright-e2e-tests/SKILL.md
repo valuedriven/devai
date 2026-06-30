@@ -59,10 +59,18 @@ Always import `test` and `expect` from `baseTest.ts` — never directly from `@p
 ```ts
 // ✔ Good
 import { test, expect } from '../fixtures/baseTest';
-
 // ✘ Bad — bypasses all custom fixtures
 import { test, expect } from '@playwright/test';
 ```
+
+### E2E Coverage Scope
+
+E2E tests are expensive to write and run. Reserve them for **core business actions**
+(login, checkout, order lifecycle, admin product management) — as a rule of thumb,
+core-flow E2E coverage should sit around **30% of the total test suite**, with the
+remainder handled by unit and component tests. Push purely visual/aesthetic checks
+(spacing, font sizes, color contrast) to unit or visual-regression tooling, not Playwright
+E2E specs.
 
 ---
 
@@ -74,7 +82,6 @@ apps/frontend/
   .auth/
     customer.json      ← storageState cache (gitignored)
     admin.json
-
   src/
     fixtures/
       baseTest.ts      ← always import test/expect from here
@@ -93,7 +100,6 @@ apps/frontend/
       api.ts             ← API seeding helpers (calls backend directly)
     types/
       index.ts
-
   tests/
     auth/
       auth.setup.ts      ← storageState setup (customer + admin)
@@ -132,7 +138,6 @@ A Page Object is **not** responsible for:
 ### Locator Priority
 
 Use user-facing selectors in this order:
-
 1. `getByRole`
 2. `getByLabel`
 3. `getByPlaceholder`
@@ -140,14 +145,21 @@ Use user-facing selectors in this order:
 5. `getByText`
 6. CSS selectors (last resort only)
 
+`getByRole()` is the most important locator in this list — it tracks the accessibility
+tree rather than markup, so it survives DOM/CSS churn and doubles as an implicit
+accessibility check. If deleting an element's `class` attribute wouldn't break the
+user experience, it shouldn't break the locator either.
+
 ```ts
 // ✔ Good
 readonly emailInput    = this.page.getByRole('textbox', { name: /email/i });
 readonly submitButton  = this.page.getByRole('button', { name: /entrar/i });
-
 // ✘ Bad — brittle
 readonly emailInput = this.page.locator('input[data-id="email-1"]');
 ```
+
+Prefer chaining and `.filter()` to narrow a search instead of writing a single complex
+selector — see "Chaining `.filter()`" below for the row-container rule.
 
 ### Assertions Stay in Tests
 
@@ -157,13 +169,30 @@ Never use `expect()` inside a Page Object.
 // ✔ Good — assertion in the test
 await loginPage.login(user.email, user.password);
 await expect(catalogPage.heading).toBeVisible();
-
 // ✘ Bad — assertion inside Page Object
 async login() {
   await this.submitButton.click();
   await expect(this.page).toHaveURL('/catalog'); // never do this
 }
 ```
+
+### ARIA Snapshots for Whole-View Assertions
+
+When a test needs to validate the overall structure of a view (e.g. a full order
+summary panel, a dashboard sidebar) rather than one specific field, prefer
+`toMatchAriaSnapshot()` over asserting individual DOM nodes one by one. It captures
+the accessibility tree, so it catches meaningful semantic regressions (a button
+becoming a link, a missing heading) while ignoring purely cosmetic CSS changes that
+don't matter to a screen reader or to real users.
+
+```ts
+// ✔ Good — guards the whole region's structure resiliently
+await expect(orderPage.summaryPanel).toMatchAriaSnapshot();
+```
+
+Use this for structural/regression coverage of a region; still use targeted
+`toHaveText()` / `toBeVisible()` assertions (or `expect.soft()`, see below) when the
+test cares about a specific value.
 
 ### Navigation Returns the Destination Page Object
 
@@ -188,13 +217,11 @@ async goTo(): Promise<this> {
   await expect(this.heading).toBeVisible(); // web-first; retries until data loads
   return this;
 }
-
 // ✘ Bad — domcontentloaded fires before async API data loads
 async goTo(): Promise<void> {
   await this.page.goto('/login');
   await this.page.waitForLoadState('domcontentloaded'); // ← race condition
 }
-
 // ✘ Bad — leaks page internals into the test
 test('login', async ({ page }) => {
   await page.goto('/login');
@@ -216,7 +243,6 @@ async createCategory(name: string): Promise<this> {
   await this.saveButton.click();
   return this;
 }
-
 // ✘ Bad — fill() may target an element not yet in the DOM
 async createCategory(name: string): Promise<this> {
   await this.newCategoryButton.click();
@@ -253,7 +279,6 @@ async transitionStatus(actionName: string): Promise<this> {
   await expect(button).toBeHidden(); // ← confirms server responded and UI re-rendered
   return this;
 }
-
 // ✔ Good — cancel confirmation
 async cancelOrder(): Promise<this> {
   const cancelButton = this.page.getByTestId('cancel-order-button');
@@ -271,7 +296,6 @@ async cancelOrder(): Promise<this> {
 // ✔ Good
 await expect(this.confirmDeleteButton).toBeVisible();
 await this.confirmDeleteButton.click();
-
 // ✘ Bad — depends on focus state
 await this.confirmDeleteButton.press('Enter');
 ```
@@ -340,7 +364,6 @@ await page.context().clearCookies();
 await storefrontPage.goTo();
 await page.evaluate(() => localStorage.clear());
 await page.reload(); // ← clears in-memory router state
-
 // ✘ Bad — Next.js router still thinks the user is logged in
 await page.context().clearCookies();
 await page.evaluate(() => localStorage.clear());
@@ -358,7 +381,6 @@ await page.evaluate(() => localStorage.clear());
 beforeEach(async ({ page }) => {
   loginPage = new LoginPage(page);
 });
-
 // ✔ Good
 export const test = base.extend<Fixtures>({
   loginPage: async ({ page }, use) => {
@@ -405,6 +427,22 @@ seededProduct: async ({ request }, use) => {
 },
 ```
 
+### Aborting on Broken Preconditions
+
+If a fixture or `beforeEach` setup step fails (e.g. a required seed API call returns an
+unexpected status, or an environment variable is missing), call `test.abort("reason")`
+rather than letting the test fail naturally. This marks the run as an environment/setup
+problem in the report instead of a product regression, which keeps triage signal clean.
+
+```ts
+test.beforeEach(async ({ request }) => {
+  const health = await request.get('/v1/health');
+  if (!health.ok()) {
+    test.abort('Backend health check failed — environment is not ready for E2E run');
+  }
+});
+```
+
 ---
 
 ## Test Data
@@ -440,7 +478,6 @@ export interface SeededOrder {
   totalAmount: number;
   status: string;
 }
-
 // ✘ Bad — missing number field; order.number is undefined at runtime
 export interface SeededOrder {
   id: string;
@@ -462,7 +499,6 @@ async addToCartForProduct(productId: string): Promise<this> {
   await this.addToCartButton.click();
   return this;
 }
-
 // ✘ Bad — adds whichever product renders first; non-deterministic
 async addToCart(): Promise<this> {
   await this.addToCartButton.first().click();
@@ -485,6 +521,13 @@ export const makeProduct = (overrides = {}) => ({
   ...overrides,
 });
 ```
+
+### Reset State Between Runs
+
+Test data lifecycle should be self-contained per test (create → use → teardown via
+fixture teardown, see above). For any data that can't be cleaned up per-test — e.g.
+shared seed/reference data — rely on database snapshots or scheduled teardown jobs so
+runs do not inherit dirty state from a previous suite execution.
 
 ---
 
@@ -511,14 +554,13 @@ test('customer can place an order', async ({ request, catalogPage, orderPage }) 
 
 ### `test.step()` for Readability
 
-Use `test.step()` whenever a test has more than two logical phases. Steps appear in the HTML report and Playwright trace viewer.
+Use `test.step()` whenever a test has more than two logical phases. Steps appear in the HTML report and Playwright trace viewer. Name tests and steps for the specific failure they'd surface — write them so the trace viewer reads like a sentence describing the behavior under test (e.g. `"checkout charges the card and shows the order number"`), not a vague phase label.
 
 ```ts
 test('admin creates a product', async ({ adminPage }) => {
   await test.step('fill product form', async () => {
     await adminPage.fillProductForm(makeProduct());
   });
-
   await test.step('submit and verify', async () => {
     await adminPage.submitProductForm();
     await expect(adminPage.successMessage).toBeVisible();
@@ -545,11 +587,11 @@ test.describe('Catalog page', () => {
 // ✔ Good — timeout applies from the start of every test in this describe
 test.describe('Order Lifecycle', () => {
   test.setTimeout(60_000);
+
   test('Admin can manage order lifecycle...', async ({ ... }) => {
     // no test.setTimeout here
   });
 });
-
 // ✘ Bad — timer resets mid-test; first N seconds are unguarded
 test('Admin can manage order lifecycle...', async ({ ... }) => {
   test.setTimeout(60_000); // too late; doesn't cover setup time
@@ -565,7 +607,6 @@ Never pass `{ timeout }` to individual `expect()` calls. The global `expect.time
 ```ts
 // ✔ Good — trusts global config
 await expect(dialog).toBeHidden();
-
 // ✘ Bad — duplicates or overrides global; becomes stale when config changes
 await expect(dialog).toBeHidden({ timeout: 5000 });
 ```
@@ -581,7 +622,6 @@ The only legitimate per-assertion timeout override is in tests that genuinely re
 await expect(
   orderPage.auditLog.getByRole('row').filter({ hasText: 'Pago' }).filter({ hasText: 'Preparação' })
 ).toBeVisible();
-
 // ✘ Bad — getByText returns a leaf node; filter on a leaf never matches sibling text
 await expect(
   orderPage.auditLog.getByText('Pago').filter({ hasText: 'Preparação' }).first()
@@ -592,7 +632,7 @@ If the list renders `<div>` blocks instead of `<tr>` rows, use `getByTestId('aud
 
 ### Soft Assertions
 
-Use `expect.soft()` when validating multiple independent properties of a single state.
+Use `expect.soft()` when validating multiple independent properties of a single state, so the test reports every failing field in one run instead of stopping at the first.
 
 ```ts
 test('order summary shows correct details', async ({ orderPage }) => {
@@ -645,14 +685,18 @@ test('customer cannot access admin dashboard', async ({ page }) => {
 
 ## Network Interception
 
-Use `page.route()` to stub flaky or slow third-party integrations. This does not replace backend integration tests — use it to simulate edge cases in the UI only.
+Use `page.route()` to stub flaky or slow third-party integrations (payment gateways,
+shipping/weather lookups, etc.). E2E tests should validate *our* UI behavior, not the
+reliability of a third-party service — mocking lets you assert how the frontend reacts
+to specific responses (success, timeout, 5xx) deterministically, without depending on
+the real provider being up. This does not replace backend integration tests — use it to
+simulate edge cases in the UI only.
 
 ```ts
 test('shows payment error when gateway is unavailable', async ({ page, checkoutPage }) => {
   await page.route('**/v1/payments', (route) =>
     route.fulfill({ status: 503, body: JSON.stringify({ title: 'Service unavailable', status: 503 }) }),
   );
-
   await checkoutPage.submitPayment(makeCard());
   await expect(checkoutPage.errorMessage).toBeVisible();
 });
@@ -718,6 +762,23 @@ test('large order export', async ({ adminPage }) => {
 });
 ```
 
+### Lint Enforcement for Async Safety
+
+A missing `await` on an async Playwright call is one of the most common causes of
+flaky tests — the test moves on before the action or assertion has actually settled.
+Enforce this at the repo level rather than relying on review: add the
+`@typescript-eslint/no-floating-promises` ESLint rule to the frontend's lint config so
+floating promises fail CI before a flaky test ever lands.
+
+```jsonc
+// .eslintrc (relevant excerpt)
+{
+  "rules": {
+    "@typescript-eslint/no-floating-promises": "error"
+  }
+}
+```
+
 ---
 
 ## Best Practices
@@ -738,13 +799,18 @@ test('large order export', async ({ adminPage }) => {
 - All seeded resource interfaces must type every field the test references — never rely on implicit `any`
 - Chain `.filter()` on row containers, not on leaf text nodes
 - Navigate to a seeded resource by ID — never use `.first()` on multi-item lists
+- Prefer `toMatchAriaSnapshot()` for whole-view structural assertions over asserting many individual DOM nodes
+- Mock third-party dependencies with `page.route()` rather than letting tests depend on a live external provider
+- Call `test.abort("reason")` when a fixture/precondition fails, instead of letting setup failures masquerade as product bugs
+- Enforce `@typescript-eslint/no-floating-promises` in CI to catch missing `await`s before they cause flake
+- Keep E2E coverage focused on core business flows (~30% of total suite); push aesthetic checks to unit tests
 
 ---
 
 ## Anti-Patterns
 
 | Anti-pattern                                           | Correct Approach                                                      |
-|--------------------------------------------------------|-----------------------------------------------------------------------|
+|--------------------------------------------------------|-------------------------------------------------------------------------|
 | `expect()` inside Page Objects                         | All assertions in `*.spec.ts` files                                   |
 | `import { test } from '@playwright/test'`              | Always import from `baseTest.ts`                                      |
 | `new LoginPage(page)` inside tests                     | Use `test.extend` fixtures                                            |
@@ -758,16 +824,20 @@ test('large order export', async ({ adminPage }) => {
 | `.getByText().filter({ hasText })` on leaf text nodes  | `.getByRole('row').filter({…}).filter({…})` on row container         |
 | `addToCart()` with `.first()` on product lists         | Navigate to seeded product's detail page by ID                       |
 | Missing fields in seeded resource interfaces           | Type every field the test references; never rely on implicit `any`   |
-| `test.setTimeout()` inside the test body               | Declare at `test.describe` scope                                     |
-| Inline `{ timeout }` overrides on `expect()` calls     | Trust global `expect.timeout`; remove overrides                      |
-| Clearing cookies/localStorage without `page.reload()`  | Always call `await page.reload()` after clearing auth state          |
-| Navigation waits inside `login()` action method        | Keep `login()` single-responsibility; add waits at the call site     |
-| Hardcoded emails or product names                      | `@faker-js/faker` generated unique values                            |
-| Tests that depend on execution order                   | Each test owns its full data lifecycle                               |
-| Raising global timeout for one slow test               | Use `test.slow()` locally                                            |
-| Using Clerk SDK components                             | Use custom form Page Objects only                                    |
-| Creating `.env.test` or per-app env files              | Single `.env` at monorepo root                                       |
-| Skipping RBAC redirect tests                           | Mandatory for all protected routes                                   |
+| `test.setTimeout()` inside the test body                | Declare at `test.describe` scope                                      |
+| Inline `{ timeout }` overrides on `expect()` calls      | Trust global `expect.timeout`; remove overrides                      |
+| Clearing cookies/localStorage without `page.reload()`   | Always call `await page.reload()` after clearing auth state          |
+| Navigation waits inside `login()` action method          | Keep `login()` single-responsibility; add waits at the call site     |
+| Hardcoded emails or product names                       | `@faker-js/faker` generated unique values                            |
+| Tests that depend on execution order                    | Each test owns its full data lifecycle                               |
+| Raising global timeout for one slow test                | Use `test.slow()` locally                                            |
+| Using Clerk SDK components                               | Use custom form Page Objects only                                    |
+| Creating `.env.test` or per-app env files                | Single `.env` at monorepo root                                       |
+| Skipping RBAC redirect tests                              | Mandatory for all protected routes                                   |
+| Asserting many raw DOM nodes for a whole view             | `toMatchAriaSnapshot()` for structural/regression coverage           |
+| Letting tests hit live third-party providers              | Mock with `page.route()`                                             |
+| Letting broken fixtures fail tests silently as "bugs"     | `test.abort("reason")` to flag environment/setup failures clearly    |
+| Missing `await` on async Playwright calls                 | Enforce `@typescript-eslint/no-floating-promises` in CI              |
 
 ---
 
@@ -782,7 +852,7 @@ Before considering an E2E test complete:
 - [ ] Uses `storageState` for authenticated sessions — not UI login per test
 - [ ] Covers happy path, failure path, and relevant edge cases
 - [ ] Covers RBAC: unauthenticated redirect, role-based access
-- [ ] Uses `test.step()` for multi-phase tests
+- [ ] Uses `test.step()` for multi-phase tests, named for the behavior under test
 - [ ] Uses web-first assertions — no `waitForTimeout`
 - [ ] Fixture teardown cleans up created resources
 - [ ] Does not rely on execution order
@@ -799,3 +869,7 @@ Before considering an E2E test complete:
 - [ ] `test.setTimeout` declared at `describe` scope, not inside test body
 - [ ] No inline `{ timeout }` overrides on individual `expect()` calls
 - [ ] Auth-state-clearing tests call `page.reload()` after clearing cookies/localStorage
+- [ ] Whole-view structural checks use `toMatchAriaSnapshot()` rather than many discrete DOM assertions
+- [ ] Third-party integrations (payments, external lookups) are mocked via `page.route()`, not hit live
+- [ ] Fixtures abort with `test.abort("reason")` on broken preconditions instead of failing as a product bug
+- [ ] Repo's ESLint config enforces `@typescript-eslint/no-floating-promises`

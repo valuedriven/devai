@@ -1,0 +1,35 @@
+# Task Checklist: Align Playwright E2E Tests with Skill
+
+- [x] Decommission globalSetup
+  - [x] Remove `globalSetup: require.resolve('./tests/server.setup.ts')` from `apps/frontend/playwright.config.ts`
+  - [x] Delete `apps/frontend/tests/server.setup.ts` [DELETE]
+- [x] Fix Page Object and Component imports of `expect`
+  - [x] `apps/frontend/tests/pages/CategoryPage.ts`
+  - [x] `apps/frontend/tests/pages/CartPage.ts`
+  - [x] `apps/frontend/tests/pages/OrderPage.ts`
+  - [x] `apps/frontend/tests/pages/ProductPage.ts`
+  - [x] `apps/frontend/tests/pages/CustomerPage.ts`
+  - [x] `apps/frontend/tests/pages/AdminDashboardPage.ts`
+  - [x] `apps/frontend/tests/pages/CustomerOrdersPage.ts`
+  - [x] `apps/frontend/tests/pages/CheckoutPage.ts`
+  - [x] `apps/frontend/tests/pages/StorefrontPage.ts`
+  - [x] `apps/frontend/tests/components/NavigationComponent.ts`
+  - [x] `apps/frontend/tests/components/ToastComponent.ts`
+- [x] Implement Web Component & Hydration Robustness Strategies
+  - [x] Audit all interactions to ensure `[data-state="ready"]` or `:defined` waits are used where elements are loaded asynchronously or custom elements are involved
+- [x] Fix `LoginPage` POM inconsistencies
+  - [x] Await `emailInput` visibility instead of `domcontentloaded` in `goTo()`
+  - [x] Return `Promise<void>` in `login()`, adjusting call sites as necessary
+- [x] Fix `CartPage` POM inconsistencies
+  - [x] Return `Promise<void>` in `clickLogin()`
+- [x] Fix `CustomerOrdersPage` POM inconsistencies
+  - [x] Add visibility guards in `goTo()` and `goToOrderDetail()`
+- [x] Fix `StorefrontPage` POM inconsistencies
+  - [x] Refactor `addToCart()` to avoid using `.first().click()` without a scope
+- [x] Fix spec files and setup hooks
+  - [x] Add `await page.reload()` after clearing cookies/local storage in `login-flow.spec.ts`
+  - [x] Adjust any call sites impacted by `login()` or `clickLogin()` refactorings
+  - [x] Remove inline `{ timeout: 10000 }` from `storefront-catalog.spec.ts`
+- [x] Validation
+  - [x] Run `npm run lint` and verify zero errors
+  - [x] Run `npm run test:e2e` and verify all tests pass

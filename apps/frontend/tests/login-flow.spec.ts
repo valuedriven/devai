@@ -8,6 +8,7 @@ test.describe('1. Fluxo de Login', () => {
     await page.context().clearCookies();
     await storefrontPage.goTo();
     await page.evaluate(() => localStorage.clear());
+    await page.reload();
   });
 
   test('1.1 Login com credenciais válidas (ADMIN)', async ({ page, loginPage, navigationComponent }) => {

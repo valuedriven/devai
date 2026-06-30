@@ -14,7 +14,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test:all",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
-    "test:e2e": "npm run test --workspace=frontend",
+    "test:e2e": "npm run db:reset --workspace=backend && npm run test --workspace=frontend -- --workers=1",
     "test:unit": "npm run test --workspace=backend -- --coverage",
     "test:integration": "npm run test:e2e --workspace=backend -- --coverage"
   },

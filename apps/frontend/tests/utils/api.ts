@@ -1,5 +1,6 @@
 import { APIRequestContext, Page } from '@playwright/test';
 import { CategoryData, CustomerData, makeCategory, ProductData } from './data';
+import { faker as globalFaker } from '@faker-js/faker';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001/api/v1';
 
@@ -161,12 +162,13 @@ export async function createOrderApi(
     totalAmount: number;
     order_items: { productId: string; quantity: number; unitPrice?: number }[];
   },
+  faker = globalFaker,
 ): Promise<SeededOrder> {
   const res = await request.post(`${API_BASE}/orders`, {
     headers: adminHeaders(token),
     data: {
       ...data,
-      number: `E2E-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+      number: `E2E-${faker.string.numeric(10)}`,
     },
   });
   if (!res.ok()) {

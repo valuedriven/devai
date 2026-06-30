@@ -8,7 +8,6 @@ const backendDir = path.resolve(__dirname, '../backend');
 
 export default defineConfig({
   testDir: './tests',
-  globalSetup: require.resolve('./tests/server.setup.ts'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -22,13 +21,13 @@ export default defineConfig({
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     actionTimeout: 10_000,
-    navigationTimeout: 15_000,
+    navigationTimeout: 60_000,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
   webServer: [
     {
-      command: 'npm run prisma:generate && nest start',
+      command: 'npm run prisma:generate && npx nest start',
       url: 'http://127.0.0.1:3001/api/v1/products',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,

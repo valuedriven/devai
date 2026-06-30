@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
-import { StorefrontPage } from './StorefrontPage';
+import { expect } from '../fixtures/baseTest';
+
 
 export class LoginPage {
   readonly page: Page;
@@ -18,16 +19,15 @@ export class LoginPage {
 
   async goTo(): Promise<this> {
     await this.page.goto('/login');
-    await this.page.waitForLoadState('domcontentloaded');
+    await expect(this.emailInput).toBeVisible();
     return this;
   }
 
-  async login(email: string, pass: string): Promise<StorefrontPage> {
+  async login(email: string, pass: string): Promise<void> {
     // Wait for React to finish mounting the form before interacting
     await this.page.locator('form.login-form[data-state="ready"]').waitFor({ timeout: 10_000 });
     await this.emailInput.fill(email);
     await this.passwordInput.fill(pass);
     await this.submitButton.click();
-    return new StorefrontPage(this.page);
   }
 }
