@@ -6,6 +6,7 @@ import { useCart } from "@/lib/CartContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Trash2, LogIn } from "lucide-react";
+import Image from "next/image";
 
 export default function CartPage() {
     const { isLoggedIn } = useAuthMe();
@@ -24,9 +25,15 @@ export default function CartPage() {
                     {cartItems.map((item) => (
                         <Card key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center p-4 gap-4">
                             <div className="flex items-center gap-4 w-full sm:w-auto flex-1 min-w-0">
-                                <div className="h-20 w-20 bg-muted rounded overflow-hidden flex-shrink-0">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                                <div className="h-20 w-20 bg-muted rounded overflow-hidden flex-shrink-0 relative">
+                                    <Image
+                                        src={item.image}
+                                        alt={item.name}
+                                        fill
+                                        className="object-cover"
+                                        sizes="80px"
+                                        unoptimized={item.image?.startsWith('http')}
+                                    />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-semibold truncate text-base sm:text-lg">{item.name}</h3>

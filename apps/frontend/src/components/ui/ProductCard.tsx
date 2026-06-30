@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Product } from "@/lib/types";
@@ -38,11 +39,13 @@ export function ProductCard({ product }: ProductCardProps) {
                                     <Loader2 className="w-8 h-8 animate-spin" />
                                 </div>
                             )}
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 src={product.image}
                                 alt={product.name}
+                                fill
                                 className={`product-image ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                unoptimized={product.image?.startsWith('http')}
                                 onLoad={() => setImageLoading(false)}
                                 onError={() => {
                                     setImageLoading(false);

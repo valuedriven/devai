@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../../database/prisma.service';
+import { Prisma } from '@prisma/client';
 
 export enum OrderStatus {
   NEW = 'Novo',
@@ -39,7 +40,7 @@ export class OrderManagementService {
     startDate?: string;
     endDate?: string;
   }) {
-    const where: any = {};
+    const where: Prisma.OrderWhereInput = {};
 
     if (filters.status) {
       where.status = filters.status;

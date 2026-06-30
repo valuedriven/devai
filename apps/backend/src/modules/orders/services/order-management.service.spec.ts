@@ -25,7 +25,7 @@ describe('OrderManagementService', () => {
     emitMock = jest.fn();
     eventEmitter = {
       emit: emitMock,
-    } as any;
+    } as unknown as EventEmitter2;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -48,12 +48,9 @@ describe('OrderManagementService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('transitionStatus', () => {
     it('should transition from New to Paid', async () => {
+      // Arrange
       const order = { id: 'order-1', status: OrderStatus.NEW };
       prisma.order.findUnique.mockResolvedValueOnce(order);
       prisma.order.update.mockResolvedValueOnce({
@@ -61,12 +58,14 @@ describe('OrderManagementService', () => {
         status: OrderStatus.PAID,
       });
 
+      // Act
       const result = await service.transitionStatus(
         'order-1',
         OrderStatus.PAID,
         'user-1',
       );
 
+      // Assert
       expect(prisma.order.update).toHaveBeenCalledWith({
         where: { id: 'order-1' },
         data: { status: OrderStatus.PAID },
@@ -87,6 +86,7 @@ describe('OrderManagementService', () => {
     });
 
     it('should transition from any (except Delivered) to Cancelled', async () => {
+      // Arrange
       const order = { id: 'order-1', status: OrderStatus.SHIPPED };
       prisma.order.findUnique.mockResolvedValueOnce(order);
       prisma.order.update.mockResolvedValueOnce({
@@ -94,52 +94,64 @@ describe('OrderManagementService', () => {
         status: OrderStatus.CANCELLED,
       });
 
+      // Act
       const result = await service.transitionStatus(
         'order-1',
         OrderStatus.CANCELLED,
       );
 
+      // Assert
       expect(result.status).toBe(OrderStatus.CANCELLED);
     });
 
     it('should throw UnprocessableEntityException for invalid transitions', async () => {
+      // Arrange
       const order = { id: 'order-1', status: OrderStatus.NEW };
       prisma.order.findUnique.mockResolvedValueOnce(order);
 
+      // Act & Assert
       await expect(
         service.transitionStatus('order-1', OrderStatus.SHIPPED),
       ).rejects.toThrow(UnprocessableEntityException);
     });
 
     it('should throw UnprocessableEntityException when transitioning from Delivered', async () => {
+      // Arrange
       const order = { id: 'order-1', status: OrderStatus.DELIVERED };
       prisma.order.findUnique.mockResolvedValueOnce(order);
 
+      // Act & Assert
       await expect(
         service.transitionStatus('order-1', OrderStatus.CANCELLED),
       ).rejects.toThrow(UnprocessableEntityException);
     });
 
     it('should throw NotFoundException if order not found', async () => {
+      // Arrange
       prisma.order.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(
         service.transitionStatus('non-existent', OrderStatus.PAID),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should allow transitioning to the same status', async () => {
+      // Arrange
       const order = { id: 'order-1', status: OrderStatus.NEW };
       prisma.order.findUnique.mockResolvedValueOnce(order);
       prisma.order.update.mockResolvedValueOnce(order);
 
+      // Act
       const result = await service.transitionStatus('order-1', OrderStatus.NEW);
+      // Assert
       expect(result.status).toBe(OrderStatus.NEW);
     });
   });
 
   describe('findAll', () => {
     it('should apply filters correctly', async () => {
+      // Arrange
       prisma.order.findMany.mockResolvedValueOnce([]);
 
       const filters = {
@@ -149,8 +161,10 @@ describe('OrderManagementService', () => {
         endDate: '2026-01-31',
       };
 
+      // Act
       await service.findAll(filters);
 
+      // Assert
       expect(prisma.order.findMany).toHaveBeenCalledWith({
         where: {
           status: OrderStatus.NEW,
@@ -166,10 +180,13 @@ describe('OrderManagementService', () => {
     });
 
     it('should return orders without filters', async () => {
+      // Arrange
       prisma.order.findMany.mockResolvedValueOnce([]);
 
+      // Act
       await service.findAll({});
 
+      // Assert
       expect(prisma.order.findMany).toHaveBeenCalledWith({
         where: {},
         include: { customer: true },
@@ -180,6 +197,7 @@ describe('OrderManagementService', () => {
 
   describe('findOne', () => {
     it('should return order with audit logs', async () => {
+      // Arrange
       const order = {
         id: 'order-1',
         status: OrderStatus.NEW,
@@ -192,8 +210,10 @@ describe('OrderManagementService', () => {
       prisma.order.findUnique.mockResolvedValueOnce(order);
       prisma.auditLog.findMany.mockResolvedValueOnce(auditLogs);
 
+      // Act
       const result = await service.findOne('order-1');
 
+      // Assert
       expect(prisma.order.findUnique).toHaveBeenCalledWith({
         where: { id: 'order-1' },
         include: {
@@ -210,8 +230,10 @@ describe('OrderManagementService', () => {
     });
 
     it('should throw NotFoundException when order not found', async () => {
+      // Arrange
       prisma.order.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(service.findOne('non-existent')).rejects.toThrow(
         NotFoundException,
       );

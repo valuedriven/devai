@@ -12,7 +12,7 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
-playwright/.auth/
+apps/frontend/tests/.auth/
 apps/backend/coverage/*
 apps/backend/test/coverage/*
 apps/frontend/playwright/.clerk/*

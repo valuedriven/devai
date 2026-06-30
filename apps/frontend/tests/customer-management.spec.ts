@@ -4,18 +4,18 @@ import { makeCustomer, makeProduct } from './utils/data';
 
 test.describe('Customer Management', () => {
 
-  test('Admin can create a customer successfully', async ({ page, customerPage }) => {
+  test('Admin can create a customer successfully', async ({ page, customerPage, toastComponent }) => {
     const custName = `Cliente Teste ${Date.now()}`;
     const custEmail = `cliente-${Date.now()}@example.com`;
 
     await test.step('navigate to customers list', async () => {
-      await customerPage.goto();
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
 
     await test.step('open new customer form', async () => {
       await customerPage.clickNewCustomer();
-      await expect(page.locator('h1', { hasText: 'Novo Cliente' })).toBeVisible();
+      await expect(customerPage.heading.filter({ hasText: 'Novo Cliente' })).toBeVisible();
     });
 
     await test.step('fill customer details', async () => {
@@ -30,21 +30,21 @@ test.describe('Customer Management', () => {
     await test.step('submit form and verify success toast & redirect', async () => {
       await customerPage.submitForm();
       // Expect toast success message
-      await expect(page.getByText('Cliente cadastrado com sucesso!')).toBeVisible({ timeout: 10000 });
+      await expect(toastComponent.message('Cliente cadastrado com sucesso!')).toBeVisible();
       await page.waitForURL('**/admin/customers', { timeout: 15000 });
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
-      await expect(page.locator('table').getByText(custName)).toBeVisible();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
+      await expect(customerPage.table.getByText(custName)).toBeVisible();
     });
   });
 
-  test('Admin can edit a customer', async ({ page, request, authToken, customerPage }) => {
+  test('Admin can edit a customer', async ({ page, request, authToken, customerPage, toastComponent }) => {
     const editName = `Cliente Editado ${Date.now()}`;
     let customer: SeededCustomer;
 
     await test.step('seed customer via API', async () => {
       customer = await createCustomerApi(request, authToken, makeCustomer());
-      await customerPage.goto();
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
 
     await test.step('edit customer name and save', async () => {
@@ -52,35 +52,35 @@ test.describe('Customer Management', () => {
     });
 
     await test.step('verify success toast and update in list', async () => {
-      await expect(page.getByText('Cliente atualizado com sucesso!')).toBeVisible({ timeout: 10000 });
+      await expect(toastComponent.message('Cliente atualizado com sucesso!')).toBeVisible();
       await page.waitForURL('**/admin/customers', { timeout: 15000 });
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
-      await expect(page.locator('table').getByText(editName)).toBeVisible();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
+      await expect(customerPage.table.getByText(editName)).toBeVisible();
     });
   });
 
-  test('Admin can soft delete a customer', async ({ page, request, authToken, customerPage }) => {
+  test('Admin can soft delete a customer', async ({ request, authToken, customerPage, toastComponent }) => {
     let customer: SeededCustomer;
 
     await test.step('seed customer via API', async () => {
       customer = await createCustomerApi(request, authToken, makeCustomer());
-      await customerPage.goto();
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
 
     await test.step('delete the customer and confirm', async () => {
       await customerPage.deleteCustomer(customer.name);
-      await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
+      await expect(customerPage.dialog).toBeHidden();
     });
 
     await test.step('verify success toast and customer is Inactive in list', async () => {
-      await expect(page.getByText('Item excluído com sucesso!')).toBeVisible({ timeout: 10000 });
-      const row = page.locator('tr', { hasText: customer.name });
+      await expect(toastComponent.message('Item excluído com sucesso!')).toBeVisible();
+      const row = customerPage.rowFor(customer.name);
       await expect(row.getByText('Inativo')).toBeVisible();
     });
   });
 
-  test('Cannot delete a customer that has associated orders', async ({ page, request, authToken, customerPage, seededCategory }) => {
+  test('Cannot delete a customer that has associated orders', async ({ request, authToken, customerPage, seededCategory, toastComponent }) => {
     let customer: SeededCustomer;
     let product: SeededProduct;
 
@@ -99,15 +99,15 @@ test.describe('Customer Management', () => {
       });
 
       await test.step('navigate to customers list', async () => {
-        await customerPage.goto();
-        await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+        await customerPage.goTo();
+        await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
       });
 
       await test.step('attempt to delete the customer and verify error toast', async () => {
         await customerPage.deleteCustomer(customer.name);
         await expect(
-          page.getByText(/possui pedidos associados|não é possível excluir/i),
-        ).toBeVisible({ timeout: 10000 });
+          toastComponent.message(/possui pedidos associados|não é possível excluir/i),
+        ).toBeVisible();
       });
     } finally {
       await test.step('cleanup seeded product', async () => {
@@ -132,18 +132,17 @@ test.describe('Customer Management', () => {
         name: otherName,
         email: `other-${searchSuffix}@example.com`,
       });
-      await customerPage.goto();
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
 
     await test.step('search for unique name and verify list filters correctly', async () => {
-      const searchInput = page.getByPlaceholder('Pesquisar clientes...');
-      await searchInput.fill(nameMatch);
+      await customerPage.searchInput.fill(nameMatch);
       // Wait for search query URL param to update
       await page.waitForURL(new RegExp(`search=${nameMatch}`), { timeout: 10000 });
       
-      await expect(page.locator('table').getByText(nameMatch)).toBeVisible();
-      await expect(page.locator('table').getByText(otherName)).toBeHidden();
+      await expect(customerPage.table.getByText(nameMatch)).toBeVisible();
+      await expect(customerPage.table.getByText(otherName)).toBeHidden();
     });
   });
 
@@ -159,14 +158,14 @@ test.describe('Customer Management', () => {
 
     await test.step('seed customer via API', async () => {
       customer = await createCustomerApi(request, authToken, customerData);
-      await customerPage.goto();
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
 
     await test.step('navigate to edit details page and verify pre-populated values', async () => {
-      await page.locator('tr', { hasText: customer.name }).getByTitle('Editar').click();
+      await customerPage.rowFor(customer.name).getByTitle('Editar').click();
       await page.waitForURL(`**/admin/customers/${customer.id}/edit`, { timeout: 10000 });
-      await expect(page.locator('h1', { hasText: 'Editar Cliente' })).toBeVisible();
+      await expect(customerPage.heading.filter({ hasText: 'Editar Cliente' })).toBeVisible();
       
       await expect(customerPage.nameInput).toHaveValue(customerData.name);
       await expect(customerPage.emailInput).toHaveValue(customerData.email);
@@ -175,7 +174,7 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Block duplicate emails on creation', async ({ page, request, authToken, customerPage }) => {
+  test('Block duplicate emails on creation', async ({ request, authToken, customerPage, toastComponent }) => {
     const email = `duplicate-${Date.now()}@example.com`;
 
     await test.step('seed customer with target email via API', async () => {
@@ -183,13 +182,13 @@ test.describe('Customer Management', () => {
         ...makeCustomer(),
         email,
       });
-      await customerPage.goto();
-      await expect(page.locator('h1', { hasText: 'Clientes' }).first()).toBeVisible();
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
     });
 
     await test.step('open new customer form', async () => {
       await customerPage.clickNewCustomer();
-      await expect(page.locator('h1', { hasText: 'Novo Cliente' })).toBeVisible();
+      await expect(customerPage.heading.filter({ hasText: 'Novo Cliente' })).toBeVisible();
     });
 
     await test.step('attempt to create customer with duplicate email', async () => {
@@ -203,31 +202,31 @@ test.describe('Customer Management', () => {
     });
 
     await test.step('verify conflict error toast and that page did not redirect', async () => {
-      await expect(page.getByText('Erro ao salvar cliente.')).toBeVisible({ timeout: 10000 });
-      await expect(page.locator('h1', { hasText: 'Novo Cliente' })).toBeVisible();
+      await expect(toastComponent.message('Erro ao salvar cliente.')).toBeVisible();
+      await expect(customerPage.heading.filter({ hasText: 'Novo Cliente' })).toBeVisible();
     });
   });
 
-  test('Non-admin user cannot access /admin/customers', async ({ page, loginPage, customerPage }) => {
+  test('Non-admin user cannot access /admin/customers', async ({ page, loginPage, storefrontPage, forbiddenPage }) => {
     await test.step('log out from admin session', async () => {
       await page.context().clearCookies();
-      await page.goto('/');
+      await storefrontPage.goTo();
       await page.evaluate(() => localStorage.clear());
       await page.reload();
     });
 
     await test.step('log in as non-admin user', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
       await loginPage.login(
-        process.env.CUSTOMER_EMAIL || 'jps012009@yahoo.com.br',
-        process.env.CUSTOMER_PASSWORD || 'jps012009@yahoo.com.br'
+        process.env.CUSTOMER_EMAIL!,
+        process.env.CUSTOMER_PASSWORD!
       );
       await page.waitForURL('/');
     });
 
     await test.step('attempt to access admin customers page and verify 403', async () => {
-      await customerPage.goto();
-      await expect(page.getByText(/403/i)).toBeVisible({ timeout: 5000 });
+      await page.goto('/admin/customers');
+      await expect(forbiddenPage.code).toBeVisible();
     });
   });
 

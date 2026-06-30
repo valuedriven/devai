@@ -24,6 +24,7 @@
     "test:integration": "npm run test:e2e"
   },
   "dependencies": {
+    "@clerk/backend": "^0.38.15",
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",

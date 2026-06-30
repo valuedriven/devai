@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import type { Request } from 'express';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { ClerkService } from '../auth/clerk.service';
 
@@ -23,7 +24,11 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const { user } = context
+      .switchToHttp()
+      .getRequest<
+        Request & { user?: { publicMetadata?: Record<string, unknown> } }
+      >();
 
     if (!user) {
       throw new UnauthorizedException('Authentication required');

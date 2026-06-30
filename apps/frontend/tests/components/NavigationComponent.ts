@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
 
 export class NavigationComponent {
   readonly page: Page;
@@ -9,17 +10,19 @@ export class NavigationComponent {
 
   constructor(page: Page) {
     this.page = page;
-    this.desktopSidebar = page.locator('.sidebar-desktop');
+    this.desktopSidebar = page.getByTestId('sidebar-desktop');
     this.logoutButton = page.getByRole('button', { name: /Sair da Loja/i });
     this.loginLink = page.getByRole('link', { name: /Login/i });
     this.userDropdownContainer = page.getByTestId('user-dropdown-container');
   }
 
-  async logout() {
+  async logout(): Promise<this> {
     await this.logoutButton.first().click();
+    return this;
   }
 
-  async clickLogin() {
+  async clickLogin(): Promise<LoginPage> {
     await this.loginLink.first().click();
+    return new LoginPage(this.page);
   }
 }

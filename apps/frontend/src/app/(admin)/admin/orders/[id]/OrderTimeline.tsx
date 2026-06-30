@@ -19,11 +19,11 @@ export function OrderTimeline({ logs }: { logs: AuditLog[] }) {
                 <CardTitle>Linha do Tempo / Auditoria</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="relative pl-6 border-l-2 border-slate-100 space-y-6">
+                <div data-testid="audit-log" className="relative pl-6 border-l-2 border-slate-100 space-y-6">
                     {logs.map((log) => {
                         const payload = getPayload(log);
                         return (
-                            <div key={log.id} className="relative">
+                            <div key={log.id} className="relative" data-testid="audit-entry">
                                 <div className="absolute -left-[31px] top-1 h-4 w-4 rounded-full bg-white border-2 border-blue-500" />
                                 <div className="text-sm font-semibold">{log.action === 'STATUS_CHANGE' ? 'Alteração de Status' : log.action}</div>
                                 <div className="text-xs text-muted-foreground">{new Date(log.createdAt).toLocaleString()}</div>

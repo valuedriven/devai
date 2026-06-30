@@ -14,11 +14,23 @@ describe('PaymentService', () => {
   let eventEmitter: EventEmitter2;
   let emitMock: jest.Mock;
 
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-01-01T00:00:00Z'));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     prisma = createMockPrismaService();
-    prisma.$transaction.mockImplementation(async (cb) => cb(prisma));
+    prisma.$transaction.mockImplementation(
+      async (cb: (tx: MockPrismaService) => Promise<unknown>) =>
+        await cb(prisma),
+    );
     emitMock = jest.fn();
-    eventEmitter = { emit: emitMock } as any;
+    eventEmitter = { emit: emitMock } as unknown as EventEmitter2;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -43,14 +55,17 @@ describe('PaymentService', () => {
 
   describe('findAll', () => {
     it('should return payments filtered by orderId and status', async () => {
+      // Arrange
       const payments = [{ id: 'payment-1' }];
       prisma.payment.findMany.mockResolvedValueOnce(payments);
 
+      // Act
       const result = await service.findAll({
         orderId: 'order-1',
         status: 'Confirmed',
       });
 
+      // Assert
       expect(prisma.payment.findMany).toHaveBeenCalledWith({
         where: { orderId: 'order-1', status: 'Confirmed' },
         include: { order: true },
@@ -60,11 +75,14 @@ describe('PaymentService', () => {
     });
 
     it('should return all payments when no filters provided', async () => {
+      // Arrange
       const payments = [{ id: 'payment-1' }];
       prisma.payment.findMany.mockResolvedValueOnce(payments);
 
+      // Act
       const result = await service.findAll({});
 
+      // Assert
       expect(prisma.payment.findMany).toHaveBeenCalledWith({
         where: {},
         include: { order: true },
@@ -76,39 +94,45 @@ describe('PaymentService', () => {
 
   describe('register', () => {
     it('should throw NotFoundException if order does not exist', async () => {
+      // Arrange
       prisma.order.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(
         service.register({
           orderId: 'order-1',
           value: 100,
           method: 'Pix',
-          date: new Date().toISOString(),
+          date: '2024-01-01T00:00:00.000Z',
         }),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should create payment and not transition status when status is not confirmed', async () => {
+      // Arrange
       prisma.order.findUnique.mockResolvedValueOnce({
         id: 'order-1',
         status: 'Novo',
       });
       prisma.payment.create.mockResolvedValueOnce({ id: 'payment-1' });
 
+      // Act
       const result = await service.register({
         orderId: 'order-1',
         value: 100,
         method: 'Pix',
-        date: new Date().toISOString(),
+        date: '2024-01-01T00:00:00.000Z',
         status: PaymentStatus.PENDING,
       });
 
+      // Assert
       expect(prisma.payment.create).toHaveBeenCalled();
       expect(prisma.order.update).not.toHaveBeenCalled();
       expect(result).toEqual({ id: 'payment-1' });
     });
 
     it('should create payment and transition order status when confirmed', async () => {
+      // Arrange
       prisma.order.findUnique.mockResolvedValueOnce({
         id: 'order-1',
         status: 'Novo',
@@ -119,14 +143,16 @@ describe('PaymentService', () => {
         status: 'Pago',
       });
 
+      // Act
       const result = await service.register({
         orderId: 'order-1',
         value: 100,
         method: 'Pix',
-        date: new Date().toISOString(),
+        date: '2024-01-01T00:00:00.000Z',
         status: PaymentStatus.CONFIRMED,
       });
 
+      // Assert
       expect(prisma.payment.create).toHaveBeenCalled();
       expect(prisma.order.update).toHaveBeenCalledWith({
         where: { id: 'order-1' },
@@ -137,6 +163,7 @@ describe('PaymentService', () => {
     });
 
     it('should default status to CONFIRMED when not provided', async () => {
+      // Arrange
       prisma.order.findUnique.mockResolvedValueOnce({
         id: 'order-1',
         status: 'Novo',
@@ -147,16 +174,20 @@ describe('PaymentService', () => {
         status: 'Pago',
       });
 
+      // Act
       await service.register({
         orderId: 'order-1',
         value: 100,
         method: 'Pix',
-        date: new Date().toISOString(),
+        date: '2024-01-01T00:00:00.000Z',
       });
 
+      // Assert
       expect(prisma.payment.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ status: PaymentStatus.CONFIRMED }),
+          data: expect.objectContaining({
+            status: PaymentStatus.CONFIRMED,
+          }) as unknown,
         }),
       );
     });
@@ -164,14 +195,17 @@ describe('PaymentService', () => {
 
   describe('updateStatus', () => {
     it('should throw NotFoundException if payment does not exist', async () => {
+      // Arrange
       prisma.payment.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(
         service.updateStatus('payment-1', PaymentStatus.CONFIRMED),
       ).rejects.toThrow(NotFoundException);
     });
 
     it('should update payment status and transition order when confirmed', async () => {
+      // Arrange
       prisma.payment.findUnique.mockResolvedValueOnce({
         id: 'payment-1',
         orderId: 'order-1',
@@ -187,11 +221,13 @@ describe('PaymentService', () => {
         status: 'Pago',
       });
 
+      // Act
       const result = await service.updateStatus(
         'payment-1',
         PaymentStatus.CONFIRMED,
       );
 
+      // Assert
       expect(prisma.payment.update).toHaveBeenCalledWith({
         where: { id: 'payment-1' },
         data: { status: PaymentStatus.CONFIRMED },
@@ -204,6 +240,7 @@ describe('PaymentService', () => {
     });
 
     it('should update payment status without transitioning order when already paid', async () => {
+      // Arrange
       prisma.payment.findUnique.mockResolvedValueOnce({
         id: 'payment-1',
         orderId: 'order-1',
@@ -215,11 +252,13 @@ describe('PaymentService', () => {
         status: PaymentStatus.CONFIRMED,
       });
 
+      // Act
       const result = await service.updateStatus(
         'payment-1',
         PaymentStatus.CONFIRMED,
       );
 
+      // Assert
       expect(prisma.order.update).not.toHaveBeenCalled();
       expect(result.status).toBe(PaymentStatus.CONFIRMED);
     });

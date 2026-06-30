@@ -9,13 +9,13 @@ test.describe('Product Management', () => {
     const prodName = `Produto Teste ${Date.now()}`;
 
     await test.step('navigate to products list', async () => {
-      await productPage.goto();
-      await expect(page.locator('h1', { hasText: 'Produtos' }).first()).toBeVisible();
+      await productPage.goTo();
+      await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
     });
 
     await test.step('open new product form', async () => {
       await productPage.clickNewProduct();
-      await expect(page.locator('h1', { hasText: 'Novo Produto' })).toBeVisible();
+      await expect(productPage.heading.filter({ hasText: 'Novo Produto' })).toBeVisible();
     });
 
     await test.step('fill product details', async () => {
@@ -31,8 +31,8 @@ test.describe('Product Management', () => {
     await test.step('submit form and verify redirect', async () => {
       await productPage.submitForm();
       await page.waitForURL('**/admin/products', { timeout: 15000 });
-      await expect(page.locator('h1', { hasText: 'Produtos' }).first()).toBeVisible();
-      await expect(page.locator('table').getByText(prodName)).toBeVisible();
+      await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
+      await expect(productPage.table.getByText(prodName)).toBeVisible();
     });
 
   });
@@ -43,8 +43,8 @@ test.describe('Product Management', () => {
 
     await test.step('seed product via API', async () => {
       product = await createProduct(request, authToken, makeProduct(seededCategory.id));
-      await productPage.goto();
-      await expect(page.locator('h1', { hasText: 'Produtos' }).first()).toBeVisible();
+      await productPage.goTo();
+      await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
     });
 
     await test.step('edit product name and save', async () => {
@@ -53,51 +53,51 @@ test.describe('Product Management', () => {
 
     await test.step('verify update in list', async () => {
       await page.waitForURL('**/admin/products', { timeout: 15000 });
-      await expect(page.locator('h1', { hasText: 'Produtos' }).first()).toBeVisible();
-      await expect(page.locator('table').getByText(editName)).toBeVisible();
+      await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
+      await expect(productPage.table.getByText(editName)).toBeVisible();
     });
   });
 
-  test('Admin can delete a product', async ({ page, request, authToken, seededCategory, productPage }) => {
+  test('Admin can delete a product', async ({ request, authToken, seededCategory, productPage }) => {
     let product: SeededProduct;
 
     await test.step('seed product via API', async () => {
       product = await createProduct(request, authToken, makeProduct(seededCategory.id));
-      await productPage.goto();
-      await expect(page.locator('h1', { hasText: 'Produtos' }).first()).toBeVisible();
+      await productPage.goTo();
+      await expect(productPage.heading.filter({ hasText: 'Produtos' })).toBeVisible();
     });
 
     await test.step('delete the product and confirm', async () => {
       await productPage.deleteProduct(product.name);
-      await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
+      await expect(productPage.dialog).toBeHidden();
     });
 
     await test.step('verify product status is inactive in list', async () => {
-      const row = page.locator('tr', { hasText: product.name });
+      const row = productPage.rowFor(product.name);
       await expect(row.getByText('Inativo')).toBeVisible();
     });
   });
 
-  test('Non-admin user cannot access /admin/products', async ({ page, loginPage, productPage }) => {
+  test('Non-admin user cannot access /admin/products', async ({ page, loginPage, storefrontPage, forbiddenPage }) => {
     await test.step('log out from admin session', async () => {
       await page.context().clearCookies();
-      await page.goto('/');
+      await storefrontPage.goTo();
       await page.evaluate(() => localStorage.clear());
       await page.reload();
     });
 
     await test.step('log in as non-admin user', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
       await loginPage.login(
-        process.env.CUSTOMER_EMAIL || 'jps012009@yahoo.com.br',
-        process.env.CUSTOMER_PASSWORD || 'jps012009@yahoo.com.br'
+        process.env.CUSTOMER_EMAIL!,
+        process.env.CUSTOMER_PASSWORD!
       );
       await page.waitForURL('/');
     });
 
     await test.step('attempt to access admin products page and verify 403', async () => {
-      await productPage.goto();
-      await expect(page.getByText(/403/i)).toBeVisible({ timeout: 5000 });
+      await page.goto('/admin/products');
+      await expect(forbiddenPage.code).toBeVisible();
     });
   });
 

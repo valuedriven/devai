@@ -27,28 +27,9 @@ env:
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
 jobs:
-  changes:
-    name: Check for Changes
-    runs-on: ubuntu-latest
-    outputs:
-      apps: ${{ steps.filter.outputs.apps }}
-      infra: ${{ steps.filter.outputs.infra }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            apps:
-              - 'apps/**'
-            infra:
-              - 'infra/**'
-
+  
   quality:
-    name: Lint & Test
-    #needs: changes
-    #if: needs.changes.outputs.apps == 'true' || github.event_name == 'workflow_dispatch'
+    name: Lint & Unit Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -64,27 +45,22 @@ jobs:
         run: npm ci
 
       - name: Lint Backend
-        run: npm run lint --workspace=backend
+        run: npm run lint
 
       - name: Gerar schema
         run: npm run prisma:generate --workspace=backend
 
-      - name: Test Backend
-        run: npm run test --workspace=backend
+      - name: Unit Test 
+        run: npm run test:unit
 
       - name: Lint Frontend
         run: npm run lint --workspace=frontend
 
   terraform:
     name: Terraform Apply
-    #needs: [changes, quality]
     needs: [quality]
     outputs:
       alb_dns_name: ${{ steps.outputs.outputs.alb_dns_name }}
-    # if: |
-    #   always() &&
-    #   (needs.changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch') &&
-    #   (needs.quality.result == 'success' || needs.quality.result == 'skipped')
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -216,7 +192,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-       # Backend Build & Push
       - name: Build and push Backend image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -248,13 +223,7 @@ jobs:
           docker push --all-tags $REGISTRY/$IMAGE
   deploy:
     name: Deploy to ECS
-    #needs: [changes, build-and-push, terraform]
     needs: [build-and-push, terraform]
-    # if: |
-    #   always() &&
-    #   (needs.changes.outputs.apps == 'true' || needs.changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch') &&
-    #   (needs.build-and-push.result == 'success' || needs.build-and-push.result == 'skipped') &&
-    #   (needs.terraform.result == 'success' || needs.terraform.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Update ECS Backend Service

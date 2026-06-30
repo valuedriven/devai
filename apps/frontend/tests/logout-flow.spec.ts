@@ -3,9 +3,9 @@ import { test, expect } from './fixtures/baseTest';
 
 test.describe('3. Fluxo de Logout', () => {
 
-  test('3.1 Logout bem-sucedido', async ({ page, navigationComponent }) => {
+  test('3.1 Logout bem-sucedido', async ({ page, navigationComponent, storefrontPage }) => {
     await test.step('navigate to homepage', async () => {
-      await page.goto('/');
+      await storefrontPage.goTo();
     });
 
     await test.step('perform logout', async () => {
@@ -30,10 +30,10 @@ test.describe('3. Fluxo de Logout', () => {
     });
   });
 
-  test('3.2 Logout sem sessão ativa', async ({ page, navigationComponent }) => {
+  test('3.2 Logout sem sessão ativa', async ({ page, navigationComponent, storefrontPage }) => {
     await test.step('clear authentication session and reload', async () => {
       await page.context().clearCookies();
-      await page.goto('/');
+      await storefrontPage.goTo();
       await page.evaluate(() => localStorage.clear());
       await page.reload();
     });
@@ -45,4 +45,3 @@ test.describe('3. Fluxo de Logout', () => {
   });
 
 });
-

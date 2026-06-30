@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../../database/prisma.service';
+import { Prisma } from '@prisma/client';
 import { OrderStatus } from './order-management.service';
 
 export enum PaymentStatus {
@@ -17,7 +18,7 @@ export class PaymentService {
   ) {}
 
   async findAll(filters: { orderId?: string; status?: string }) {
-    const where: any = {};
+    const where: Prisma.PaymentWhereInput = {};
     if (filters.orderId) where.orderId = filters.orderId;
     if (filters.status) where.status = filters.status;
 

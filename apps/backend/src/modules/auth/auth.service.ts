@@ -11,7 +11,7 @@ export class AuthService {
     await this.clerkService.syncUserWithData(user);
 
     // Create a local JWT for the frontend to use
-    const token = await this.clerkService.signInternalToken({
+    const token = this.clerkService.signInternalToken({
       sub: user.id,
       email: user.emailAddresses[0]?.emailAddress,
     });
@@ -39,7 +39,7 @@ export class AuthService {
     });
 
     // Create a local JWT for the frontend to use
-    const token = await this.clerkService.signInternalToken({
+    const token = this.clerkService.signInternalToken({
       sub: user.id,
       email: user.emailAddresses[0]?.emailAddress,
     });

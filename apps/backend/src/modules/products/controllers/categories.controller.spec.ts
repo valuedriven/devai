@@ -4,9 +4,10 @@ import { CategoriesService } from '../services/categories.service';
 import { AuthGuard } from '../../../core/guards/auth.guard';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
+import { App } from 'supertest/types';
 
 describe('CategoriesController (Integration)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
 
   const mockCategoriesService = {
     create: jest.fn(),
@@ -30,7 +31,7 @@ describe('CategoriesController (Integration)', () => {
       .useValue({ canActivate: () => true })
       .compile();
 
-    app = module.createNestApplication();
+    app = module.createNestApplication<INestApplication<App>>();
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
     );
@@ -65,6 +66,7 @@ describe('CategoriesController (Integration)', () => {
 
   describe('GET /admin/categories', () => {
     it('should return categories with pagination headers', async () => {
+      // Arrange
       const categories = [{ id: '1', name: 'Electronics' }];
       mockCategoriesService.findAll.mockResolvedValue({
         data: categories,
@@ -75,11 +77,13 @@ describe('CategoriesController (Integration)', () => {
         .get('/admin/categories')
         .expect(200);
 
+      // Assert
       expect(response.body).toEqual(categories);
       expect(response.headers['x-total-count']).toBe('1');
     });
 
     it('should pass query parameters to service', async () => {
+      // Arrange
       mockCategoriesService.findAll.mockResolvedValue({
         data: [],
         meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
@@ -89,6 +93,7 @@ describe('CategoriesController (Integration)', () => {
         .get('/admin/categories?page=2&limit=10&search=electronics')
         .expect(200);
 
+      // Assert
       expect(mockCategoriesService.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
           page: 2,

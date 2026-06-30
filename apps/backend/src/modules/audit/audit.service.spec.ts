@@ -30,12 +30,9 @@ describe('AuditService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('handleAuditLogEvent', () => {
     it('should successfully create an audit log entry', async () => {
+      // Arrange
       const event: AuditEvent = {
         entityType: 'Order',
         entityId: 'order-123',
@@ -50,8 +47,10 @@ describe('AuditService', () => {
         createdAt: new Date(),
       });
 
+      // Act
       await service.handleAuditLogEvent(event);
 
+      // Assert
       expect(prisma.auditLog.create).toHaveBeenCalledWith({
         data: {
           entityType: event.entityType,
@@ -64,6 +63,7 @@ describe('AuditService', () => {
     });
 
     it('should handle errors gracefully during creation', async () => {
+      // Arrange
       const event: AuditEvent = {
         entityType: 'Order',
         entityId: 'order-123',
@@ -74,6 +74,7 @@ describe('AuditService', () => {
       prisma.auditLog.create.mockRejectedValueOnce(error);
 
       // Should not throw, should log the error instead
+      // Act & Assert
       await expect(service.handleAuditLogEvent(event)).resolves.not.toThrow();
       expect(prisma.auditLog.create).toHaveBeenCalled();
     });

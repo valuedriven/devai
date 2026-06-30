@@ -1,29 +1,63 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
+import { ProductCardComponent } from '../components/ProductCardComponent';
 
 export class StorefrontPage {
   readonly page: Page;
+  readonly heading: Locator;
   readonly addToCartButton: Locator;
   readonly welcomeHeading: Locator;
   readonly highlightsHeading: Locator;
   readonly backToStoreLink: Locator;
+  readonly productCards: Locator;
+  readonly outOfStockBadge: Locator;
+  readonly price: Locator;
+  readonly notFoundMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.heading = page.getByRole('heading', { level: 1 });
     this.addToCartButton = page.getByRole('button', { name: /Adicionar ao Carrinho/i });
-    this.welcomeHeading = page.getByText('Bem-vindo à DevAI Store').first();
-    this.highlightsHeading = page.getByText('Destaques').first();
-    this.backToStoreLink = page.getByText('Voltar para a loja').first();
+    this.welcomeHeading = page.getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first();
+    this.highlightsHeading = page.getByRole('heading', { name: 'Destaques' }).first();
+    this.backToStoreLink = page.getByRole('link', { name: 'Voltar para a loja' }).first();
+    this.productCards = page.getByTestId('product-card');
+    this.outOfStockBadge = page.getByText('Esgotado').first();
+    this.price = page.getByText(/R\$/).first();
+    this.notFoundMessage = page.getByText(/404|not found|não encontrad/i);
   }
 
-  async goto() {
+  productCard(name: string): ProductCardComponent {
+    return new ProductCardComponent(this.productCards.filter({ hasText: name }).first());
+  }
+
+  productCardByName(name: string): Locator {
+    return this.productCards.filter({ hasText: name }).first();
+  }
+
+  categoryLink(name: string): Locator {
+    return this.page.getByRole('link', { name });
+  }
+
+  async goTo(): Promise<this> {
     await this.page.goto('/');
+    await expect(this.welcomeHeading).toBeVisible();
+    return this;
   }
 
-  async addToCart() {
+  async addToCart(): Promise<this> {
     await this.addToCartButton.first().click();
+    return this;
   }
 
-  async gotoProductDetail(productId: string) {
+  async gotoProductDetail(productId: string): Promise<this> {
     await this.page.goto(`/products/${productId}`);
+    return this;
+  }
+
+  async addToCartForProduct(productId: string): Promise<this> {
+    await this.page.goto(`/products/${productId}`);
+    await expect(this.addToCartButton).toBeVisible();
+    await this.addToCartButton.click();
+    return this;
   }
 }

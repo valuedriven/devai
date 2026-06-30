@@ -1,21 +1,5 @@
-/**
- * API seeding helpers for E2E tests.
- *
- * All admin operations require a valid Clerk JWT, which is stored in the
- * `devai_auth_token` cookie after auth.setup.ts runs.
- *
- * Pattern:
- *   1. getAuthToken(page)  — extract the JWT from the page context cookies
- *   2. createCategory — seed category data via the admin REST API
- *   3. deleteCategory — clean up in fixture teardown
- *
- * NOTE: The backend `POST /admin/products` endpoint is NOT currently registered
- * (ProductsController is absent from the route map despite being in the module).
- * Product seeding must be done via the admin UI in tests that require it.
- */
-
-import { APIRequestContext, Page, expect } from '@playwright/test';
-import { CategoryData, makeCategory, ProductData } from './data';
+import { APIRequestContext, Page } from '@playwright/test';
+import { CategoryData, CustomerData, makeCategory, ProductData } from './data';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001/api/v1';
 
@@ -25,15 +9,13 @@ export const AUTH_COOKIE_NAME = 'devai_auth_token';
 // Auth helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Extracts the Clerk JWT from the page context cookie store.
- * Fails the test immediately if the cookie is missing (auth setup probably failed).
- */
 export async function getAuthToken(page: Page): Promise<string> {
   const cookies = await page.context().cookies();
   const token = cookies.find((c) => c.name === AUTH_COOKIE_NAME)?.value;
-  expect(token, `Cookie "${AUTH_COOKIE_NAME}" not found — did auth.setup.ts run?`).toBeDefined();
-  return token!;
+  if (!token) {
+    throw new Error(`Cookie "${AUTH_COOKIE_NAME}" not found — did auth.setup.ts run?`);
+  }
+  return token;
 }
 
 function adminHeaders(token: string): Record<string, string> {
@@ -61,7 +43,9 @@ export async function createCategory(
     headers: adminHeaders(token),
     data,
   });
-  expect(res.ok(), `createCategory failed: ${res.status()} ${await res.text()}`).toBeTruthy();
+  if (!res.ok()) {
+    throw new Error(`createCategory failed: ${res.status()} ${await res.text()}`);
+  }
   return res.json();
 }
 
@@ -100,7 +84,9 @@ export async function createProduct(
     headers: adminHeaders(token),
     data,
   });
-  expect(res.ok(), `createProduct failed: ${res.status()} ${await res.text()}`).toBeTruthy();
+  if (!res.ok()) {
+    throw new Error(`createProduct failed: ${res.status()} ${await res.text()}`);
+  }
   return res.json();
 }
 
@@ -129,8 +115,6 @@ export interface SeededCustomer {
   active: boolean;
 }
 
-import { CustomerData } from './data';
-
 export async function createCustomerApi(
   request: APIRequestContext,
   token: string,
@@ -140,7 +124,9 @@ export async function createCustomerApi(
     headers: adminHeaders(token),
     data,
   });
-  expect(res.ok(), `createCustomer failed: ${res.status()} ${await res.text()}`).toBeTruthy();
+  if (!res.ok()) {
+    throw new Error(`createCustomer failed: ${res.status()} ${await res.text()}`);
+  }
   return res.json();
 }
 
@@ -161,6 +147,7 @@ export async function deleteCustomerApi(
 
 export interface SeededOrder {
   id: string;
+  number: string;
   customerId: string;
   totalAmount: number;
   status: string;
@@ -182,8 +169,8 @@ export async function createOrderApi(
       number: `E2E-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     },
   });
-  expect(res.ok(), `createOrder failed: ${res.status()} ${await res.text()}`).toBeTruthy();
+  if (!res.ok()) {
+    throw new Error(`createOrder failed: ${res.status()} ${await res.text()}`);
+  }
   return res.json();
 }
-
-

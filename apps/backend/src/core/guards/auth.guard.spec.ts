@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthGuard } from './auth.guard';
 import { ClerkService } from '../auth/clerk.service';
 import { Reflector } from '@nestjs/core';
-import { UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
@@ -48,31 +48,43 @@ describe('AuthGuard', () => {
   });
 
   it('should bypass auth for public endpoints', async () => {
+    // Arrange
     mockReflector.getAllAndOverride.mockReturnValue(true);
-    const result = await guard.canActivate(mockExecutionContext() as any);
+    // Act
+    const result = await guard.canActivate(
+      mockExecutionContext() as unknown as ExecutionContext,
+    );
+    // Assert
     expect(result).toBe(true);
   });
 
   it('should throw UnauthorizedException when no auth header', async () => {
+    // Arrange
     mockReflector.getAllAndOverride.mockReturnValue(false);
+    // Act & Assert
     await expect(
-      guard.canActivate(mockExecutionContext(false) as any),
+      guard.canActivate(
+        mockExecutionContext(false) as unknown as ExecutionContext,
+      ),
     ).rejects.toThrow(UnauthorizedException);
   });
 
   it('should throw UnauthorizedException for invalid token', async () => {
+    // Arrange
     mockReflector.getAllAndOverride.mockReturnValue(false);
-    (mockClerkService.verifyToken as jest.Mock).mockRejectedValue(
-      new Error('Invalid token'),
-    );
+    (mockClerkService.verifyToken as jest.Mock).mockImplementation(() => {
+      throw new Error('Invalid token');
+    });
+    // Act & Assert
     await expect(
-      guard.canActivate(mockExecutionContext() as any),
+      guard.canActivate(mockExecutionContext() as unknown as ExecutionContext),
     ).rejects.toThrow(UnauthorizedException);
   });
 
   it('should allow access with valid token', async () => {
+    // Arrange
     mockReflector.getAllAndOverride.mockReturnValue(false);
-    (mockClerkService.verifyToken as jest.Mock).mockResolvedValue({
+    (mockClerkService.verifyToken as jest.Mock).mockReturnValue({
       sub: 'user_123',
     });
     (mockClerkService.getUser as jest.Mock).mockResolvedValue({
@@ -82,7 +94,11 @@ describe('AuthGuard', () => {
       undefined,
     );
 
-    const result = await guard.canActivate(mockExecutionContext() as any);
+    // Act
+    const result = await guard.canActivate(
+      mockExecutionContext() as unknown as ExecutionContext,
+    );
+    // Assert
     expect(result).toBe(true);
   });
 });

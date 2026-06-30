@@ -3,16 +3,16 @@ import { test, expect } from './fixtures/baseTest';
 
 test.describe('1. Fluxo de Login', () => {
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, storefrontPage }) => {
     // Clear cookies and local storage before each test
     await page.context().clearCookies();
-    await page.goto('/');
+    await storefrontPage.goTo();
     await page.evaluate(() => localStorage.clear());
   });
 
-  test('1.1 Login com credenciais válidas (ADMIN)', async ({ page, loginPage }) => {
+  test('1.1 Login com credenciais válidas (ADMIN)', async ({ page, loginPage, navigationComponent }) => {
     await test.step('navigate to login page', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
     });
 
     await test.step('fill credentials and submit', async () => {
@@ -21,7 +21,7 @@ test.describe('1. Fluxo de Login', () => {
 
     await test.step('verify success redirect and dropdown container visibility', async () => {
       await expect(page).toHaveURL('/');
-      await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
+      await expect(navigationComponent.userDropdownContainer).toBeVisible();
       await expect(loginPage.loginError).toBeHidden();
     });
   });
@@ -30,7 +30,7 @@ test.describe('1. Fluxo de Login', () => {
     await page.context().clearCookies();
 
     await test.step('navigate to login page', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
     });
 
     await test.step('fill customer credentials and submit', async () => {
@@ -49,7 +49,7 @@ test.describe('1. Fluxo de Login', () => {
     await page.context().clearCookies();
 
     await test.step('navigate to login page', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
     });
 
     await test.step('login with non-existent email', async () => {
@@ -67,7 +67,7 @@ test.describe('1. Fluxo de Login', () => {
     await page.context().clearCookies();
 
     await test.step('navigate to login page', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
     });
 
     await test.step('login with wrong password', async () => {
@@ -84,7 +84,7 @@ test.describe('1. Fluxo de Login', () => {
     await page.context().clearCookies();
 
     await test.step('navigate to login page', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
     });
 
     await test.step('click submit without filling fields', async () => {
@@ -102,7 +102,7 @@ test.describe('1. Fluxo de Login', () => {
     await page.context().clearCookies();
 
     await test.step('navigate to login page', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
     });
 
     await test.step('login with malformed email', async () => {

@@ -3,9 +3,10 @@ import { PublicProductsController } from './public-products.controller';
 import { ProductsService } from '../services/products.service';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
+import { App } from 'supertest/types';
 
 describe('PublicProductsController (Integration)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
 
   const mockProduct = {
     id: 'prod-1',
@@ -43,7 +44,7 @@ describe('PublicProductsController (Integration)', () => {
       ],
     }).compile();
 
-    app = module.createNestApplication();
+    app = module.createNestApplication<INestApplication<App>>();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
@@ -58,6 +59,7 @@ describe('PublicProductsController (Integration)', () => {
 
   describe('GET /api/v1/products', () => {
     it('should return list of active products with pagination headers', async () => {
+      // Arrange
       mockProductsService.findAll.mockResolvedValue({
         data: [mockProduct],
         meta: { total: 1 },
@@ -67,6 +69,7 @@ describe('PublicProductsController (Integration)', () => {
         .get('/api/v1/products')
         .expect(200);
 
+      // Assert
       expect(response.body).toEqual([mockProduct]);
       expect(response.headers['x-total-count']).toBe('1');
       expect(mockProductsService.findAll).toHaveBeenCalledWith({
@@ -79,6 +82,7 @@ describe('PublicProductsController (Integration)', () => {
     });
 
     it('should pass query filters to service', async () => {
+      // Arrange
       mockProductsService.findAll.mockResolvedValue({
         data: [],
         meta: { total: 0 },
@@ -88,6 +92,7 @@ describe('PublicProductsController (Integration)', () => {
         .get('/api/v1/products?search=active&categoryId=cat-1')
         .expect(200);
 
+      // Assert
       expect(mockProductsService.findAll).toHaveBeenCalledWith({
         page: 1,
         limit: 20,
@@ -100,12 +105,14 @@ describe('PublicProductsController (Integration)', () => {
 
   describe('GET /api/v1/products/:id', () => {
     it('should return an active product', async () => {
+      // Arrange
       mockProductsService.findOne.mockResolvedValue(mockProduct);
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/products/prod-1')
         .expect(200);
 
+      // Assert
       expect(response.body).toEqual(mockProduct);
     });
 

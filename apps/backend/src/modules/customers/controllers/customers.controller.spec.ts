@@ -5,9 +5,10 @@ import { NotFoundException, ConflictException } from '@nestjs/common';
 import { AuthGuard } from '../../../core/guards/auth.guard';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
+import type { App } from 'supertest/types';
 
 describe('CustomersController (Integration)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
 
   const mockCustomersService = {
     create: jest.fn(),
@@ -33,7 +34,7 @@ describe('CustomersController (Integration)', () => {
       .useValue({ canActivate: () => true })
       .compile();
 
-    app = module.createNestApplication();
+    app = module.createNestApplication<INestApplication<App>>();
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
     );
@@ -117,6 +118,7 @@ describe('CustomersController (Integration)', () => {
     });
 
     it('should support search query parameter', async () => {
+      // Arrange
       mockCustomersService.findAll.mockResolvedValue([
         { id: '1', name: 'John' },
       ]);
@@ -125,6 +127,7 @@ describe('CustomersController (Integration)', () => {
         .get('/customers?search=John')
         .expect(200);
 
+      // Assert
       expect(mockCustomersService.findAll).toHaveBeenCalledWith('John');
     });
   });

@@ -6,6 +6,8 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import type { Request } from 'express';
+import * as jwt from 'jsonwebtoken';
 import { ClerkService } from '../auth/clerk.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
@@ -28,7 +30,9 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: Record<string, unknown> }>();
     const authHeader = request.headers['authorization'];
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -39,9 +43,13 @@ export class AuthGuard implements CanActivate {
 
     const token = authHeader.split(' ')[1];
 
-    let decodedToken;
+    let decodedToken: jwt.JwtPayload;
     try {
-      decodedToken = await this.clerkService.verifyToken(token);
+      const verified = this.clerkService.verifyToken(token);
+      if (typeof verified === 'string' || !verified.sub) {
+        throw new UnauthorizedException('Invalid token payload');
+      }
+      decodedToken = verified;
     } catch (error) {
       this.loggingVerificationError(token, error);
       const detail = error instanceof Error ? error.message : String(error);
@@ -50,14 +58,31 @@ export class AuthGuard implements CanActivate {
       );
     }
 
-    const userId = decodedToken.sub;
+    const userId = decodedToken.sub!;
     const clerkUser = await this.clerkService.getUser(userId);
-    request.user = clerkUser;
+
+    const roles = ClerkService.extractRoles(
+      clerkUser.publicMetadata as Record<string, unknown> | undefined,
+    );
+    const role = roles.map((r) => r.toUpperCase()).includes('ADMIN')
+      ? 'ADMIN'
+      : 'CUSTOMER';
+
+    request.user = {
+      ...clerkUser,
+      id: clerkUser.id,
+      clerkId: clerkUser.id,
+      email: clerkUser.emailAddresses?.[0]?.emailAddress || '',
+      name:
+        [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') ||
+        undefined,
+      role,
+    };
 
     return true;
   }
 
-  private loggingVerificationError(token: string, error: any) {
+  private loggingVerificationError(token: string, error: unknown) {
     this.logger.error('AuthGuard verification error:', error);
   }
 }

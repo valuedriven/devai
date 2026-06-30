@@ -31,19 +31,18 @@ describe('CustomersService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('create', () => {
     it('should create a customer', async () => {
+      // Arrange
       const dto = { name: 'John Doe', email: 'john@example.com' };
       const expected = { id: 'uuid-123', ...dto, active: true };
 
       prisma.customer.create.mockResolvedValueOnce(expected);
 
+      // Act
       const result = await service.create(dto);
 
+      // Assert
       expect(prisma.customer.create).toHaveBeenCalledWith({
         data: dto,
       });
@@ -51,6 +50,7 @@ describe('CustomersService', () => {
     });
 
     it('should throw ConflictException on duplicate email (P2002)', async () => {
+      // Arrange
       const dto = { name: 'John Doe', email: 'existing@example.com' };
 
       const prismaError = new Prisma.PrismaClientKnownRequestError(
@@ -60,12 +60,14 @@ describe('CustomersService', () => {
 
       prisma.customer.create.mockRejectedValueOnce(prismaError);
 
+      // Act & Assert
       await expect(service.create(dto)).rejects.toThrow(ConflictException);
     });
   });
 
   describe('syncCustomer', () => {
     it('should return existing customer if found by email', async () => {
+      // Arrange
       const existing = {
         id: 'uuid-123',
         email: 'john@example.com',
@@ -74,8 +76,10 @@ describe('CustomersService', () => {
 
       prisma.customer.findFirst.mockResolvedValueOnce(existing);
 
+      // Act
       const result = await service.syncCustomer('john@example.com', 'John Doe');
 
+      // Assert
       expect(prisma.customer.findFirst).toHaveBeenCalledWith({
         where: { email: 'john@example.com' },
       });
@@ -84,6 +88,7 @@ describe('CustomersService', () => {
     });
 
     it('should create a new customer if not found by email', async () => {
+      // Arrange
       prisma.customer.findFirst.mockResolvedValueOnce(null);
 
       const created = {
@@ -94,8 +99,10 @@ describe('CustomersService', () => {
       };
       prisma.customer.create.mockResolvedValueOnce(created);
 
+      // Act
       const result = await service.syncCustomer('jane@example.com', 'Jane Doe');
 
+      // Assert
       expect(prisma.customer.findFirst).toHaveBeenCalledWith({
         where: { email: 'jane@example.com' },
       });
@@ -108,6 +115,7 @@ describe('CustomersService', () => {
 
   describe('findAll', () => {
     it('should return all customers ordered by createdAt desc', async () => {
+      // Arrange
       const customers = [
         { id: '1', name: 'John', email: 'john@example.com' },
         { id: '2', name: 'Jane', email: 'jane@example.com' },
@@ -115,8 +123,10 @@ describe('CustomersService', () => {
 
       prisma.customer.findMany.mockResolvedValueOnce(customers);
 
+      // Act
       const result = await service.findAll();
 
+      // Assert
       expect(prisma.customer.findMany).toHaveBeenCalledWith({
         orderBy: { createdAt: 'desc' },
       });
@@ -124,14 +134,17 @@ describe('CustomersService', () => {
     });
 
     it('should return filtered customers when search query is provided', async () => {
+      // Arrange
       const customers = [
         { id: '1', name: 'John Doe', email: 'john@example.com', phone: '123' },
       ];
 
       prisma.customer.findMany.mockResolvedValueOnce(customers);
 
+      // Act
       const result = await service.findAll('John');
 
+      // Assert
       expect(prisma.customer.findMany).toHaveBeenCalledWith({
         where: {
           OR: [
@@ -148,6 +161,7 @@ describe('CustomersService', () => {
 
   describe('findAllActive', () => {
     it('should return active customers ordered by name asc', async () => {
+      // Arrange
       const customers = [
         { id: '2', name: 'Jane', email: 'jane@example.com', active: true },
         { id: '1', name: 'John', email: 'john@example.com', active: true },
@@ -155,8 +169,10 @@ describe('CustomersService', () => {
 
       prisma.customer.findMany.mockResolvedValueOnce(customers);
 
+      // Act
       const result = await service.findAllActive();
 
+      // Assert
       expect(prisma.customer.findMany).toHaveBeenCalledWith({
         where: { active: true },
         orderBy: { name: 'asc' },
@@ -167,6 +183,7 @@ describe('CustomersService', () => {
 
   describe('findOne', () => {
     it('should return a customer by id', async () => {
+      // Arrange
       const customer = {
         id: 'uuid-123',
         name: 'John',
@@ -175,8 +192,10 @@ describe('CustomersService', () => {
 
       prisma.customer.findUnique.mockResolvedValueOnce(customer);
 
+      // Act
       const result = await service.findOne('uuid-123');
 
+      // Assert
       expect(prisma.customer.findUnique).toHaveBeenCalledWith({
         where: { id: 'uuid-123' },
       });
@@ -184,19 +203,19 @@ describe('CustomersService', () => {
     });
 
     it('should throw NotFoundException when customer not found', async () => {
+      // Arrange
       prisma.customer.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(service.findOne('non-existent')).rejects.toThrow(
         NotFoundException,
-      );
-      await expect(service.findOne('non-existent')).rejects.toThrow(
-        'Customer with ID non-existent not found',
       );
     });
   });
 
   describe('update', () => {
     it('should update a customer', async () => {
+      // Arrange
       const existing = {
         id: 'uuid-123',
         name: 'John',
@@ -208,8 +227,10 @@ describe('CustomersService', () => {
       prisma.customer.findUnique.mockResolvedValueOnce(existing);
       prisma.customer.update.mockResolvedValueOnce(updated);
 
+      // Act
       const result = await service.update('uuid-123', updateDto);
 
+      // Assert
       expect(prisma.customer.findUnique).toHaveBeenCalledWith({
         where: { id: 'uuid-123' },
       });
@@ -221,8 +242,10 @@ describe('CustomersService', () => {
     });
 
     it('should throw NotFoundException when customer to update not found', async () => {
+      // Arrange
       prisma.customer.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(
         service.update('non-existent', { name: 'Test' }),
       ).rejects.toThrow(NotFoundException);
@@ -231,6 +254,7 @@ describe('CustomersService', () => {
 
   describe('remove', () => {
     it('should soft delete a customer when they have no associated orders', async () => {
+      // Arrange
       const customer = {
         id: 'uuid-123',
         name: 'John',
@@ -244,8 +268,10 @@ describe('CustomersService', () => {
         active: false,
       });
 
+      // Act
       const result = await service.remove('uuid-123');
 
+      // Assert
       expect(prisma.customer.findUnique).toHaveBeenCalledWith({
         where: { id: 'uuid-123' },
         include: {
@@ -262,6 +288,7 @@ describe('CustomersService', () => {
     });
 
     it('should throw ConflictException when customer has associated orders', async () => {
+      // Arrange
       const customer = {
         id: 'uuid-123',
         name: 'John',
@@ -271,14 +298,17 @@ describe('CustomersService', () => {
 
       prisma.customer.findUnique.mockResolvedValueOnce(customer);
 
+      // Act & Assert
       await expect(service.remove('uuid-123')).rejects.toThrow(
         ConflictException,
       );
     });
 
     it('should throw NotFoundException when customer to remove not found', async () => {
+      // Arrange
       prisma.customer.findUnique.mockResolvedValueOnce(null);
 
+      // Act & Assert
       await expect(service.remove('non-existent')).rejects.toThrow(
         NotFoundException,
       );

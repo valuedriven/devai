@@ -30,13 +30,16 @@ describe('AdminPaymentsController', () => {
 
   describe('findAll', () => {
     it('should return payments filtered by orderId and status', async () => {
+      // Arrange
       const payments = [
         { id: 'payment-1', orderId: 'order-1', status: 'Confirmed' },
       ];
       findAllMock.mockResolvedValue(payments);
 
+      // Act
       const result = await controller.findAll('order-1', 'Confirmed');
 
+      // Assert
       expect(result).toEqual(payments);
       expect(findAllMock).toHaveBeenCalledWith({
         orderId: 'order-1',
@@ -45,11 +48,14 @@ describe('AdminPaymentsController', () => {
     });
 
     it('should return all payments when no filters provided', async () => {
+      // Arrange
       const payments = [{ id: 'payment-1' }];
       findAllMock.mockResolvedValue(payments);
 
+      // Act
       const result = await controller.findAll();
 
+      // Assert
       expect(result).toEqual(payments);
       expect(findAllMock).toHaveBeenCalledWith({});
     });

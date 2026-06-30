@@ -10,10 +10,19 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ClerkService } from '../../core/auth/clerk.service';
+import type { AuthUser } from '../../core/auth/interfaces/auth-user.interface';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Public } from '../../core/decorators/public.decorator';
+
+interface RequestUser extends AuthUser {
+  publicMetadata?: Record<string, unknown>;
+  emailAddresses?: Array<{ emailAddress?: string }>;
+  firstName?: string | null;
+  lastName?: string | null;
+  imageUrl?: string;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -61,13 +70,13 @@ export class AuthController {
   }
 
   @Get('me')
-  async getMe(@Req() req: Request) {
-    const user = (req as any).user;
+  getMe(@Req() req: Request) {
+    const user = (req as Request & { user: RequestUser }).user;
     const roles = ClerkService.extractRoles(user.publicMetadata);
 
     return {
       id: user.id,
-      email: user.emailAddresses[0]?.emailAddress,
+      email: user.emailAddresses?.[0]?.emailAddress,
       firstName: user.firstName,
       lastName: user.lastName,
       roles,
@@ -83,8 +92,12 @@ export class AuthController {
     if (authHeader?.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       try {
-        const decoded = await this.clerkService.verifyToken(token);
-        await this.clerkService.revokeSession(decoded.sub);
+        const decoded = this.clerkService.verifyToken(token);
+        const sub =
+          typeof decoded.sub === 'function' ? decoded.sub() : decoded.sub;
+        if (sub) {
+          await this.clerkService.revokeSession(sub);
+        }
       } catch {
         // Ignore token errors on logout
       }

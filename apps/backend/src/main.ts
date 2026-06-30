@@ -16,7 +16,9 @@ import { initializeOpenTelemetry } from './core/observability/opentelemetry';
 initializeOpenTelemetry();
 
 async function bootstrap() {
-  (BigInt.prototype as any).toJSON = function (this: bigint) {
+  (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function (
+    this: bigint,
+  ) {
     return this.toString();
   };
 

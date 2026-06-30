@@ -12,16 +12,23 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 4,
+  workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   timeout: 30_000,
+  expect: {
+    timeout: 5_000,
+  },
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
+    actionTimeout: 10_000,
+    navigationTimeout: 15_000,
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   webServer: [
     {
-      command: 'npm run dev',
+      command: 'npm run prisma:generate && nest start',
       url: 'http://127.0.0.1:3001/api/v1/products',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
@@ -40,7 +47,7 @@ export default defineConfig({
       testMatch: /auth\.setup\.ts/,
     },
     {
-      name: 'chromium',
+      name: 'admin',
       use: {
         ...devices['Desktop Chrome'],
         storageState: path.resolve(__dirname, 'tests/.auth/admin.json'),
@@ -48,5 +55,22 @@ export default defineConfig({
       dependencies: ['setup'],
       testIgnore: /auth\.setup\.ts/,
     },
+    {
+      name: 'customer',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: path.resolve(__dirname, 'tests/.auth/customer.json'),
+      },
+      dependencies: ['setup'],
+      testIgnore: [
+        /auth\.setup\.ts/,
+        /category-management\.spec\.ts/,
+        /customer-management\.spec\.ts/,
+        /product-management\.spec\.ts/,
+        /order-management\.spec\.ts/,
+        /order-lifecycle\.spec\.ts/
+      ],
+    },
   ],
 });
+

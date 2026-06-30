@@ -29,20 +29,18 @@ test.describe('Storefront Public API', () => {
     }
   });
 
-  test('1.3 Public single product retrieval returns HTTP 200 for active product', async ({ request, page, authToken, productPage }) => {
+  test('1.3 Public single product retrieval returns HTTP 200 for active product', async ({ request, adminAuthToken }) => {
     const prodName = `Prod Pub ${Date.now()}`;
 
     // Create category via API
-    const category = await createCategory(request, authToken, makeCategory());
+    const category = await createCategory(request, adminAuthToken, makeCategory());
+    let product: SeededProduct;
 
-    await test.step('create product via admin UI', async () => {
-      await productPage.goto();
-      await productPage.clickNewProduct();
-      await expect(page.locator('h1', { hasText: 'Novo Produto' })).toBeVisible();
-
-      await productPage.fillProductDetails(prodName, '99.99', '5', 'Produto E2E para teste de API pública', category.id);
-      await productPage.submitForm();
-      await page.waitForURL('**/admin/products', { timeout: 15000 });
+    await test.step('create product via API', async () => {
+      product = await createProduct(request, adminAuthToken, {
+        ...makeProduct(category.id),
+        name: prodName
+      });
     });
 
     await test.step('find created product via public API', async () => {
@@ -57,13 +55,14 @@ test.describe('Storefront Public API', () => {
       const detailResponse = await request.get(`${API_BASE}/products/${created!.id}`);
       expect(detailResponse.status()).toBe(200);
 
-      const product = await detailResponse.json();
-      expect(product.name).toBeDefined();
-      expect(product.price).toBeDefined();
+      const productJson = await detailResponse.json();
+      expect(productJson.name).toBeDefined();
+      expect(productJson.price).toBeDefined();
     });
 
-    // Teardown category
-    await deleteCategory(request, authToken, category.id);
+    // Teardown
+    await deleteProduct(request, adminAuthToken, product!.id);
+    await deleteCategory(request, adminAuthToken, category.id);
   });
 
   test('1.4 Public single product retrieval returns 404 for non-existent product', async ({ request }) => {
@@ -97,86 +96,74 @@ test.describe('Storefront Public API', () => {
 test.describe('Storefront Frontend Integration', () => {
 
   test('2.1 Homepage displays hero section', async ({ storefrontPage }) => {
-    await storefrontPage.goto();
+    await storefrontPage.goTo();
 
     await expect(storefrontPage.welcomeHeading).toBeVisible();
     await expect(storefrontPage.highlightsHeading).toBeVisible();
   });
 
-  test('2.2 Product detail page shows product info when product exists', async ({ page, request, authToken, storefrontPage }) => {
-    // Create category via API
-    const category = await createCategory(request, authToken, makeCategory());
-    let product: SeededProduct;
+  test('2.2 Product detail page shows product info when product exists', async ({ seededProduct, storefrontPage }) => {
+    await test.step('navigate to product detail page', async () => {
+      await storefrontPage.gotoProductDetail(seededProduct.id);
+    });
+
+    await test.step('verify product info is visible', async () => {
+      await expect(storefrontPage.heading.filter({ hasText: seededProduct.name })).toBeVisible();
+      await expect(storefrontPage.price).toBeVisible();
+      await expect(storefrontPage.backToStoreLink).toBeVisible();
+    });
+  });
+
+  test('2.3 Non-existent product shows 404', async ({ storefrontPage }) => {
+    await storefrontPage.gotoProductDetail('00000000-0000-0000-0000-000000000000');
+    await expect(storefrontPage.notFoundMessage).toBeVisible({ timeout: 10000 });
+  });
+
+  test('2.4 Out-of-stock product displays "Esgotado" badge and disabled button', async ({ storefrontPage, request, adminAuthToken, seededCategory }) => {
+    const product = await createProduct(request, adminAuthToken, { ...makeProduct(seededCategory.id), stock: 0 });
 
     try {
-      await test.step('seed product via API', async () => {
-        product = await createProduct(request, authToken, makeProduct(category.id));
+      await test.step('navigate to storefront', async () => {
+        await storefrontPage.goTo();
       });
 
-      await test.step('navigate to product detail page', async () => {
-        await storefrontPage.gotoProductDetail(product.id);
-      });
-
-      await test.step('verify product info is visible', async () => {
-        await expect(page.locator('h1').first()).toBeVisible();
-        await expect(page.getByText(/R\$/).first()).toBeVisible();
-        await expect(storefrontPage.backToStoreLink).toBeVisible();
+      await test.step('assert out-of-stock badge and disabled button via ProductCardComponent', async () => {
+        const card = storefrontPage.productCard(product.name);
+        await expect(card.outOfStockBadge).toBeVisible();
+        await expect(card.unavailableButton).toBeDisabled();
       });
     } finally {
-      // Teardown
-      await deleteProduct(request, authToken, product?.id);
-      await deleteCategory(request, authToken, category.id);
+      await deleteProduct(request, adminAuthToken, product.id);
     }
   });
 
-  test('2.3 Non-existent product shows 404', async ({ page }) => {
-    await page.goto('/products/00000000-0000-0000-0000-000000000000');
-    await expect(page.getByText(/404|not found|não encontrad/i)).toBeVisible({ timeout: 10000 });
-  });
+  test('2.5 Category filter navigation updates URL and filters products', async ({ page, storefrontPage, request, adminAuthToken }) => {
+    const catA = await createCategory(request, adminAuthToken, makeCategory());
+    const catB = await createCategory(request, adminAuthToken, makeCategory());
 
-  test('2.4 Out-of-stock product displays "Esgotado" badge and disabled button', async ({ page, request, authToken }) => {
-    const category = await createCategory(request, authToken, makeCategory());
-    const prodData = makeProduct(category.id);
-    prodData.stock = 0;
-    const product = await createProduct(request, authToken, prodData);
+    const prodA = await createProduct(request, adminAuthToken, { ...makeProduct(catA.id), name: `ProdA ${Date.now()}` });
+    const prodB = await createProduct(request, adminAuthToken, { ...makeProduct(catB.id), name: `ProdB ${Date.now()}` });
 
     try {
-      await page.goto('/');
-      const card = page.locator('[data-testid="product-card"]', { hasText: product.name }).first();
-      await expect(card.locator('.badge', { hasText: 'Esgotado' }).first()).toBeVisible();
+      await test.step('navigate to storefront', async () => {
+        await storefrontPage.goTo();
+      });
 
-      const button = card.locator('button', { hasText: 'Indisponível' }).first();
-      await expect(button).toBeDisabled();
+      await test.step('click category A link and verify URL update', async () => {
+        await storefrontPage.categoryLink(catA.name).click();
+        await page.waitForURL(new RegExp(`categoryId=${catA.id}`));
+      });
+
+      await test.step('verify only category A products are visible', async () => {
+        await expect(storefrontPage.productCardByName(prodA.name)).toBeVisible();
+        await expect(storefrontPage.productCardByName(prodB.name)).toBeHidden();
+      });
     } finally {
-      await deleteProduct(request, authToken, product.id);
-      await deleteCategory(request, authToken, category.id);
-    }
-  });
-
-  test('2.5 Category filter navigation updates URL and filters products', async ({ page, request, authToken }) => {
-    const catA = await createCategory(request, authToken, makeCategory());
-    const catB = await createCategory(request, authToken, makeCategory());
-
-    const prodA = await createProduct(request, authToken, { ...makeProduct(catA.id), name: `ProdA ${Date.now()}` });
-    const prodB = await createProduct(request, authToken, { ...makeProduct(catB.id), name: `ProdB ${Date.now()}` });
-
-    try {
-      await page.goto('/');
-      
-      // Click on Category A link
-      await page.locator(`a:has-text("${catA.name}")`).click();
-      await page.waitForURL(new RegExp(`categoryId=${catA.id}`));
-
-      // Verify only Prod A is visible
-      await expect(page.locator('[data-testid="product-card"]', { hasText: prodA.name })).toBeVisible();
-      await expect(page.locator('[data-testid="product-card"]', { hasText: prodB.name })).toBeHidden();
-    } finally {
-      await deleteProduct(request, authToken, prodA.id);
-      await deleteProduct(request, authToken, prodB.id);
-      await deleteCategory(request, authToken, catA.id);
-      await deleteCategory(request, authToken, catB.id);
+      await deleteProduct(request, adminAuthToken, prodA.id);
+      await deleteProduct(request, adminAuthToken, prodB.id);
+      await deleteCategory(request, adminAuthToken, catA.id);
+      await deleteCategory(request, adminAuthToken, catB.id);
     }
   });
 
 });
-

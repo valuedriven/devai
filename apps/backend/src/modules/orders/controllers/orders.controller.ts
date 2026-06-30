@@ -14,15 +14,19 @@ import { CreateOrderDto } from '../dto/create-order.dto';
 import { UpdateOrderDto } from '../dto/update-order.dto';
 import { CurrentUser } from '../../../core/decorators/current-user.decorator';
 import { Roles } from '../../../core/decorators/roles.decorator';
+import type { AuthUser } from '../../../core/auth/interfaces/auth-user.interface';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto, @CurrentUser() user: any) {
-    const isAdmin = this.checkIsAdmin(user);
-    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+  create(
+    @Body() createOrderDto: CreateOrderDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    const isAdmin = user.role === 'ADMIN';
+    const userEmail = user.email;
 
     if (!isAdmin) {
       return this.ordersService.create(createOrderDto, userEmail);
@@ -34,31 +38,16 @@ export class OrdersController {
     );
   }
 
-  private checkIsAdmin(user: any): boolean {
-    const metadata = user?.publicMetadata || {};
-    let roles: string[] = [];
-    if (Array.isArray(metadata.roles)) {
-      roles = metadata.roles;
-    } else if (typeof metadata.roles === 'string') {
-      roles = [metadata.roles];
-    } else if (Array.isArray(metadata.role)) {
-      roles = metadata.role;
-    } else if (typeof metadata.role === 'string') {
-      roles = [metadata.role];
-    }
-    return roles.includes('admin');
-  }
-
   @Get()
   async findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthUser,
     @Query('customerEmail') customerEmail?: string,
     @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const isAdmin = this.checkIsAdmin(user);
-    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+    const isAdmin = user.role === 'ADMIN';
+    const userEmail = user.email;
     const emailToFilter = isAdmin ? customerEmail : userEmail;
 
     const pageNum = Math.max(1, Number(page) || 1);
@@ -73,11 +62,11 @@ export class OrdersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @CurrentUser() user: any) {
+  async findOne(@Param('id') id: string, @CurrentUser() user: AuthUser) {
     const order = await this.ordersService.findOne(id);
 
-    const isAdmin = this.checkIsAdmin(user);
-    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+    const isAdmin = user.role === 'ADMIN';
+    const userEmail = user.email;
 
     if (!isAdmin && order?.customer?.email !== userEmail) {
       throw new NotFoundException(`Order with ID ${id} not found`);
@@ -87,9 +76,9 @@ export class OrdersController {
   }
 
   @Post(':id/cancel')
-  async cancel(@Param('id') id: string, @CurrentUser() user: any) {
-    const isAdmin = this.checkIsAdmin(user);
-    const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+  async cancel(@Param('id') id: string, @CurrentUser() user: AuthUser) {
+    const isAdmin = user.role === 'ADMIN';
+    const userEmail = user.email;
 
     return this.ordersService.cancel(id, isAdmin ? undefined : userEmail);
   }
@@ -104,9 +93,9 @@ export class OrdersController {
   update(
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthUser,
   ) {
-    const isAdmin = this.checkIsAdmin(user);
+    const isAdmin = user.role === 'ADMIN';
     if (!isAdmin) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }

@@ -19,7 +19,7 @@ function SuccessContent() {
             </h1>
             {orderId && (
                 <p className="order-success-text text-center text-lg mt-2">
-                    Seu pedido <strong>#{orderId}</strong> foi realizado com sucesso.
+                    Seu pedido <strong data-testid="order-success-text">#{orderId}</strong> foi realizado com sucesso.
                 </p>
             )}
             <p className="order-success-subtext text-center text-muted-foreground mt-1">

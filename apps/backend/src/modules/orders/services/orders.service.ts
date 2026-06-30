@@ -253,8 +253,11 @@ export class OrdersService {
   async update(id: string, updateOrderDto: UpdateOrderDto) {
     await this.findOne(id);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { order_items: _, customerId, ...orderData } = updateOrderDto;
+    const {
+      order_items: _order_items,
+      customerId,
+      ...orderData
+    } = updateOrderDto;
 
     return this.prisma.order.update({
       where: { id },

@@ -28,6 +28,7 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should login with valid credentials', async () => {
+      // Arrange
       const mockUser = {
         id: 'user_123',
         emailAddresses: [{ emailAddress: 'john@example.com' }],
@@ -37,10 +38,12 @@ describe('AuthService', () => {
 
       clerk.verifyPassword.mockResolvedValue(mockUser);
       clerk.syncUserWithData.mockResolvedValue({ id: 'cust_1' });
-      clerk.signInternalToken.mockResolvedValue('signed-jwt-token');
+      clerk.signInternalToken.mockReturnValue('signed-jwt-token');
 
+      // Act
       const result = await service.login('john@example.com', 'password123');
 
+      // Assert
       expect(clerk.verifyPassword).toHaveBeenCalledWith(
         'john@example.com',
         'password123',
@@ -62,9 +65,11 @@ describe('AuthService', () => {
     });
 
     it('should propagate error when credentials are invalid', async () => {
+      // Arrange
       const error = new Error('Invalid credentials');
       clerk.verifyPassword.mockRejectedValue(error);
 
+      // Act & Assert
       await expect(service.login('wrong@example.com', 'wrong')).rejects.toThrow(
         error,
       );
@@ -73,6 +78,7 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('should register a new user', async () => {
+      // Arrange
       const mockUser = {
         id: 'user_456',
         emailAddresses: [{ emailAddress: 'jane@example.com' }],
@@ -81,8 +87,9 @@ describe('AuthService', () => {
       };
 
       clerk.createUser.mockResolvedValue(mockUser);
-      clerk.signInternalToken.mockResolvedValue('signed-jwt-token');
+      clerk.signInternalToken.mockReturnValue('signed-jwt-token');
 
+      // Act
       const result = await service.register({
         email: 'jane@example.com',
         password: 'secure123',
@@ -90,6 +97,7 @@ describe('AuthService', () => {
         lastName: 'Smith',
       });
 
+      // Assert
       expect(clerk.createUser).toHaveBeenCalledWith({
         email: 'jane@example.com',
         password: 'secure123',
@@ -113,15 +121,18 @@ describe('AuthService', () => {
     });
 
     it('should propagate error when user creation fails', async () => {
+      // Arrange
       const error = new Error('Email already exists');
       clerk.createUser.mockRejectedValue(error);
 
+      // Act & Assert
       await expect(
         service.register({ email: 'existing@example.com' }),
       ).rejects.toThrow(error);
     });
 
     it('should handle missing optional fields', async () => {
+      // Arrange
       const mockUser = {
         id: 'user_789',
         emailAddresses: [{ emailAddress: 'anon@example.com' }],
@@ -132,10 +143,12 @@ describe('AuthService', () => {
       clerk.createUser.mockResolvedValue(mockUser);
       clerk.signInternalToken.mockResolvedValue('token');
 
+      // Act
       const result = await service.register({
         email: 'anon@example.com',
       });
 
+      // Assert
       expect(result.user.firstName).toBeNull();
       expect(result.user.lastName).toBeNull();
     });

@@ -3,15 +3,14 @@ import { createProduct, createCustomerApi, createOrderApi } from './utils/api';
 import { makeProduct } from './utils/data';
 
 test.describe('Order Lifecycle', () => {
+  test.setTimeout(60_000);
 
-  test('Admin can manage order lifecycle from New to Delivered', async ({ 
-    page, 
-    request, 
-    authToken, 
-    seededCategory, 
-    orderPage 
+  test('Admin can manage order lifecycle from New to Delivered', async ({
+    request,
+    authToken,
+    seededCategory,
+    orderPage
   }) => {
-    test.setTimeout(60000);
     let orderId: string;
     let orderNumber: string;
 
@@ -36,16 +35,15 @@ test.describe('Order Lifecycle', () => {
     });
 
     await test.step('navigate to order list and find order', async () => {
-        await orderPage.goto();
-        await page.getByPlaceholder(/Pesquisar/i).fill(orderNumber);
-        await page.keyboard.press('Enter');
-        await expect(page.locator('tr', { hasText: orderNumber })).toBeVisible();
+        await orderPage.goTo();
+        await orderPage.searchOrder(orderNumber);
+        await expect(orderPage.rowFor(orderNumber)).toBeVisible();
     });
 
     await test.step('view order details', async () => {
-        await page.goto(`/admin/orders/${orderId}`);
-        await expect(page.getByRole('heading', { name: /Pedido #/i }).first()).toContainText(orderNumber);
-        await expect(page.getByText('Novo').first()).toBeVisible();
+        await orderPage.goToOrderDetail(orderId);
+        await expect(orderPage.heading.filter({ hasText: /Pedido #/i }).first()).toContainText(orderNumber);
+        await expect(orderPage.statusBadge('Novo')).toBeVisible();
     });
 
     await test.step('register payment and verify Paid status', async () => {
@@ -53,33 +51,37 @@ test.describe('Order Lifecycle', () => {
         await orderPage.fillPaymentForm('150', 'Pix');
         
         // After payment, status should transition to Pago
-        await expect(page.getByText('Pago').first()).toBeVisible();
-        await expect(page.locator('table')).toContainText('Pix');
+        await expect(orderPage.statusBadge('Pago')).toBeVisible();
+        await expect(orderPage.table).toContainText('Pix');
     });
 
     await test.step('transition to Preparation', async () => {
         await orderPage.transitionStatus('Iniciar Preparação');
-        await expect(page.getByText('Preparação').first()).toBeVisible();
+        await expect(orderPage.statusBadge('Preparação')).toBeVisible();
     });
 
     await test.step('transition to Invoiced', async () => {
         await orderPage.transitionStatus('Emitir Nota Fiscal');
-        await expect(page.getByText('Faturado').first()).toBeVisible();
+        await expect(orderPage.statusBadge('Faturado')).toBeVisible();
     });
 
     await test.step('transition to Shipped', async () => {
         await orderPage.transitionStatus('Despachar Pedido');
-        await expect(page.getByText('Despachado').first()).toBeVisible();
+        await expect(orderPage.statusBadge('Despachado')).toBeVisible();
     });
 
     await test.step('transition to Delivered', async () => {
         await orderPage.transitionStatus('Confirmar Entrega');
-        await expect(page.getByText('Entregue').first()).toBeVisible();
+        await expect(orderPage.statusBadge('Entregue')).toBeVisible();
     });
 
     await test.step('verify audit logs', async () => {
-        await expect(page.locator('div', { hasText: 'De Pago para Preparação' })).toBeVisible();
-        await expect(page.locator('div', { hasText: 'De Despachado para Entregue' })).toBeVisible();
+        await expect(
+          orderPage.auditLog.getByTestId('audit-entry').filter({ hasText: 'Pago' }).filter({ hasText: 'Preparação' })
+        ).toBeVisible();
+        await expect(
+          orderPage.auditLog.getByTestId('audit-entry').filter({ hasText: 'Despachado' }).filter({ hasText: 'Entregue' })
+        ).toBeVisible();
     });
   });
 });

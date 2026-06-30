@@ -1,11 +1,16 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { createClerkClient } from '@clerk/clerk-sdk-node';
+import type { User } from '@clerk/clerk-sdk-node';
 import * as jwt from 'jsonwebtoken';
+import type { JwtPayload } from 'jsonwebtoken';
 import { CustomersService } from '../../modules/customers/services/customers.service';
+
+type ClerkClientType = ReturnType<typeof createClerkClient>;
+type CreateUserParams = Parameters<ClerkClientType['users']['createUser']>[0];
 
 @Injectable()
 export class ClerkService {
-  private readonly clerkClient: any;
+  private readonly clerkClient: ClerkClientType;
   private readonly logger = new Logger(ClerkService.name);
 
   constructor(private readonly customersService: CustomersService) {
@@ -24,7 +29,7 @@ export class ClerkService {
     });
   }
 
-  async verifyToken(token: string): Promise<any> {
+  verifyToken(token: string): string | JwtPayload {
     try {
       const secret = process.env.JWT_SECRET;
       if (!secret) {
@@ -37,7 +42,7 @@ export class ClerkService {
     }
   }
 
-  async signInternalToken(payload: any): Promise<string> {
+  signInternalToken(payload: Record<string, unknown>): string {
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       throw new Error('JWT_SECRET is not defined in environment variables');
@@ -45,11 +50,11 @@ export class ClerkService {
     return jwt.sign(payload, secret, { expiresIn: '24h' });
   }
 
-  async getUser(userId: string): Promise<any> {
+  getUser(userId: string): Promise<User> {
     return this.clerkClient.users.getUser(userId);
   }
 
-  async syncUserWithData(user: any) {
+  async syncUserWithData(user: User) {
     try {
       const email = user.emailAddresses[0]?.emailAddress;
       const name =
@@ -72,7 +77,7 @@ export class ClerkService {
     }
   }
 
-  async verifyPassword(email: string, password: string): Promise<any> {
+  async verifyPassword(email: string, password: string): Promise<User> {
     try {
       // Find user by email
       const users = await this.clerkClient.users.getUserList({
@@ -113,7 +118,7 @@ export class ClerkService {
     firstName?: string;
     lastName?: string;
     role?: string;
-  }): Promise<any> {
+  }): Promise<User> {
     try {
       const newUser = await this.clerkClient.users.createUser({
         emailAddress: [data.email],
@@ -123,7 +128,7 @@ export class ClerkService {
         publicMetadata: {
           roles: data.role ? [data.role] : ['customer'],
         },
-      });
+      } as CreateUserParams);
 
       // Sync with local database
       await this.syncUserWithData(newUser);
@@ -143,11 +148,11 @@ export class ClerkService {
     if (!publicMetadata) return ['CUSTOMER'];
 
     if (Array.isArray(publicMetadata.roles)) {
-      roles = publicMetadata.roles;
+      roles = publicMetadata.roles.map(String);
     } else if (typeof publicMetadata.roles === 'string') {
       roles = [publicMetadata.roles];
     } else if (Array.isArray(publicMetadata.role)) {
-      roles = publicMetadata.role;
+      roles = publicMetadata.role.map(String);
     } else if (typeof publicMetadata.role === 'string') {
       roles = [publicMetadata.role];
     }
@@ -160,6 +165,7 @@ export class ClerkService {
       const tokenResponse =
         await this.clerkClient.signInTokens.createSignInToken({
           userId,
+          expiresInSeconds: 3600,
         });
       return tokenResponse.token;
     } catch (error) {
@@ -170,7 +176,9 @@ export class ClerkService {
 
   async revokeSession(userId: string): Promise<void> {
     try {
-      const sessions = await this.clerkClient.users.getSessions(userId);
+      const sessions = await this.clerkClient.sessions.getSessionList({
+        userId,
+      });
       for (const session of sessions) {
         await this.clerkClient.sessions.revokeSession(session.id);
       }

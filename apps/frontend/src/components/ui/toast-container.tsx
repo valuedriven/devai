@@ -32,12 +32,14 @@ export function ToastContainer() {
   if (toasts.length === 0) return null;
   
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div data-testid="toast-container" className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
       {toasts.map((toast) => {
         const styles = typeStyles[toast.type];
         return (
           <div
             key={toast.id}
+            data-testid="toast-message"
+            data-toast-type={toast.type}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg border-l-4 shadow-lg ${styles.bg} ${styles.border}`}
           >
             <div className={styles.icon}>

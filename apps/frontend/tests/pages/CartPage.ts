@@ -1,4 +1,5 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
+import { LoginPage } from './LoginPage';
 
 export class CartPage {
   readonly page: Page;
@@ -15,15 +16,25 @@ export class CartPage {
     this.confirmOrderButton = page.getByRole('button', { name: /Checkout/i });
   }
 
-  async clickCartIcon() {
+  async goTo(): Promise<this> {
+    await this.page.goto('/cart');
+    await expect(this.cartIcon).toBeVisible();
+    return this;
+  }
+
+  async clickCartIcon(): Promise<this> {
     await this.cartIcon.first().click();
+    return this;
   }
 
-  async clickLogin() {
+  async clickLogin(): Promise<LoginPage> {
     await this.loginButton.click();
+    await this.page.waitForURL(/\/login/);
+    return new LoginPage(this.page);
   }
 
-  async confirmOrder() {
+  async confirmOrder(): Promise<this> {
     await this.confirmOrderButton.click();
+    return this;
   }
 }

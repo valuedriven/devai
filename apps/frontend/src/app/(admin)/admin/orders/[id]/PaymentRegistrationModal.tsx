@@ -60,11 +60,12 @@ export function PaymentRegistrationModal({ orderId }: { orderId: string }) {
                 </div>
                 <form onSubmit={handleSubmit} className="p-6 space-y-4 text-slate-900">
                     <div className="space-y-1">
-                        <label className="text-sm font-semibold text-slate-700">Valor</label>
-                        <Input 
-                            type="number" 
-                            step="0.01" 
-                            required 
+                        <label htmlFor="payment-value" className="text-sm font-semibold text-slate-700">Valor do pagamento</label>
+                        <Input
+                            id="payment-value"
+                            type="number"
+                            step="0.01"
+                            required
                             placeholder="0,00"
                             value={formData.value}
                             onChange={(e) => setFormData({...formData, value: e.target.value})}

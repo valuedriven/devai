@@ -1,7 +1,9 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 export class ProductPage {
   readonly page: Page;
+  readonly heading: Locator;
+  readonly table: Locator;
   readonly newProductLink: Locator;
   readonly nameInput: Locator;
   readonly priceInput: Locator;
@@ -9,10 +11,13 @@ export class ProductPage {
   readonly descriptionInput: Locator;
   readonly categorySelect: Locator;
   readonly saveProductButton: Locator;
+  readonly dialog: Locator;
   readonly confirmDeleteButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.heading = page.getByRole('heading', { level: 1 });
+    this.table = page.getByRole('table');
     this.newProductLink = page.getByRole('link', { name: /Novo Produto/i });
     this.nameInput = page.getByLabel(/Nome do Produto/i);
     this.priceInput = page.getByLabel(/Preço/i);
@@ -20,39 +25,61 @@ export class ProductPage {
     this.descriptionInput = page.getByLabel(/Descrição/i);
     this.categorySelect = page.getByLabel(/Categoria/i, { exact: true });
     this.saveProductButton = page.getByRole('button', { name: /Salvar Produto/i });
-    this.confirmDeleteButton = page.getByRole('dialog').getByRole('button', { name: /^Excluir$/i });
+    this.dialog = page.getByRole('dialog');
+    this.confirmDeleteButton = this.dialog.getByRole('button', { name: /^Excluir$/i });
   }
 
-  async goto() {
+  rowFor(name: string): Locator {
+    return this.table.getByRole('row', { name: new RegExp(name) });
+  }
+
+  async goTo(): Promise<this> {
     await this.page.goto('/admin/products');
+    await expect(this.heading.filter({ hasText: 'Produtos' })).toBeVisible();
+    return this;
   }
 
-  async clickNewProduct() {
+  async clickNewProduct(): Promise<this> {
     await this.newProductLink.click();
+    return this;
   }
 
-  async fillProductDetails(name: string, price: string, stock: string, description: string, categoryId: string) {
+  async fillProductDetails(
+    name: string,
+    price: string,
+    stock: string,
+    description: string,
+    categoryId: string
+  ): Promise<this> {
     await this.nameInput.fill(name);
     await this.priceInput.fill(price);
     await this.stockInput.fill(stock);
     await this.descriptionInput.fill(description);
-    await this.categorySelect.locator('option').nth(1).waitFor({ state: 'attached', timeout: 10000 });
+    await this.categorySelect.getByRole('option').nth(1).waitFor({ state: 'attached', timeout: 10000 });
     await this.categorySelect.selectOption({ value: categoryId });
+    return this;
   }
 
-  async submitForm() {
+  async submitForm(): Promise<this> {
     await this.saveProductButton.click();
+    return this;
   }
 
-  async editProduct(oldName: string, newName: string) {
-    await this.page.locator('tr', { hasText: oldName }).getByTitle('Editar').click();
+  async editProduct(oldName: string, newName: string): Promise<this> {
+    const row = this.table.getByRole('row', { name: new RegExp(oldName) });
+    await expect(row).toBeVisible();
+    await row.getByTitle('Editar').click();
     await this.nameInput.clear();
     await this.nameInput.fill(newName);
     await this.submitForm();
+    return this;
   }
 
-  async deleteProduct(name: string) {
-    await this.page.locator('tr', { hasText: name }).getByTitle('Excluir').click();
+  async deleteProduct(name: string): Promise<this> {
+    const row = this.table.getByRole('row', { name: new RegExp(name) });
+    await expect(row).toBeVisible();
+    await row.getByTitle('Excluir').click();
     await this.confirmDeleteButton.click();
+    return this;
   }
 }

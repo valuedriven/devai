@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/Badge";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import { getProduct } from "@/lib/data";
 import { ArrowLeft, Truck } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/ui/Button";
@@ -31,11 +32,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 {/* Product Image */}
                 <div className="aspect-square relative overflow-hidden rounded-lg bg-muted/20 border">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        unoptimized={product.image?.startsWith('http')}
+                        priority
                     />
                 </div>
 

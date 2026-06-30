@@ -4,7 +4,9 @@ import { AuthService } from './auth.service';
 import { ClerkService } from '../../core/auth/clerk.service';
 import { createMockClerkService } from '../../core/auth/__mocks__/clerk-service.mock';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import type { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
+import type { App } from 'supertest/types';
 
 const mockUser = {
   id: 'user_123',
@@ -16,7 +18,7 @@ const mockUser = {
 };
 
 describe('AuthController (Integration)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
 
   const mockAuthService = {
     login: jest.fn(),
@@ -40,9 +42,9 @@ describe('AuthController (Integration)', () => {
       ],
     }).compile();
 
-    app = module.createNestApplication();
-    app.use((req: any, _res: any, next: any) => {
-      req.user = mockUser;
+    app = module.createNestApplication<INestApplication<App>>();
+    app.use((req: Request, _res: Response, next: NextFunction) => {
+      (req as Request & { user: typeof mockUser }).user = mockUser;
       next();
     });
     app.useGlobalPipes(
@@ -58,6 +60,7 @@ describe('AuthController (Integration)', () => {
 
   describe('POST /auth/login', () => {
     it('should login and set auth cookie', async () => {
+      // Arrange
       mockAuthService.login.mockResolvedValue({
         token: 'jwt-token',
         user: {
@@ -73,7 +76,9 @@ describe('AuthController (Integration)', () => {
         .send({ email: 'john@example.com', password: 'password123' })
         .expect(201);
 
-      expect(response.body.token).toBe('jwt-token');
+      // Assert
+      const body = response.body as { token: string };
+      expect(body.token).toBe('jwt-token');
     });
 
     it('should reject login with invalid email', async () => {
@@ -93,6 +98,7 @@ describe('AuthController (Integration)', () => {
 
   describe('POST /auth/register', () => {
     it('should register and set auth cookie', async () => {
+      // Arrange
       mockAuthService.register.mockResolvedValue({
         token: 'jwt-token',
         user: {
@@ -113,7 +119,9 @@ describe('AuthController (Integration)', () => {
         })
         .expect(201);
 
-      expect(response.body.token).toBe('jwt-token');
+      // Assert
+      const body = response.body as { token: string };
+      expect(body.token).toBe('jwt-token');
     });
 
     it('should reject registration with short password', async () => {
@@ -139,10 +147,12 @@ describe('AuthController (Integration)', () => {
 
   describe('GET /auth/me', () => {
     it('should return current user info', async () => {
+      // Arrange
       const response = await request(app.getHttpServer())
         .get('/auth/me')
         .expect(200);
 
+      // Assert
       expect(response.body).toEqual({
         id: 'user_123',
         email: 'john@example.com',
@@ -156,7 +166,8 @@ describe('AuthController (Integration)', () => {
 
   describe('POST /auth/logout', () => {
     it('should logout and clear cookie', async () => {
-      mockClerkService.verifyToken.mockResolvedValue({ sub: 'user_123' });
+      // Arrange
+      mockClerkService.verifyToken.mockReturnValue({ sub: 'user_123' });
       mockClerkService.revokeSession.mockResolvedValue(undefined);
 
       await request(app.getHttpServer())
@@ -164,6 +175,7 @@ describe('AuthController (Integration)', () => {
         .set('Authorization', 'Bearer valid-token')
         .expect(204);
 
+      // Assert
       expect(mockClerkService.verifyToken).toHaveBeenCalledWith('valid-token');
       expect(mockClerkService.revokeSession).toHaveBeenCalledWith('user_123');
     });

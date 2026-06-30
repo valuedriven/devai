@@ -8,7 +8,7 @@ test.describe('10. Regressão — Outros Fluxos', () => {
   test('10.0 Produto sem estoque: botão "Adicionar ao Carrinho" deve estar desabilitado', async ({
     page,
     request,
-    authToken,
+    adminAuthToken,
     seededCategory,
     storefrontPage,
   }) => {
@@ -17,14 +17,14 @@ test.describe('10. Regressão — Outros Fluxos', () => {
     await test.step('seed product with stock = 0 via API', async () => {
       product = await createProduct(
         request,
-        authToken,
+        adminAuthToken,
         makeProduct(seededCategory.id, 0),
       );
     });
 
     try {
       await test.step('clear cookies and localStorage', async () => {
-        await page.goto('/');
+        await storefrontPage.goTo();
         await page.context().clearCookies();
         await page.evaluate(() => localStorage.clear());
         await page.reload();
@@ -35,16 +35,16 @@ test.describe('10. Regressão — Outros Fluxos', () => {
       });
 
       await test.step('verify "Adicionar ao Carrinho" button is disabled', async () => {
-        const button = page.getByRole('button', { name: /Adicionar ao Carrinho/i });
+        const button = storefrontPage.addToCartButton;
         await expect(button).toBeDisabled();
       });
 
       await test.step('verify "Esgotado" badge is visible', async () => {
-        await expect(page.getByText('Esgotado').first()).toBeVisible();
+        await expect(storefrontPage.outOfStockBadge).toBeVisible();
       });
     } finally {
       await test.step('cleanup seeded product', async () => {
-        await deleteProduct(request, authToken, product?.id);
+        await deleteProduct(request, adminAuthToken, product?.id);
       });
     }
   });
@@ -52,28 +52,30 @@ test.describe('10. Regressão — Outros Fluxos', () => {
   test('10.1 Fluxo completo: adicionar ao carrinho → login → checkout → cancelar pedido', async ({
     page,
     request,
-    authToken,
+    adminAuthToken,
     seededCategory,
     cartPage,
     storefrontPage,
     loginPage,
+    checkoutPage,
+    customerOrdersPage,
   }) => {
     let product: SeededProduct;
 
     await test.step('seed product via API', async () => {
-      product = await createProduct(request, authToken, makeProduct(seededCategory.id));
+      product = await createProduct(request, adminAuthToken, makeProduct(seededCategory.id));
     });
 
     try {
-      await test.step('clear cookies and go to homepage', async () => {
+      await test.step('clear authentication state', async () => {
         await page.context().clearCookies();
-        await storefrontPage.goto();
-        await page.evaluate(() => localStorage.clear());
+        await storefrontPage.goTo();
+        await page.evaluate(() => localStorage.removeItem('devai_auth_token'));
         await page.reload();
       });
 
       await test.step('add product to cart', async () => {
-        await storefrontPage.addToCart();
+        await storefrontPage.addToCartForProduct(product.id);
       });
 
       await test.step('go to cart page', async () => {
@@ -103,52 +105,44 @@ test.describe('10. Regressão — Outros Fluxos', () => {
       });
 
       await test.step('fill address and submit order', async () => {
-        await page.locator('#address').fill('Rua Teste, 123');
-        await page.getByRole('button', { name: /Confirmar e Fechar Pedido/i }).click();
+        await checkoutPage.fillAddress('Rua Teste, 123');
+        await checkoutPage.submitOrder();
       });
 
       let orderId = '';
 
       await test.step('verify order confirmation screen', async () => {
         await page.waitForURL(/\/checkout\/success/);
-        await expect(page.getByTestId('order-success-title')).toBeVisible();
+        await expect(checkoutPage.orderSuccessTitle).toBeVisible();
 
-        const successText = await page.locator('.order-success-text strong').textContent();
-        orderId = successText?.replace('#', '').trim() || '';
+        orderId = await checkoutPage.getOrderIdFromSuccessText();
       });
 
       await test.step('navigate to orders history and verify order is listed', async () => {
-        await page.getByRole('button', { name: /Ver Meus Pedidos/i }).click();
+        await checkoutPage.clickViewOrders();
         await page.waitForURL(/\/orders/);
-        await expect(page.locator(`text=Pedido #${orderId}`)).toBeVisible();
+        await expect(customerOrdersPage.orderCard(orderId)).toBeVisible();
       });
 
       await test.step('filter orders by status', async () => {
-        await page.getByTestId('filter-novo').click();
-        await expect(page.locator(`text=Pedido #${orderId}`)).toBeVisible();
+        await customerOrdersPage.filterNovo.click();
+        await expect(customerOrdersPage.orderCard(orderId)).toBeVisible();
 
-        await page.getByTestId('filter-cancelado').click();
-        await expect(page.locator(`text=Pedido #${orderId}`)).toBeHidden();
+        await customerOrdersPage.filterCancelado.click();
+        await expect(customerOrdersPage.orderCard(orderId)).toBeHidden();
 
-        await page.getByTestId('filter-todos').click();
-        await expect(page.locator(`text=Pedido #${orderId}`)).toBeVisible();
+        await customerOrdersPage.filterTodos.click();
+        await expect(customerOrdersPage.orderCard(orderId)).toBeVisible();
       });
 
       await test.step('cancel order from details page', async () => {
-        await page.getByRole('button', { name: /Ver Detalhes/i }).first().click();
-        await page.waitForURL(/\/orders\//);
-
-        page.once('dialog', async dialog => {
-          await dialog.accept();
-        });
-
-        await page.getByTestId('cancel-order-button').click();
-        await expect(page.getByText('Cancelado')).toBeVisible();
-        await expect(page.getByTestId('cancel-order-button')).toBeHidden();
+        await customerOrdersPage.cancelOrder(orderId);
+        await expect(customerOrdersPage.orderCard(orderId).getByText('Cancelado')).toBeVisible();
+        await expect(customerOrdersPage.orderCard(orderId).getByTestId('cancel-order-button')).toBeHidden();
       });
     } finally {
       await test.step('cleanup seeded product', async () => {
-        await deleteProduct(request, authToken, product?.id);
+        await deleteProduct(request, adminAuthToken, product?.id);
       });
     }
   });

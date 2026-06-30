@@ -23,51 +23,81 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let detail = 'An unexpected error occurred';
     let errors: string[] | undefined;
 
-    if (exception instanceof BadRequestException) {
-      status = exception.getStatus();
-      const body = exception.getResponse() as Record<string, any>;
-      title = 'Bad Request';
-      detail = Array.isArray(body.message)
-        ? body.message.join('; ')
-        : body.message || title;
-      if (Array.isArray(body.message)) {
-        errors = body.message;
+    const getMessage = (
+      responseBody: string | Record<string, unknown>,
+    ): string | string[] | undefined => {
+      if (typeof responseBody === 'string') {
+        return responseBody;
       }
-    } else if (exception instanceof NotFoundException) {
-      status = exception.getStatus();
-      title = 'Not Found';
-      detail =
-        (exception.getResponse() as Record<string, any>).message || title;
-    } else if (exception instanceof UnauthorizedException) {
-      status = exception.getStatus();
-      title = 'Unauthorized';
-      detail =
-        (exception.getResponse() as Record<string, any>).message || title;
-    } else if (exception instanceof ForbiddenException) {
-      status = exception.getStatus();
-      title = 'Forbidden';
-      detail =
-        (exception.getResponse() as Record<string, any>).message || title;
-    } else if (exception instanceof HttpException) {
+      const message = responseBody.message;
+      if (
+        Array.isArray(message) &&
+        message.every((m): m is string => typeof m === 'string')
+      ) {
+        return message;
+      }
+      if (typeof message === 'string') {
+        return message;
+      }
+      return undefined;
+    };
+
+    if (
+      exception instanceof BadRequestException ||
+      exception instanceof NotFoundException ||
+      exception instanceof UnauthorizedException ||
+      exception instanceof ForbiddenException ||
+      exception instanceof HttpException
+    ) {
       status = exception.getStatus();
       const responseBody = exception.getResponse();
-      if (typeof responseBody === 'string') {
-        title = responseBody;
-        detail = responseBody;
-      } else if (typeof responseBody === 'object') {
-        const body = responseBody as Record<string, any>;
-        title = body.message || exception.message;
-        detail = body.message || exception.message;
-        if (Array.isArray(body.message)) {
-          detail = body.message.join('; ');
-          errors = body.message;
+      const safeBody: string | Record<string, unknown> =
+        typeof responseBody === 'object' && responseBody !== null
+          ? (responseBody as Record<string, unknown>)
+          : typeof responseBody === 'string'
+            ? responseBody
+            : {};
+      const message = getMessage(safeBody);
+
+      if (exception instanceof BadRequestException) {
+        title = 'Bad Request';
+        if (Array.isArray(message)) {
+          detail = message.join('; ');
+          errors = message;
+        } else {
+          detail = message || title;
+        }
+      } else if (exception instanceof NotFoundException) {
+        title = 'Not Found';
+        detail = typeof message === 'string' ? message : title;
+      } else if (exception instanceof UnauthorizedException) {
+        title = 'Unauthorized';
+        detail = typeof message === 'string' ? message : title;
+      } else if (exception instanceof ForbiddenException) {
+        title = 'Forbidden';
+        detail = typeof message === 'string' ? message : title;
+      } else {
+        if (typeof safeBody === 'string') {
+          title = safeBody;
+          detail = safeBody;
+        } else {
+          title =
+            (typeof message === 'string' ? message : exception.message) ||
+            title;
+          detail =
+            (typeof message === 'string' ? message : exception.message) ||
+            title;
+          if (Array.isArray(message)) {
+            detail = message.join('; ');
+            errors = message;
+          }
         }
       }
     } else if (exception instanceof Error) {
       detail = exception.message;
     }
 
-    const problemDetails: Record<string, any> = {
+    const problemDetails: Record<string, unknown> = {
       type: `https://httpstatuses.org/${status}`,
       title,
       status,

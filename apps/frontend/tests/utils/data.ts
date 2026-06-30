@@ -1,9 +1,4 @@
-/**
- * Data factories for E2E test seeding.
- * Uses Date.now() + Math.random() for uniqueness across parallel workers.
- */
-
-const uid = () => `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+import { faker } from '@faker-js/faker';
 
 export interface CategoryData {
   name: string;
@@ -18,19 +13,6 @@ export interface ProductData {
   description?: string;
 }
 
-export const makeCategory = (): CategoryData => ({
-  name: `Cat E2E ${uid()}`,
-});
-
-export const makeProduct = (categoryId: string, stock?: number): ProductData => ({
-  name: `Prod E2E ${uid()}`,
-  price: 99.99,
-  stock: stock ?? 10,
-  categoryId,
-  active: true,
-  description: 'Produto criado automaticamente para testes E2E',
-});
-
 export interface CustomerData {
   name: string;
   email: string;
@@ -39,10 +21,23 @@ export interface CustomerData {
   active?: boolean;
 }
 
+export const makeCategory = (): CategoryData => ({
+  name: `${faker.commerce.department()} ${faker.string.alphanumeric(6)}`,
+});
+
+export const makeProduct = (categoryId: string, stock?: number): ProductData => ({
+  name: `${faker.commerce.productName()} ${faker.string.alphanumeric(6)}`,
+  price: parseFloat(faker.commerce.price({ min: 10, max: 500 })),
+  stock: stock ?? faker.number.int({ min: 1, max: 100 }),
+  categoryId,
+  active: true,
+  description: faker.commerce.productDescription(),
+});
+
 export const makeCustomer = (): CustomerData => ({
-  name: `Customer E2E ${uid()}`,
-  email: `customer-${uid()}@example.com`,
-  phone: '11999999999',
-  address: 'Rua de Teste, 123',
+  name: faker.person.fullName(),
+  email: faker.internet.email(),
+  phone: faker.phone.number({ style: 'national' }),
+  address: faker.location.streetAddress(),
   active: true,
 });

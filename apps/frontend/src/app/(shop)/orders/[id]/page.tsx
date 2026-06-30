@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ArrowLeft, Ban } from "lucide-react";
+import Image from "next/image";
 
 export default function OrderDetailsPage({ params }: { params: { id: string } }) {
     const router = useRouter();
@@ -170,13 +171,15 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
                             <div className="space-y-4">
                                 {orderProducts.map((item, index) => (
                                     <div key={index} className="flex gap-4 items-center border-b pb-4 last:border-0 last:pb-0">
-                                        <div className="h-16 w-16 bg-muted rounded overflow-hidden flex-shrink-0">
+                                        <div className="h-16 w-16 bg-muted rounded overflow-hidden flex-shrink-0 relative">
                                             {item.product?.image && (
-                                                /* eslint-disable-next-line @next/next/no-img-element */
-                                                <img
+                                                <Image
                                                     src={item.product.image}
                                                     alt={item.product.name}
-                                                    className="h-full w-full object-cover"
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="64px"
+                                                    unoptimized={item.product.image?.startsWith('http')}
                                                 />
                                             )}
                                         </div>

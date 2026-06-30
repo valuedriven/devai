@@ -3,9 +3,10 @@ import { PublicCategoriesController } from './public-categories.controller';
 import { CategoriesService } from '../services/categories.service';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
+import { App } from 'supertest/types';
 
 describe('PublicCategoriesController (Integration)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
 
   const mockCategory = {
     id: 'cat-1',
@@ -35,7 +36,7 @@ describe('PublicCategoriesController (Integration)', () => {
       ],
     }).compile();
 
-    app = module.createNestApplication();
+    app = module.createNestApplication<INestApplication<App>>();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
@@ -50,6 +51,7 @@ describe('PublicCategoriesController (Integration)', () => {
 
   describe('GET /api/v1/categories', () => {
     it('should return list of active categories with pagination headers', async () => {
+      // Arrange
       mockCategoriesService.findAll.mockResolvedValue({
         data: [mockCategory],
         meta: { total: 1 },
@@ -59,6 +61,7 @@ describe('PublicCategoriesController (Integration)', () => {
         .get('/api/v1/categories')
         .expect(200);
 
+      // Assert
       expect(response.body).toEqual([mockCategory]);
       expect(response.headers['x-total-count']).toBe('1');
       expect(mockCategoriesService.findAll).toHaveBeenCalledWith({
@@ -70,6 +73,7 @@ describe('PublicCategoriesController (Integration)', () => {
     });
 
     it('should pass query filters to service', async () => {
+      // Arrange
       mockCategoriesService.findAll.mockResolvedValue({
         data: [],
         meta: { total: 0 },
@@ -79,6 +83,7 @@ describe('PublicCategoriesController (Integration)', () => {
         .get('/api/v1/categories?search=cat')
         .expect(200);
 
+      // Assert
       expect(mockCategoriesService.findAll).toHaveBeenCalledWith({
         page: 1,
         limit: 20,
@@ -90,12 +95,14 @@ describe('PublicCategoriesController (Integration)', () => {
 
   describe('GET /api/v1/categories/:id', () => {
     it('should return an active category', async () => {
+      // Arrange
       mockCategoriesService.findOne.mockResolvedValue(mockCategory);
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/categories/cat-1')
         .expect(200);
 
+      // Assert
       expect(response.body).toEqual(mockCategory);
     });
 

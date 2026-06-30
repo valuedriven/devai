@@ -3,14 +3,24 @@ import { OrdersController } from './orders.controller';
 import { OrdersService } from '../services/orders.service';
 import { RolesGuard } from '../../../core/guards/roles.guard';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import type { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
+import type { App } from 'supertest/types';
 
 const adminUser = {
+  id: 'admin-id',
+  clerkId: 'admin-id',
+  email: 'admin@example.com',
+  role: 'ADMIN' as const,
   publicMetadata: { roles: ['admin'] },
   emailAddresses: [{ emailAddress: 'admin@example.com' }],
 };
 
 const customerUser = {
+  id: 'cust-id',
+  clerkId: 'cust-id',
+  email: 'john@example.com',
+  role: 'CUSTOMER' as const,
   publicMetadata: { roles: ['customer'] },
   emailAddresses: [{ emailAddress: 'john@example.com' }],
 };
@@ -40,9 +50,27 @@ describe('OrdersController (Integration)', () => {
       .useValue({ canActivate: () => true })
       .compile();
 
-    const app = module.createNestApplication();
-    app.use((req: any, _res: any, next: any) => {
-      req.user = user;
+    const app = module.createNestApplication<INestApplication<App>>();
+    app.use((req: Request, _res: Response, next: NextFunction) => {
+      const typedUser = user as {
+        role?: string;
+        email?: string;
+        publicMetadata?: {
+          roles?: string[] | string;
+          role?: string[] | string;
+        };
+        emailAddresses?: Array<{ emailAddress?: string }>;
+      };
+      (req as Request & { user: Record<string, unknown> }).user = {
+        ...user,
+        role:
+          typedUser.role ||
+          (typedUser.publicMetadata?.roles?.includes('admin') ||
+          typedUser.publicMetadata?.role === 'admin'
+            ? 'ADMIN'
+            : 'CUSTOMER'),
+        email: typedUser.email || typedUser.emailAddresses?.[0]?.emailAddress,
+      };
       next();
     });
     app.useGlobalPipes(
@@ -52,12 +80,12 @@ describe('OrdersController (Integration)', () => {
     return app;
   };
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
   describe('as admin', () => {
-    let app: INestApplication;
+    let app: INestApplication<App>;
 
     beforeEach(async () => {
       app = await buildApp(adminUser);
@@ -69,6 +97,7 @@ describe('OrdersController (Integration)', () => {
 
     describe('POST /orders', () => {
       it('should create an order using customerId from body', async () => {
+        // Arrange
         const dto = {
           customerId: 'cust-1',
           totalAmount: 150.0,
@@ -82,6 +111,7 @@ describe('OrdersController (Integration)', () => {
           .send(dto)
           .expect(201);
 
+        // Assert
         expect(mockOrdersService.create).toHaveBeenCalledWith(
           expect.any(Object),
           undefined,
@@ -91,6 +121,7 @@ describe('OrdersController (Integration)', () => {
 
     describe('GET /orders', () => {
       it('should return all orders', async () => {
+        // Arrange
         mockOrdersService.findAll.mockResolvedValue({
           data: [{ id: 'order-1' }],
           total: 1,
@@ -98,6 +129,7 @@ describe('OrdersController (Integration)', () => {
 
         await request(app.getHttpServer()).get('/orders').expect(200);
 
+        // Assert
         expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined, {
           skip: 0,
           take: 20,
@@ -106,6 +138,7 @@ describe('OrdersController (Integration)', () => {
       });
 
       it('should filter orders by status', async () => {
+        // Arrange
         mockOrdersService.findAll.mockResolvedValue({
           data: [{ id: 'order-1' }],
           total: 1,
@@ -115,6 +148,7 @@ describe('OrdersController (Integration)', () => {
           .get('/orders?status=Novo')
           .expect(200);
 
+        // Assert
         expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined, {
           skip: 0,
           take: 20,
@@ -163,6 +197,7 @@ describe('OrdersController (Integration)', () => {
 
     describe('role parsing variants', () => {
       it('should accept admin role as a single string in metadata.roles', async () => {
+        // Arrange
         const roleStringApp = await buildApp({
           publicMetadata: { roles: 'admin' },
           emailAddresses: [{ emailAddress: 'admin@example.com' }],
@@ -175,10 +210,12 @@ describe('OrdersController (Integration)', () => {
 
         await request(roleStringApp.getHttpServer()).get('/orders').expect(200);
 
+        // Act
         await roleStringApp.close();
       });
 
       it('should accept admin role in metadata.role array', async () => {
+        // Arrange
         const roleArrayApp = await buildApp({
           publicMetadata: { role: ['admin'] },
           emailAddresses: [{ emailAddress: 'admin@example.com' }],
@@ -191,10 +228,12 @@ describe('OrdersController (Integration)', () => {
 
         await request(roleArrayApp.getHttpServer()).get('/orders').expect(200);
 
+        // Act
         await roleArrayApp.close();
       });
 
       it('should accept admin role as a single string in metadata.role', async () => {
+        // Arrange
         const roleStringApp = await buildApp({
           publicMetadata: { role: 'admin' },
           emailAddresses: [{ emailAddress: 'admin@example.com' }],
@@ -207,13 +246,14 @@ describe('OrdersController (Integration)', () => {
 
         await request(roleStringApp.getHttpServer()).get('/orders').expect(200);
 
+        // Act
         await roleStringApp.close();
       });
     });
   });
 
   describe('as customer', () => {
-    let app: INestApplication;
+    let app: INestApplication<App>;
 
     beforeEach(async () => {
       app = await buildApp(customerUser);
@@ -225,6 +265,7 @@ describe('OrdersController (Integration)', () => {
 
     describe('POST /orders', () => {
       it('should force create using authenticated user email', async () => {
+        // Arrange
         const dto = {
           totalAmount: 150.0,
           order_items: [{ productId: 'prod-1', quantity: 2, unitPrice: 50.0 }],
@@ -237,6 +278,7 @@ describe('OrdersController (Integration)', () => {
           .send(dto)
           .expect(201);
 
+        // Assert
         expect(mockOrdersService.create).toHaveBeenCalledWith(
           expect.any(Object),
           'john@example.com',
@@ -266,6 +308,7 @@ describe('OrdersController (Integration)', () => {
 
     describe('POST /orders/:id/cancel', () => {
       it('should cancel the order', async () => {
+        // Arrange
         mockOrdersService.cancel.mockResolvedValue({
           id: 'order-1',
           status: 'Cancelado',
@@ -275,6 +318,7 @@ describe('OrdersController (Integration)', () => {
           .post('/orders/order-1/cancel')
           .expect(201);
 
+        // Assert
         expect(mockOrdersService.cancel).toHaveBeenCalledWith(
           'order-1',
           'john@example.com',

@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ServiceError } from "@/types/api";
 
 interface UseApiState<T> {
   data: T | null;
-  loading: boolean;
   error: string | null;
+  loadedKey: string | null;
 }
 
-interface UseApiResult<T> extends UseApiState<T> {
+interface UseApiResult<T> {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
   refetch: () => void;
 }
 
@@ -19,19 +22,26 @@ export function useApi<T>(
 ): UseApiResult<T> {
   const [state, setState] = useState<UseApiState<T>>({
     data: null,
-    loading: true,
     error: null,
+    loadedKey: null,
   });
+  const [refetchToken, setRefetchToken] = useState(0);
 
-  const execute = useCallback(() => {
+  const fetcherRef = useRef(fetcher);
+  const depsKey = JSON.stringify(deps);
+  const requestKey = `${refetchToken}:${depsKey}`;
+
+  useEffect(() => {
+    fetcherRef.current = fetcher;
+  }, [fetcher]);
+
+  useEffect(() => {
     let cancelled = false;
 
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-
-    fetcher()
+    fetcherRef.current()
       .then((data) => {
         if (!cancelled) {
-          setState({ data, loading: false, error: null });
+          setState({ data, error: null, loadedKey: requestKey });
         }
       })
       .catch((err) => {
@@ -40,23 +50,23 @@ export function useApi<T>(
             err instanceof ServiceError
               ? err.message
               : "An unexpected error occurred";
-          setState({ data: null, loading: false, error: message });
+          setState({ data: null, error: message, loadedKey: requestKey });
         }
       });
 
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+  }, [requestKey]);
 
-  useEffect(() => {
-    const cleanup = execute();
-    return cleanup;
-  }, [execute]);
+  const refetch = () => {
+    setRefetchToken((token) => token + 1);
+  };
 
   return {
-    ...state,
-    refetch: execute,
+    data: state.data,
+    loading: state.loadedKey !== requestKey,
+    error: state.error,
+    refetch,
   };
 }

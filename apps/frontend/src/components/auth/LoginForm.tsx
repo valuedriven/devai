@@ -1,31 +1,38 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import { useInternalAuth } from '@/hooks/AuthContext'
 import './LoginForm.css'
 
 export function LoginForm() {
-  const searchParams = useSearchParams()
-  const redirectUrl = searchParams.get('redirect') || '/'
+  'use no memo'
   const { login } = useInternalAuth()
-  
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  useEffect(() => { setMounted(true) }, [])
+
+  // Refs ensure the async handler always uses the latest values regardless of
+  // when the React Compiler memoized the closure.
+  const emailRef = useRef(email)
+  const passwordRef = useRef(password)
+  emailRef.current = email
+  passwordRef.current = password
+
+  const handleLogin = async () => {
     setError(null)
     setIsSubmitting(true)
 
     try {
-      await login(email, password)
-      // Aguarda um curto período para garantir que os cookies sejam persistidos no navegador
-      await new Promise(resolve => setTimeout(resolve, 300))
-      window.location.href = redirectUrl
+      await login(emailRef.current, passwordRef.current)
+      // Read destination from the actual URL at submit time
+      const destination = new URLSearchParams(window.location.search).get('redirect') || '/'
+      window.location.href = destination
     } catch (err: unknown) {
       console.error('Login failed:', err)
       const message = err instanceof Error ? err.message : 'Falha ao realizar login. Verifique suas credenciais.';
@@ -33,6 +40,11 @@ export function LoginForm() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    handleLogin()
   }
 
   return (
@@ -43,7 +55,11 @@ export function LoginForm() {
           <p>Entre com suas credenciais para acessar sua conta</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form
+          onSubmit={handleSubmit}
+          className="login-form"
+          data-state={mounted ? 'ready' : 'loading'}
+        >
           {error && <div className="login-error" data-testid="login-error">{error}</div>}
 
           <div className="form-group">
@@ -75,7 +91,12 @@ export function LoginForm() {
             />
           </div>
 
-          <button type="submit" className="login-button" disabled={isSubmitting}>
+          <button
+            type="button"
+            className="login-button"
+            disabled={isSubmitting}
+            onClick={handleLogin}
+          >
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
         </form>

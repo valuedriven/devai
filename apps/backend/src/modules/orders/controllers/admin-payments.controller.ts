@@ -12,7 +12,7 @@ export class AdminPaymentsController {
   @Roles('admin')
   @ApiOperation({ summary: 'List all payments for admin' })
   @ApiResponse({ status: 200, description: 'List of payments.' })
-  async findAll(
+  findAll(
     @Query('orderId') orderId?: string,
     @Query('status') status?: string,
   ) {

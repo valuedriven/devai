@@ -7,7 +7,7 @@ test.describe('Category Management', () => {
 
   test.beforeEach(async ({ categoryPage }) => {
     // Navigate to categories page
-    await categoryPage.goto();
+    await categoryPage.goTo();
   });
 
   test('9.1 Admin can create a category successfully', async ({ categoryPage }) => {
@@ -29,7 +29,7 @@ test.describe('Category Management', () => {
 
     await test.step('seed category via API', async () => {
       category = await createCategory(request, authToken, makeCategory());
-      await categoryPage.goto();
+      await categoryPage.goTo();
     });
 
     await test.step('edit category via UI', async () => {
@@ -48,7 +48,7 @@ test.describe('Category Management', () => {
 
     await test.step('seed category via API', async () => {
       category = await createCategory(request, authToken, makeCategory());
-      await categoryPage.goto();
+      await categoryPage.goTo();
     });
 
     await test.step('delete category via UI', async () => {
@@ -56,31 +56,31 @@ test.describe('Category Management', () => {
     });
 
     await test.step('verify category is removed from list', async () => {
-      await expect(categoryPage.dialog).toBeHidden({ timeout: 5000 });
+      await expect(categoryPage.dialog).toBeHidden();
       await expect(categoryPage.categoryTable.getByText(category.name)).toBeHidden();
     });
   });
 
-  test('9.4 Non-admin user cannot access /admin/categories', async ({ page, loginPage, categoryPage }) => {
+  test('9.4 Non-admin user cannot access /admin/categories', async ({ page, loginPage, storefrontPage, forbiddenPage }) => {
     await test.step('log out from admin session', async () => {
       await page.context().clearCookies();
-      await page.goto('/');
+      await storefrontPage.goTo();
       await page.evaluate(() => localStorage.clear());
       await page.reload();
     });
 
     await test.step('log in as non-admin user', async () => {
-      await loginPage.goto();
+      await loginPage.goTo();
       await loginPage.login(
-        process.env.CUSTOMER_EMAIL || 'jps012009@yahoo.com.br',
-        process.env.CUSTOMER_PASSWORD || 'jps012009@yahoo.com.br'
+        process.env.CUSTOMER_EMAIL!,
+        process.env.CUSTOMER_PASSWORD!
       );
       await page.waitForURL('/');
     });
 
     await test.step('attempt to access admin categories page and verify 403', async () => {
-      await categoryPage.goto();
-      await expect(page.getByText(/403/i)).toBeVisible({ timeout: 5000 });
+      await page.goto('/admin/categories');
+      await expect(forbiddenPage.code).toBeVisible();
     });
   });
 
@@ -102,7 +102,7 @@ test.describe('Category Management', () => {
 
     await test.step('delete category via UI', async () => {
       await categoryPage.deleteCategory(metaEditName);
-      await expect(categoryPage.dialog).toBeHidden({ timeout: 5000 });
+      await expect(categoryPage.dialog).toBeHidden();
       await expect(categoryPage.categoryTable.getByText(metaEditName)).toBeHidden();
     });
   });

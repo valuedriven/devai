@@ -14,7 +14,7 @@ export function DesktopSidebar() {
     const isLoggedIn = isAuthenticated;
 
     return (
-        <aside className="sidebar-desktop">
+        <aside className="sidebar-desktop" data-testid="sidebar-desktop">
             <div className="sidebar-header">
                 <Link href="/" className="flex items-center">
                     <Image

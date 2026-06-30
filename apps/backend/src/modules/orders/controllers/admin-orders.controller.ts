@@ -17,6 +17,7 @@ import { OrderStatusTransitionDto } from '../dto/order-status-transition.dto';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { Roles } from '../../../core/decorators/roles.decorator';
 import { CurrentUser } from '../../../core/decorators/current-user.decorator';
+import type { AuthUser } from '../../../core/auth/interfaces/auth-user.interface';
 
 @ApiTags('admin-orders')
 @Controller('admin/orders')
@@ -29,7 +30,7 @@ export class AdminOrdersController {
   @Get('config/transitions')
   @Roles('admin')
   @ApiOperation({ summary: 'Get valid order status transitions' })
-  async getTransitions() {
+  getTransitions() {
     return this.orderManagementService.validTransitions;
   }
 
@@ -37,7 +38,7 @@ export class AdminOrdersController {
   @Roles('admin')
   @ApiOperation({ summary: 'List all orders for admin' })
   @ApiResponse({ status: 200, description: 'List of orders.' })
-  async findAll(@Query() query: AdminListOrdersQueryDto) {
+  findAll(@Query() query: AdminListOrdersQueryDto) {
     return this.orderManagementService.findAll(query);
   }
 
@@ -46,7 +47,7 @@ export class AdminOrdersController {
   @ApiOperation({ summary: 'Get order details for admin' })
   @ApiResponse({ status: 200, description: 'Order details.' })
   @ApiResponse({ status: 404, description: 'Order not found.' })
-  async findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.orderManagementService.findOne(id);
   }
 
@@ -55,15 +56,15 @@ export class AdminOrdersController {
   @ApiOperation({ summary: 'Transition order status' })
   @ApiResponse({ status: 200, description: 'Order status updated.' })
   @ApiResponse({ status: 422, description: 'Invalid transition.' })
-  async transitionStatus(
+  transitionStatus(
     @Param('id') id: string,
     @Body() transitionDto: OrderStatusTransitionDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthUser,
   ) {
     return this.orderManagementService.transitionStatus(
       id,
       transitionDto.status,
-      user?.sub,
+      user.clerkId,
       transitionDto.notes,
     );
   }
@@ -73,17 +74,17 @@ export class AdminOrdersController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a manual payment for an order' })
   @ApiResponse({ status: 201, description: 'Payment registered.' })
-  async registerPayment(
+  registerPayment(
     @Param('id') id: string,
     @Body() createPaymentDto: CreatePaymentDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthUser,
   ) {
     return this.paymentService.register(
       {
         orderId: id,
         ...createPaymentDto,
       },
-      user?.sub,
+      user.clerkId,
     );
   }
 }

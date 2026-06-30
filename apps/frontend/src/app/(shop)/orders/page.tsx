@@ -103,7 +103,7 @@ export default function OrdersPage() {
                     </div>
                 ) : (
                     orders.map((order) => (
-                        <Card key={order.id} className="hover:shadow-md transition-shadow">
+                        <Card key={order.id} data-testid="order-card" className="hover:shadow-md transition-shadow">
                             <CardContent className="p-6">
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                     <div>

@@ -167,29 +167,113 @@ async login() {
 
 ### Navigation Returns the Destination Page Object
 
+`login()` is a single-responsibility action — it fills and submits. Never add navigation waits inside it. Tests that submit invalid credentials must be able to assert the page stays on `/login`.
+
 ```ts
-async login(email: string, password: string): Promise<CatalogPage> {
+// ✔ Good — single-responsibility action method
+async login(email: string, password: string): Promise<void> {
   await this.emailInput.fill(email);
   await this.passwordInput.fill(password);
   await this.submitButton.click();
-  await this.page.waitForLoadState('networkidle');
-  return new CatalogPage(this.page);
+  // no waitForURL here — callers decide what to assert next
 }
 ```
 
 Never call `page.goto()` directly in a test — encapsulate it in the Page Object.
 
 ```ts
-// ✔ Good
-async goTo(): Promise<void> {
+// ✔ Good — goTo() waits for meaningful content, not just HTML parse
+async goTo(): Promise<this> {
   await this.page.goto('/login');
-  await this.page.waitForLoadState('domcontentloaded');
+  await expect(this.heading).toBeVisible(); // web-first; retries until data loads
+  return this;
 }
 
-// ✘ Bad
+// ✘ Bad — domcontentloaded fires before async API data loads
+async goTo(): Promise<void> {
+  await this.page.goto('/login');
+  await this.page.waitForLoadState('domcontentloaded'); // ← race condition
+}
+
+// ✘ Bad — leaks page internals into the test
 test('login', async ({ page }) => {
-  await page.goto('/login'); // leaks page internals
+  await page.goto('/login');
 });
+```
+
+The anchor element for `goTo()` must be one that only renders after the page's primary data fetch completes (e.g. a table, a heading that includes loaded data, or an input that is only mounted post-fetch).
+
+### Dialog Guard Pattern
+
+Every page object method that opens a modal MUST await the dialog being visible before interacting with its inputs. Modal animations and React state updates are asynchronous.
+
+```ts
+// ✔ Good — guard before filling
+async createCategory(name: string): Promise<this> {
+  await this.newCategoryButton.click();
+  await expect(this.dialog).toBeVisible(); // ← guard
+  await this.nameInput.fill(name);
+  await this.saveButton.click();
+  return this;
+}
+
+// ✘ Bad — fill() may target an element not yet in the DOM
+async createCategory(name: string): Promise<this> {
+  await this.newCategoryButton.click();
+  await this.nameInput.fill(name); // race condition
+}
+```
+
+### Row-Visibility Guard Before Table-Row Actions
+
+Every method that locates a row and clicks an action inside it MUST first assert the row is visible. After `goTo()` the table may still be loading its data from the API.
+
+```ts
+// ✔ Good
+async editCategory(name: string, newName: string): Promise<this> {
+  const row = this.categoryTable.getByRole('row', { name: new RegExp(name) });
+  await expect(row).toBeVisible();           // ← guard
+  await row.getByTitle('Edit category').click();
+  await expect(this.dialog).toBeVisible();   // ← dialog guard
+  await this.nameInput.fill(newName);
+  return this;
+}
+```
+
+### Post-Mutation Visibility Guard
+
+After any method that triggers an async API call (status transition, cancellation, delete), wait for the UI to confirm the round-trip completed — typically by waiting for the action button to disappear.
+
+```ts
+// ✔ Good — confirms API round-trip before returning
+async transitionStatus(actionName: string): Promise<this> {
+  const button = this.page.getByRole('button', { name: actionName });
+  this.page.once('dialog', dialog => dialog.accept());
+  await button.click();
+  await expect(button).toBeHidden(); // ← confirms server responded and UI re-rendered
+  return this;
+}
+
+// ✔ Good — cancel confirmation
+async cancelOrder(): Promise<this> {
+  const cancelButton = this.page.getByTestId('cancel-order-button');
+  await cancelButton.click();
+  await expect(cancelButton).toBeHidden(); // ← don't return until cancellation confirmed
+  return this;
+}
+```
+
+### Confirmation Buttons — Use `.click()` Not `press('Enter')`
+
+`press('Enter')` dispatches a keyboard event and requires the element to be focused. Focus can be lost to dialog overlays or animations. Always use `.click()` on confirmation buttons, preceded by a visibility guard.
+
+```ts
+// ✔ Good
+await expect(this.confirmDeleteButton).toBeVisible();
+await this.confirmDeleteButton.click();
+
+// ✘ Bad — depends on focus state
+await this.confirmDeleteButton.press('Enter');
 ```
 
 ---
@@ -245,6 +329,23 @@ setup('authenticate as admin', async ({ loginPage }) => {
 ```
 
 Use `scope: 'worker'` for fixtures that consume cached auth state. Never use worker scope for fixtures that mutate state.
+
+### Clearing Auth State — Always Reload After
+
+When a test clears cookies and localStorage to simulate logout, always follow with `page.reload()`. Without it, Next.js's client-side router retains authenticated state in memory and subsequent navigations are served from the in-memory cache, bypassing the auth check.
+
+```ts
+// ✔ Good — forces Next.js router to re-evaluate auth from cookies
+await page.context().clearCookies();
+await storefrontPage.goTo();
+await page.evaluate(() => localStorage.clear());
+await page.reload(); // ← clears in-memory router state
+
+// ✘ Bad — Next.js router still thinks the user is logged in
+await page.context().clearCookies();
+await page.evaluate(() => localStorage.clear());
+// missing reload; redirect assertions will fail non-deterministically
+```
 
 ---
 
@@ -326,6 +427,49 @@ export async function createProductViaApi(
 }
 ```
 
+### Seeded Resource Types Must Be Fully Typed
+
+Every interface returned by API helpers must include all fields the test will reference. A missing field silently infers `any` and returns `undefined` at runtime — causing assertion failures that appear as locator mismatches.
+
+```ts
+// ✔ Good — all fields that tests reference are present
+export interface SeededOrder {
+  id: string;
+  number: string;   // e.g. "E2E-1234-5678" — displayed in UI; must be typed
+  customerId: string;
+  totalAmount: number;
+  status: string;
+}
+
+// ✘ Bad — missing number field; order.number is undefined at runtime
+export interface SeededOrder {
+  id: string;
+  customerId: string;
+  totalAmount: number;
+  status: string;
+}
+```
+
+### Scope Data-Dependent Actions to the Seeded Resource
+
+Never use `.first()` or positional selectors on lists that may contain multiple items. Navigate directly to the seeded resource's detail or use its ID to scope the interaction.
+
+```ts
+// ✔ Good — navigates to the specific seeded product's detail page
+async addToCartForProduct(productId: string): Promise<this> {
+  await this.page.goto(`/products/${productId}`);
+  await expect(this.addToCartButton).toBeVisible();
+  await this.addToCartButton.click();
+  return this;
+}
+
+// ✘ Bad — adds whichever product renders first; non-deterministic
+async addToCart(): Promise<this> {
+  await this.addToCartButton.first().click();
+  return this;
+}
+```
+
 ### Unique Values
 
 Use `@faker-js/faker` for all generated values. Never hardcode values that could collide across parallel workers.
@@ -392,6 +536,59 @@ test.describe('Catalog page', () => {
   test('shows product details on click', async ({ catalogPage }) => { ... });
 });
 ```
+
+### `test.setTimeout` — Declare at `describe` Scope, Never Inside the Test Body
+
+`test.setTimeout()` inside the test body resets the timer from that point — not from test start — which can silently allow the test to run longer than intended.
+
+```ts
+// ✔ Good — timeout applies from the start of every test in this describe
+test.describe('Order Lifecycle', () => {
+  test.setTimeout(60_000);
+  test('Admin can manage order lifecycle...', async ({ ... }) => {
+    // no test.setTimeout here
+  });
+});
+
+// ✘ Bad — timer resets mid-test; first N seconds are unguarded
+test('Admin can manage order lifecycle...', async ({ ... }) => {
+  test.setTimeout(60_000); // too late; doesn't cover setup time
+});
+```
+
+Use `test.slow()` as an alternative when you don't need a precise value — it triples the global timeout automatically.
+
+### Inline `{ timeout }` Overrides — Remove Them
+
+Never pass `{ timeout }` to individual `expect()` calls. The global `expect.timeout` in `playwright.config.ts` already covers normal assertions. Inline overrides create inconsistency and silently shadow the global config.
+
+```ts
+// ✔ Good — trusts global config
+await expect(dialog).toBeHidden();
+
+// ✘ Bad — duplicates or overrides global; becomes stale when config changes
+await expect(dialog).toBeHidden({ timeout: 5000 });
+```
+
+The only legitimate per-assertion timeout override is in tests that genuinely require extra time (e.g. an order lifecycle test with `test.setTimeout` set at the `describe` level).
+
+### Chaining `.filter()` — Always Filter the Row Container, Not a Text Node
+
+`.getByText()` returns a leaf text node. Calling `.filter({ hasText })` on a leaf finds nothing because the sibling text is not a descendant. Always chain `.filter()` calls on the container element that holds both values as children.
+
+```ts
+// ✔ Good — filter on the row container
+await expect(
+  orderPage.auditLog.getByRole('row').filter({ hasText: 'Pago' }).filter({ hasText: 'Preparação' })
+).toBeVisible();
+
+// ✘ Bad — getByText returns a leaf node; filter on a leaf never matches sibling text
+await expect(
+  orderPage.auditLog.getByText('Pago').filter({ hasText: 'Preparação' }).first()
+).toBeVisible();
+```
+
+If the list renders `<div>` blocks instead of `<tr>` rows, use `getByTestId('audit-entry')` or `getByRole('listitem')` as the container selector.
 
 ### Soft Assertions
 
@@ -532,25 +729,45 @@ test('large order export', async ({ adminPage }) => {
 - Never use `page.evaluate()` for DOM state that a locator can express
 - Use `expect(locator).toHaveText(...)` — not `const t = await locator.textContent(); expect(t).toBe(...)`
 - Keep each test to a single user behavior
+- `goTo()` must wait for meaningful content, not just `domcontentloaded` — the anchor element must only render after the page's primary data fetch completes
+- Add dialog visibility guards before any modal input interaction
+- Add row visibility guards before any table-row action
+- Add post-mutation guards (wait for button/element to disappear) after async API calls
+- After clearing auth state, always call `page.reload()` before asserting navigation behavior
+- Action methods (e.g. `login()`) are single-responsibility — add navigation waits at the call site, not inside the method
+- All seeded resource interfaces must type every field the test references — never rely on implicit `any`
+- Chain `.filter()` on row containers, not on leaf text nodes
+- Navigate to a seeded resource by ID — never use `.first()` on multi-item lists
 
 ---
 
 ## Anti-Patterns
 
-| Anti-pattern                               | Correct Approach                                    |
-|--------------------------------------------|-----------------------------------------------------|
-| `expect()` inside Page Objects             | All assertions in `*.spec.ts` files                 |
-| `import { test } from '@playwright/test'`  | Always import from `baseTest.ts`                    |
-| `new LoginPage(page)` inside tests         | Use `test.extend` fixtures                          |
-| UI flows to create prerequisite data       | Seed via backend API using `request` fixture        |
-| `page.waitForTimeout()` / `sleep()`        | Web-first assertions or `locator.waitFor()`         |
-| Hardcoded emails or product names          | `@faker-js/faker` generated unique values           |
-| Tests that depend on execution order       | Each test owns its full data lifecycle              |
-| Raising global timeout for one slow test   | Use `test.slow()` locally                           |
-| Accessing `/catalog` without `/v1` (API)   | Only applies to page routes, not API calls          |
-| Using Clerk SDK components                 | Use custom form Page Objects only                   |
-| Creating `.env.test` or per-app env files  | Single `.env` at monorepo root                      |
-| Skipping RBAC redirect tests               | Mandatory for all protected routes                  |
+| Anti-pattern                                           | Correct Approach                                                      |
+|--------------------------------------------------------|-----------------------------------------------------------------------|
+| `expect()` inside Page Objects                         | All assertions in `*.spec.ts` files                                   |
+| `import { test } from '@playwright/test'`              | Always import from `baseTest.ts`                                      |
+| `new LoginPage(page)` inside tests                     | Use `test.extend` fixtures                                            |
+| UI flows to create prerequisite data                   | Seed via backend API using `request` fixture                          |
+| `page.waitForTimeout()` / `sleep()`                    | Web-first assertions or `locator.waitFor()`                           |
+| `waitForLoadState('domcontentloaded')` in `goTo()`     | `await expect(<contentElement>).toBeVisible()` after `page.goto()`   |
+| No dialog-visibility guard before modal inputs         | `await expect(this.dialog).toBeVisible()` before any `.fill()`       |
+| No row-visibility guard before table-row actions       | `await expect(row).toBeVisible()` before clicking row actions        |
+| No post-mutation wait after async API call             | `await expect(button).toBeHidden()` to confirm round-trip complete   |
+| `press('Enter')` on confirmation buttons               | `await expect(btn).toBeVisible(); await btn.click()`                 |
+| `.getByText().filter({ hasText })` on leaf text nodes  | `.getByRole('row').filter({…}).filter({…})` on row container         |
+| `addToCart()` with `.first()` on product lists         | Navigate to seeded product's detail page by ID                       |
+| Missing fields in seeded resource interfaces           | Type every field the test references; never rely on implicit `any`   |
+| `test.setTimeout()` inside the test body               | Declare at `test.describe` scope                                     |
+| Inline `{ timeout }` overrides on `expect()` calls     | Trust global `expect.timeout`; remove overrides                      |
+| Clearing cookies/localStorage without `page.reload()`  | Always call `await page.reload()` after clearing auth state          |
+| Navigation waits inside `login()` action method        | Keep `login()` single-responsibility; add waits at the call site     |
+| Hardcoded emails or product names                      | `@faker-js/faker` generated unique values                            |
+| Tests that depend on execution order                   | Each test owns its full data lifecycle                               |
+| Raising global timeout for one slow test               | Use `test.slow()` locally                                            |
+| Using Clerk SDK components                             | Use custom form Page Objects only                                    |
+| Creating `.env.test` or per-app env files              | Single `.env` at monorepo root                                       |
+| Skipping RBAC redirect tests                           | Mandatory for all protected routes                                   |
 
 ---
 
@@ -571,3 +788,14 @@ Before considering an E2E test complete:
 - [ ] Does not rely on execution order
 - [ ] Does not assert business logic — only UI behavior
 - [ ] Critical workflows covered: catalog browsing, order creation, admin product management
+- [ ] `goTo()` uses web-first assertion (not `waitForLoadState`) anchored on post-fetch content
+- [ ] Every modal-open method has a dialog-visibility guard before input interaction
+- [ ] Every table-row action method has a row-visibility guard before clicking
+- [ ] Every async API call method has a post-mutation guard (wait for button/indicator to disappear)
+- [ ] Confirmation buttons use `.click()`, not `press('Enter')`
+- [ ] Chained filter assertions use row containers, not leaf text nodes
+- [ ] `addToCart` (and similar) navigates to the seeded resource by ID — no `.first()` on product lists
+- [ ] All seeded resource interfaces type every field referenced in tests
+- [ ] `test.setTimeout` declared at `describe` scope, not inside test body
+- [ ] No inline `{ timeout }` overrides on individual `expect()` calls
+- [ ] Auth-state-clearing tests call `page.reload()` after clearing cookies/localStorage

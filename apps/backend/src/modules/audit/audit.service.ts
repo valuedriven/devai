@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 
 export interface AuditEvent {
   entityType: string;
   entityId: string;
   action: string;
-  payload?: any;
+  payload?: Record<string, unknown>;
   userId?: string;
 }
 
@@ -24,7 +25,7 @@ export class AuditService {
           entityType: event.entityType,
           entityId: event.entityId,
           action: event.action,
-          payload: event.payload,
+          payload: event.payload as Prisma.InputJsonValue,
           userId: event.userId,
         },
       });
@@ -32,10 +33,9 @@ export class AuditService {
         `Audit log created: ${event.action} for ${event.entityType}:${event.entityId}`,
       );
     } catch (error) {
-      this.logger.error(
-        `Failed to create audit log: ${error.message}`,
-        error.stack,
-      );
+      const message = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to create audit log: ${message}`, stack);
     }
   }
 }

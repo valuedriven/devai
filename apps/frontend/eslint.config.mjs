@@ -10,6 +10,18 @@ const eslintConfig = defineConfig([
     files: ['tests/**'],
     extends: [playwright.configs['flat/recommended']],
   },
+  {
+    files: ['**/*.tsx', '**/*.jsx'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+    },
+  },
+  {
+    files: ['**/*.ts', '**/*.js'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+    },
+  },
   globalIgnores([
     ".next/**",
     "out/**",

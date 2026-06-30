@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { buttonVariants } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { getPaginatedProducts, getCategories } from "@/lib/data";
@@ -36,9 +37,15 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
             header: "Nome",
             cell: (product) => (
                 <div className="flex items-center gap-3 font-medium">
-                    <div className="h-10 w-10 flex-shrink-0 rounded bg-muted overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                    <div className="h-10 w-10 flex-shrink-0 rounded bg-muted overflow-hidden relative">
+                        <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            sizes="40px"
+                            unoptimized={product.image?.startsWith('http')}
+                        />
                     </div>
                     {product.name}
                 </div>

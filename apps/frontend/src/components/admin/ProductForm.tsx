@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -146,8 +147,14 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
                         <div className="flex items-center gap-6">
                             <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-dashed border-gray-300 flex items-center justify-center bg-muted">
                                 {formData.imageUrl ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={formData.imageUrl} alt="Preview" className="h-full w-full object-cover" />
+                                    <Image
+                                        src={formData.imageUrl}
+                                        alt="Preview"
+                                        fill
+                                        className="object-cover"
+                                        sizes="128px"
+                                        unoptimized={formData.imageUrl?.startsWith('http')}
+                                    />
                                 ) : (
                                     <span className="text-xs text-muted-foreground">Sem imagem</span>
                                 )}
