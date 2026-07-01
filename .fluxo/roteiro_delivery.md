@@ -221,8 +221,9 @@ npx skills add https://github.com/sickn33/antigravity-awesome-skills --yes --age
 ```
 - Verifique no diretório .agents se as skills foram instaladas.
 
-Quando necessário, mais skills podem ser encontradas em marketplaces como: https://skillsmp.com/
-
+Quando necessário, mais skills podem ser encontradas em marketplaces como: 
+- https://skillsmp.com/
+- https://skills.sh/
 
 Skills relacionadas aos testes no projeto de referência:
 
@@ -672,7 +673,9 @@ Os procedimentos de planejamento -> geração -> ajustes devem ser realizados pa
 
 ---
 
-### 7. Inspeção de código
+## 7. Inspeção de código
+
+### Configuração do servidor Sonar
 
 - Acesse o terminal.
 - Inicialize o servidor Sonar:
@@ -683,83 +686,63 @@ docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000
 - Acesse o navegador e informe o endereço:
 
 ```bash
-localhost:9000
+http://localhost:9000
 ```
 
 - Informe como credenciais: usuário = admin, senha = admin.
 - Altere a senha conforme recomendado.
-- Aguarde a navegação até a seção Projects, How do you want to create your project?
-- Selecione a opção "Create a local project".
-- Informe os dados solicitados.
-- Na seção Set up new code for project, escolha a opção default.
-- Acione o comando Create project.
-- Para seção Analysis Method, selecione a opção Locally.
-- Na seção Analyze your project, acione o comando Generate.
-- Copie o token criado.
-- Acione o comando Continue.
-- Para a opção Run analysis on your project, selecione JS/TS & Web.
-- Acione o terminal e execute o seguinte comando:
+- Aguarde a navegação até a seção Projects.
+- Para "How do you want to create your project?", selecione a opção "Create a local project".
+- Para "Create a local project", informe os dados solicitados. Acione Next.
+- Para "Set up new code for project", escolha a opção "Follows the instance's defaults". Acione Create project.
+
+- Aguarde o posicionamento na seção "Project onboarding", item "Analysis Method".
+- Para "How do you want to analyze your repository?", selecione Locally.
+- Em "1. Provide a token", acione Generate.
+- Anote o token criado.
+- Selecione “Continue” no canto inferior direito.
+- Em "2. Run code analysis on your project", selecione "JS/TS & Web".
+
+
+### Execução do scanner Sonar
+
+- No diretório raiz, crie o arquivo sonar-project.properties com o seguinte conteúdo:
+
+```
+# Root Project Information
+sonar.projectKey=<projectKey configurado>
+sonar.projectName=<Nome do projeto>
+sonar.host.url=<endereço do servidor>
+
+# Define comma-separated paths to all source and test roots
+sonar.sources=apps/backend/src,apps/frontend/src
+sonar.tests=apps/backend/src,apps/frontend/src,apps/frontend/tests
+
+# Monorepo Glob Inclusions
+sonar.test.inclusions=**/*.spec.ts
+
+# Pass a comma-separated list of all generated coverage reports
+sonar.javascript.lcov.reportPaths=apps/backend/coverage/lcov.info,apps/frontend/coverage/lcov.info
+```
+
+- Execute a suite de testes para coletar as métricas de cobertura de código.
+- Acesse o terminal e execute o comando para instalação do scanner (copie o comando disponibilizado na tela do Sonar):
 
 ```
 npm install -g @sonar/scan
 ```
 
-- Acesse o termina e execute o comando:
-
-```bash
-npm install -g @sonar/scan
-```
-
-- Configure as seguintes variáveis de ambiente
+- Acesse o terminal e execute o comando para execução do scanner (substitua o token pelo valor )
 
 ```
-SONARQUBE_TOKEN= <troque pelo token criado>
-SONARQUBE_HOST=http://localhost:9000
-SONARQUBE_PROJECT_KEY=<identificador do projeto>
-```
-- Execute o scaner:
-
-```bash
-sonar \
-  -Dsonar.host.url=$SONARQUBE_HOST \
-  -Dsonar.token=$SONARQUBE_TOKEN \
-  -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY
+sonar -Dsonar.token=$SONARQUBE_TOKEN
 ```
 
-- Acesse novamente o navegador e informe o endereço:
+- Acesse novamente o servidor do Sonar e verifique os resultados do scanner:
 
 ```
 localhost:9000
 ```
-
-- Analise os resultados apresentados.
-
-- Inclua o trecho a seguir nos servidores MCP do projeto:
-
-```
-"sonarqube": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-v",
-        "${workspaceRoot}:/app/mcp-workspace",
-        "-e",
-        "SONAR_TOKEN=$SONARQUBE_TOKEN",
-        "-e",
-        "SONAR_HOST_URL=$SONARQUBE_HOST", 
-        "SonarSource/sonarqube-mcp-server"
-      ],
-      "enabled": true
-    }
-```
-
-- Abra uma nova seção do agente.
-- Solicite a listagem dos achados:
-
-```
-Liste os problemas de qualidade identificados pelo sonar
-```
-
 ---
+
+

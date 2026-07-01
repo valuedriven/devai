@@ -21,3 +21,4 @@ apps/frontend/playwright-report/index.html
 
 # stryker temp files
 .stryker-tmp
+apps/backend/reports/mutation/mutation.html
