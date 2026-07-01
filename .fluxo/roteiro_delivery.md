@@ -683,6 +683,24 @@ Os procedimentos de planejamento -> geração -> ajustes devem ser realizados pa
 ```bash
 docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
 ```
+
+- Alternativamente, o Sonar pode ser configurado como um serviço no docker-compose.yaml:
+
+```bash
+sonar:
+    image: sonarqube:latest
+    restart: unless-stopped
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+    networks:
+      - app-network
+```
 - Acesse o navegador e informe o endereço:
 
 ```bash
@@ -708,7 +726,7 @@ http://localhost:9000
 
 - No diretório raiz, crie o arquivo sonar-project.properties com o seguinte conteúdo:
 
-```
+```bash
 # Root Project Information
 sonar.projectKey=<projectKey configurado>
 sonar.projectName=<Nome do projeto>
@@ -732,7 +750,7 @@ sonar.javascript.lcov.reportPaths=apps/backend/coverage/lcov.info,apps/frontend/
 npm install -g @sonar/scan
 ```
 
-- Acesse o terminal e execute o comando para execução do scanner (substitua o token pelo valor )
+- Acesse o terminal e execute o comando para execução do scanner (substitua o token pelo valor anotado):
 
 ```
 sonar -Dsonar.token=$SONARQUBE_TOKEN
