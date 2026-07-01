@@ -205,7 +205,7 @@ Os comandos a seguir, criarão a seguinte estrutura de diretórios:
 ```
 npx skills add https://github.com/hashicorp/agent-skills --yes --skill terraform-style-guide --agent universal 
 
-npx skills add https://github.com/vercel-labs/next-skills --yes --agent universal --skill next-best-practices next-cache-components deploy-to-vercel react-best-practices web-design-guidelines composition-patterns
+npx skills add https://github.com/vercel/next.js/tree/canary/skills --yes --agent universal --skill next-best-practices next-cache-components deploy-to-vercel react-best-practices web-design-guidelines composition-patterns
 
 npx skills add https://github.com/prisma/skills --yes --agent universal --skill prisma-database-setup
 
