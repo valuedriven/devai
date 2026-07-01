@@ -6,6 +6,7 @@ const config = {
   packageManager: "npm",
   testRunner: "jest",
   reporters: ["progress", "clear-text", "html", "dashboard"],
-  coverageAnalysis: "perTest"
+  coverageAnalysis: "perTest",
+  testRunnerNodeArgs: ["--experimental-vm-modules"]
 };
 export default config;
