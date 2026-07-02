@@ -1,6 +1,5 @@
-// spec: openspec/changes/change-08-order-creation/test-plan.md
 import { test, expect } from './fixtures/baseTest';
-import { createProduct, deleteProduct, SeededProduct } from './utils/api';
+import { createProduct, SeededProduct } from './utils/api';
 import { makeProduct } from './utils/data';
 
 test.describe('10. Regressão — Outros Fluxos', () => {
@@ -123,7 +122,7 @@ test.describe('10. Regressão — Outros Fluxos', () => {
         await customerOrdersPage.cancelOrder(orderId);
         // We are currently on the Order Details page, not the Order List page.
         // Therefore, we check the status badge and the cancel button directly on the details page.
-        await expect(page.getByText('Cancelado', { exact: true }).first()).toBeVisible();
+        await expect(page.getByText('Cancelado', { exact: true })).toBeVisible();
         await expect(page.getByTestId('cancel-order-button')).toBeHidden();
       });
   });

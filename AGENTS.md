@@ -94,6 +94,7 @@ Forbidden:
 * Authorization logic
 * Database access
 * Prisma usage
+* Mixing Sizing Units: Design system tokens in `globals.css` must use a consistent unit system (e.g., exclusively `rem`). Do not mix hardcoded `px` overrides if the system uses `rem` or variables.
 
 Frontend must remain a presentation layer.
 
@@ -315,6 +316,7 @@ Block task completion if any of the following exist:
 * Unit tests must be used exclusively in the backend to validate business rules, services, use cases, and components in isolation.
 * Integration tests must be used exclusively for the backend REST API to validate endpoints, data persistence, authentication, authorization, and component integration.
 * End-to-end (E2E) tests must validate the application's critical user journeys, covering the integration between frontend, backend, and any required supporting services.
+* **Playwright Restrictions**: The use of `.first()` or `.nth()` to resolve locator strict mode violations is explicitly forbidden. You must use robust, uniquely scoped locators or text filters.
 
 Tests should cover, when applicable:
 

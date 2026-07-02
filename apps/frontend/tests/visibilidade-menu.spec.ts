@@ -42,7 +42,7 @@ test.describe('5. Visibilidade Baseada em Papel (UI)', () => {
       await storefrontPage.goTo();
 
       const sidebar = navigationComponent.desktopSidebar;
-      await expect(navigationComponent.loginLink.first()).toBeVisible();
+      await expect(navigationComponent.loginLink).toBeVisible();
 
       await expect(sidebar.getByText('Administração')).toBeHidden();
       await expect(sidebar.getByText('Meus pedidos')).toBeHidden();

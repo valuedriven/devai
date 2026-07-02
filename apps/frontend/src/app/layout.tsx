@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Bebas_Neue } from "next/font/google";
 import { CartProvider } from "@/lib/CartContext";
 import { AuthProvider } from "@/hooks/AuthContext";
 import { DesktopSidebar } from "@/components/layout/DesktopSidebar";
@@ -13,7 +13,8 @@ const inter = Inter({
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const bebasNeue = Bebas_Neue({
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-display-family",
   display: "swap",
@@ -30,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${bebasNeue.variable}`}>
         <body className="font-sans min-h-screen flex">
           <CartProvider>
             <AuthProvider>

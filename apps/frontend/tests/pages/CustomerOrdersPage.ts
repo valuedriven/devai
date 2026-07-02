@@ -21,8 +21,7 @@ export class CustomerOrdersPage {
   orderCard(orderId: string): Locator {
     return this.page
       .getByTestId('order-card')
-      .filter({ hasText: `Pedido #${orderId}` })
-      .first();
+      .filter({ hasText: `Pedido #${orderId}` });
   }
 
   async goTo(): Promise<this> {

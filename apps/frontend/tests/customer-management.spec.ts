@@ -1,10 +1,10 @@
 import { test, expect } from './fixtures/baseTest';
-import { createCustomerApi, createOrderApi, createProduct, deleteProduct, SeededCustomer, SeededProduct } from './utils/api';
-import { makeCustomer, makeProduct, makeOrder, makeOrderItem } from './utils/data';
+import { createCustomerApi, createOrderApi, SeededCustomer } from './utils/api';
+import { makeCustomer, makeOrder, makeOrderItem } from './utils/data';
 
 test.describe('Customer Management', () => {
 
-  test('Admin can create a customer successfully', async ({ page, customerPage, toastComponent, faker }) => {
+  test('Admin can create a customer successfully', async ({ customerPage, toastComponent, faker }) => {
     const cust = makeCustomer(faker);
     const custName = cust.name;
     const custEmail = cust.email;
@@ -37,7 +37,7 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Admin can edit a customer', async ({ page, request, authToken, customerPage, toastComponent, faker }) => {
+  test('Admin can edit a customer', async ({ request, authToken, customerPage, toastComponent, faker }) => {
     const editName = makeCustomer(faker).name;
     let customer: SeededCustomer;
 
@@ -97,7 +97,7 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Admin can list and search customers', async ({ page, request, authToken, customerPage, faker }) => {
+  test('Admin can list and search customers', async ({ request, authToken, customerPage, faker }) => {
     const searchTarget = makeCustomer(faker);
     const otherTarget = makeCustomer(faker);
     const nameMatch = searchTarget.name;
@@ -118,7 +118,7 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Admin can view details of a specific customer by ID', async ({ page, request, authToken, customerPage, faker }) => {
+  test('Admin can view details of a specific customer by ID', async ({ request, authToken, customerPage, faker }) => {
     const cust = makeCustomer(faker);
     const customerData = {
       name: cust.name,

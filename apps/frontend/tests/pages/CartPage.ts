@@ -24,7 +24,7 @@ export class CartPage {
   }
 
   async clickCartIcon(): Promise<this> {
-    await this.cartIcon.first().click();
+    await this.cartIcon.click();
     return this;
   }
 

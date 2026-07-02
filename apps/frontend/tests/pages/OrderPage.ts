@@ -42,7 +42,7 @@ export class OrderPage {
 
   async goToOrderDetail(orderId: string): Promise<this> {
     await this.page.goto(`/admin/orders/${orderId}`);
-    await expect(this.heading.filter({ hasText: /Pedido #/i }).first()).toBeVisible();
+    await expect(this.heading.filter({ hasText: /Pedido #/i })).toBeVisible();
     return this;
   }
 
@@ -60,7 +60,7 @@ export class OrderPage {
 
 
   async transitionStatus(actionName: string): Promise<this> {
-    const button = this.page.getByRole('button', { name: actionName });
+    const button = this.page.getByRole('button', { name: new RegExp(actionName, 'i') });
     this.page.once('dialog', dialog => dialog.accept());
     await button.click();
     await expect(button).toBeHidden();

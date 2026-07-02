@@ -56,7 +56,7 @@ export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormP
             } else {
                 setErrorMsg(result.error || "Erro ao salvar categoria.");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
             setErrorMsg("Erro inesperado ao salvar categoria.");
         } finally {

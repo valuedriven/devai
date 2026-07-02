@@ -99,8 +99,4 @@ Para detalhes técnicos e de produto, consulte a pasta `docs/`:
 > [!IMPORTANT]
 > **Convenções de Código:** Siga rigorosamente as diretrizes em [AGENTS.md](./AGENTS.md) ao realizar contribuições automáticas ou manuais.
 
-
 ---
-TODO:
-npm exec -w backend -- stryker run
-

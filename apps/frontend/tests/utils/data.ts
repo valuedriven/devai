@@ -22,14 +22,14 @@ export interface CustomerData {
 }
 
 export const makeCategory = (faker = globalFaker): CategoryData => {
-  const uniq = Math.random().toString(36).substring(2, 7);
+  const uniq = `${Math.random().toString(36).substring(2, 7)}-${Date.now()}`;
   return {
     name: `${faker.commerce.department()} ${faker.string.alphanumeric(6)}-${uniq}`,
   };
 };
 
 export const makeProduct = (categoryId: string, stock?: number, faker = globalFaker): ProductData => {
-  const uniq = Math.random().toString(36).substring(2, 7);
+  const uniq = `${Math.random().toString(36).substring(2, 7)}-${Date.now()}`;
   return {
     name: `${faker.commerce.productName()} ${faker.string.alphanumeric(6)}-${uniq}`,
     price: parseFloat(faker.commerce.price({ min: 10, max: 500 })),
@@ -41,7 +41,7 @@ export const makeProduct = (categoryId: string, stock?: number, faker = globalFa
 };
 
 export const makeCustomer = (faker = globalFaker): CustomerData => {
-  const uniq = Math.random().toString(36).substring(2, 7);
+  const uniq = `${Math.random().toString(36).substring(2, 7)}-${Date.now()}`;
   const rawEmail = faker.internet.email();
   const [user, domain] = rawEmail.split('@');
   return {

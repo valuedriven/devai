@@ -21,9 +21,9 @@ export class StorefrontPage {
     this.welcomeHeading = page.getByRole('heading', { name: 'Bem-vindo à DevAI Store' });
     this.highlightsHeading = page.getByRole('heading', { name: 'Destaques' });
     this.backToStoreLink = page.getByRole('link', { name: 'Voltar para a loja' });
-    this.productCards = page.getByTestId('product-card');
-    this.outOfStockBadge = page.getByRole('main').getByText('Esgotado').first();
-    this.price = page.getByText(/R\$/);
+    this.productCards = page.locator('.products-grid').getByTestId('product-card');
+    this.outOfStockBadge = page.getByRole('main').getByText('Esgotado');
+    this.price = page.locator('main').locator('.text-4xl.font-bold.text-primary');
     this.notFoundMessage = page.getByText(/404|not found|não encontrad/i);
   }
 

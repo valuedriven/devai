@@ -1,6 +1,4 @@
 import { test, expect } from './fixtures/baseTest';
-import { createProduct, createCustomerApi, createOrderApi } from './utils/api';
-import { makeProduct, makeCustomer } from './utils/data';
 
 test.describe('Order Lifecycle', () => {
   test.setTimeout(60_000);
@@ -20,7 +18,7 @@ test.describe('Order Lifecycle', () => {
 
     await test.step('view order details', async () => {
         await orderPage.goToOrderDetail(orderId);
-        await expect(orderPage.heading.filter({ hasText: /Pedido #/i }).first()).toContainText(orderNumber);
+        await expect(orderPage.heading.filter({ hasText: /Pedido #/i })).toContainText(orderNumber);
         await expect(orderPage.statusBadge('Novo')).toBeVisible();
     });
 

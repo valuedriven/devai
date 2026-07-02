@@ -1,11 +1,9 @@
-// E2E tests for product management (change-05-product-management)
 import { test, expect } from './fixtures/baseTest';
-import { createProduct, SeededProduct } from './utils/api';
 import { makeProduct } from './utils/data';
 
 test.describe('Product Management', () => {
 
-  test('Admin can create a product successfully', async ({ page, seededCategory, productPage, faker }) => {
+  test('Admin can create a product successfully', async ({ seededCategory, productPage, faker }) => {
     const prod = makeProduct(seededCategory.id, undefined, faker);
     const prodName = prod.name;
 
@@ -36,7 +34,7 @@ test.describe('Product Management', () => {
 
   });
 
-  test('Admin can edit a product', async ({ page, seededProduct, seededCategory, productPage, faker }) => {
+  test('Admin can edit a product', async ({ seededProduct, seededCategory, productPage, faker }) => {
     const editName = makeProduct(seededCategory.id, undefined, faker).name;
 
     await test.step('navigate to products', async () => {

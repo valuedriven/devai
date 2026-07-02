@@ -11,18 +11,18 @@ export class NavigationComponent {
   constructor(page: Page) {
     this.page = page;
     this.desktopSidebar = page.getByTestId('sidebar-desktop');
-    this.logoutButton = page.getByRole('button', { name: /Sair da Loja/i });
-    this.loginLink = page.getByRole('link', { name: /Login/i });
+    this.logoutButton = page.locator('.sidebar-logout-btn');
+    this.loginLink = page.locator('.header-root').getByRole('link', { name: /Login/i });
     this.userDropdownContainer = page.getByTestId('user-dropdown-container');
   }
 
   async logout(): Promise<this> {
-    await this.logoutButton.first().click();
+    await this.logoutButton.click();
     return this;
   }
 
   async clickLogin(): Promise<LoginPage> {
-    await this.loginLink.first().click();
+    await this.loginLink.click();
     return new LoginPage(this.page);
   }
 }

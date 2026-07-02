@@ -1,6 +1,7 @@
 {
   "name": "devai",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*"
   ],
@@ -23,6 +24,7 @@
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/jest-runner": "^9.6.1",
     "@stryker-mutator/typescript-checker": "^9.6.1",
-    "concurrently": "^10.0.3"
+    "concurrently": "^10.0.3",
+    "eslint-plugin-sonarjs": "^4.1.0"
   }
 }

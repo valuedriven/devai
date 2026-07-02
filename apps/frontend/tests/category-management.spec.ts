@@ -1,11 +1,9 @@
-// E2E tests for category management (change-04-category-management)
 import { test, expect } from './fixtures/baseTest';
-import { createCategory, SeededCategory } from './utils/api';
 import { makeCategory } from './utils/data';
 
 test.describe('Category Management', () => {
 
-  test.beforeEach(async ({ categoryPage, page }) => {
+  test.beforeEach(async ({ categoryPage }) => {
     // Navigate to categories page
     await categoryPage.goTo();
   });
@@ -23,7 +21,7 @@ test.describe('Category Management', () => {
     });
   });
 
-  test('9.2 Admin can edit a category', async ({ seededCategory, categoryPage, faker, page }) => {
+  test('9.2 Admin can edit a category', async ({ seededCategory, categoryPage, faker }) => {
     const editName = makeCategory(faker).name;
 
     await test.step('reload page to see seeded category', async () => {

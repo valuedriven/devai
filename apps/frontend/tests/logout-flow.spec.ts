@@ -21,7 +21,7 @@ test.describe('3. Fluxo de Logout', () => {
     });
 
     await test.step('verify logged out state in UI and cookies', async () => {
-      await expect(navigationComponent.loginLink.first()).toBeVisible();
+      await expect(navigationComponent.loginLink).toBeVisible();
       await expect(navigationComponent.userDropdownContainer).toBeHidden();
 
       const cookies = await page.context().cookies();
@@ -40,7 +40,7 @@ test.describe('3. Fluxo de Logout', () => {
 
     await test.step('verify logout button is hidden and login link is visible', async () => {
       await expect(navigationComponent.logoutButton).toBeHidden();
-      await expect(navigationComponent.loginLink.first()).toBeVisible();
+      await expect(navigationComponent.loginLink).toBeVisible();
     });
   });
 

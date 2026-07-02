@@ -1,7 +1,7 @@
 // spec: openspec/changes/clean-products-module/specs/storefront-catalog/test-plan.md
 import { test, expect } from './fixtures/baseTest';
 import { makeCategory, makeProduct } from './utils/data';
-import { createCategory, deleteCategory, createProduct, deleteProduct, SeededProduct, API_BASE } from './utils/api';
+import { createCategory, createProduct, API_BASE } from './utils/api';
 
 
 test.describe('Storefront Public API', () => {
@@ -114,7 +114,7 @@ test.describe('Storefront Frontend Integration', () => {
     });
   });
 
-  test('2.5 Category filter navigation updates URL and filters products', async ({ page, storefrontPage, request, adminAuthToken, faker }) => {
+  test('2.5 Category filter navigation updates URL and filters products', async ({ storefrontPage, request, adminAuthToken, faker }) => {
     const catA = await createCategory(request, adminAuthToken, makeCategory(faker));
     const catB = await createCategory(request, adminAuthToken, makeCategory(faker));
 

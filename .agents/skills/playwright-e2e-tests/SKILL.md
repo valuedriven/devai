@@ -161,6 +161,17 @@ readonly emailInput = this.page.locator('input[data-id="email-1"]');
 Prefer chaining and `.filter()` to narrow a search instead of writing a single complex
 selector — see "Chaining `.filter()`" below for the row-container rule.
 
+### Strict Mode Violations and `.first()` / `.nth()`
+
+Never use `.first()` or `.nth()` to bypass Playwright's strict mode checks. If a locator matches multiple elements, it means the locator is not specific enough and the test is brittle. You MUST refine the locator by scoping it to a specific parent component (e.g., a card, table row, or container) or by using text filtering (`.filter({ hasText: '...' })`).
+
+```ts
+// ✔ Good — scoped to the specific product card or parent container
+readonly price = this.page.getByTestId('product-card-shoes').getByTestId('price');
+// ✘ Bad — silences strict mode violation but makes the test unpredictable
+readonly price = this.page.getByTestId('price').first();
+```
+
 ### Assertions Stay in Tests
 
 Never use `expect()` inside a Page Object.
@@ -798,6 +809,7 @@ floating promises fail CI before a flaky test ever lands.
 - Action methods (e.g. `login()`) are single-responsibility — add navigation waits at the call site, not inside the method
 - All seeded resource interfaces must type every field the test references — never rely on implicit `any`
 - Chain `.filter()` on row containers, not on leaf text nodes
+- **Never use `.first()` or `.nth()` to resolve strict mode violations.** Always refine locators by parent scope or text filters.
 - Navigate to a seeded resource by ID — never use `.first()` on multi-item lists
 - Prefer `toMatchAriaSnapshot()` for whole-view structural assertions over asserting many individual DOM nodes
 - Mock third-party dependencies with `page.route()` rather than letting tests depend on a live external provider

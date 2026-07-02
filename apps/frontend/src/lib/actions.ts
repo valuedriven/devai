@@ -37,8 +37,9 @@ export async function createCategoryAction(category: Omit<Category, 'id'>, token
             return { success: true, data: result };
         }
         return { success: false, error: "Erro ao criar categoria." };
-    } catch (error: any) {
-        return { success: false, error: error.message || "Erro ao criar categoria." };
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Erro ao criar categoria.";
+        return { success: false, error: message };
     }
 }
 
@@ -50,8 +51,9 @@ export async function updateCategoryAction(id: string, category: Partial<Omit<Ca
             return { success: true, data: result };
         }
         return { success: false, error: "Erro ao atualizar categoria." };
-    } catch (error: any) {
-        return { success: false, error: error.message || "Erro ao atualizar categoria." };
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Erro ao atualizar categoria.";
+        return { success: false, error: message };
     }
 }
 
@@ -66,12 +68,13 @@ export async function deleteCustomerAction(id: string, token?: string) {
     }
 }
 
-export async function transitionOrderStatusAction(id: string, status: string, notes?: string) {
+export async function transitionOrderStatusAction(orderId: string, status: string) {
     const cookieStore = await cookies();
     const token = cookieStore.get("devai_auth_token")?.value;
-    const success = await transitionOrderStatus(id, status, notes, token);
+
+    const success = await transitionOrderStatus(orderId, status, undefined, token);
     if (success) {
-        revalidatePath(`/admin/orders/${id}`);
+        revalidatePath(`/admin/orders/${orderId}`);
         revalidatePath(`/admin/orders`);
     }
     return success;
