@@ -12,7 +12,7 @@
     "dev:backend": "npm run start:dev --workspace=backend",
     "build:frontend": "npm run build --workspace=frontend",
     "build:backend": "npm run build --workspace=backend",
-    "lint": "npm run lint --workspaces --if-present",
+    "lint": "npx eslint . && npm run lint --workspaces --if-present",
     "test": "npm run test:all",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:e2e": "npm run db:reset --workspace=backend && npm run test --workspace=frontend -- --workers=1",

@@ -438,7 +438,7 @@ expect(response.body).toMatchObject({
 ## Assertions
 
 **Assert observable behavior:**
-- HTTP status code
+- HTTP status code (must be verified using explicit Jest `expect(response.status).toBe(...)` assertions; do not rely solely on Supertest's implicit chainable assertions to ensure SonarQube detects the tests correctly)
 - Response body (explicit field assertions — avoid snapshots for dynamic fields)
 - Response headers when relevant
 - Persisted database state after mutations

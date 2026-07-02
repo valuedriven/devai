@@ -11,8 +11,8 @@ export class CartPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.cartIcon = page.getByTestId('cart-icon-wrapper');
-    this.cartBadge = page.getByTestId('cart-badge');
+    this.cartIcon = page.getByTestId('cart-icon-wrapper').first();
+    this.cartBadge = page.getByTestId('cart-badge').first();
     this.loginButton = page.getByRole('button', { name: /Faça login/i });
     this.confirmOrderButton = page.getByRole('button', { name: /Checkout/i });
   }

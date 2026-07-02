@@ -2,13 +2,15 @@ import sonarjs from "eslint-plugin-sonarjs";
 
 export default [
   sonarjs.configs.recommended,
+  {
+    ignores: ["**/.next/**", "**/dist/**", "**/build/**", "**/node_modules/**", "**/coverage/**", "**/ *.config.js"]
+  },
 
   {
-    files: ["apps/backend/*"],
-    ignores: ["dist/**", "node_modules/**", "coverage/**"]
+    files: ["apps/backend/src*"],
   },
   {
-    files: ["apps/frontend/*"],
-    ignores: [".next/**", "node_modules/**", "coverage/**", "playwright-report/**", "test-results/**"]
+    files: ["apps/frontend/src*"],
+    ignores: ["playwright-report/**", "test-results/**"]
   }
 ];

@@ -92,9 +92,9 @@ Test files SHALL NOT hardcode API URLs. All API calls MUST use the shared `API_B
 - **THEN** it MUST import and use `API_BASE` from `utils/api.ts`.
 
 ### Requirement: Web-First Assertions Over waitFor
-Page Objects SHALL use Playwright web-first assertions (`expect(locator).toBeVisible()`) instead of Selenium-style `locator.waitFor()`.
+Page Objects SHALL use Playwright web-first assertions (`expect(locator).toBeVisible()`) instead of Selenium-style `locator.waitFor()`, and they SHALL NOT use `.first()` to bypass strict mode.
 
-#### Scenario: Replace waitFor with expect
-- **WHEN** a POM method needs to wait for an element
-- **THEN** it MUST use `await expect(locator).toBeVisible()` or `.toBeAttached()`, not `locator.waitFor()`.
+#### Scenario: Replace waitFor with expect and remove first
+- **WHEN** a POM method needs to wait for an element or locate an element
+- **THEN** it MUST use strict locators and `await expect(locator).toBeVisible()` or `.toBeAttached()`, not `locator.waitFor()` and not `.first()`.
 

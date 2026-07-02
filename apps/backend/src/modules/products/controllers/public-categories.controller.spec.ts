@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { PublicCategoriesController } from './public-categories.controller';
 import { CategoriesService } from '../services/categories.service';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
-import { App } from 'supertest/types';
+import { NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
+import { PublicListCategoriesQueryDto } from '../dto/public-list-categories-query.dto';
 
-describe('PublicCategoriesController (Integration)', () => {
-  let app: INestApplication<App>;
+describe('PublicCategoriesController', () => {
+  let controller: PublicCategoriesController;
 
   const mockCategory = {
     id: 'cat-1',
@@ -36,20 +37,16 @@ describe('PublicCategoriesController (Integration)', () => {
       ],
     }).compile();
 
-    app = module.createNestApplication<INestApplication<App>>();
-    app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
+    controller = module.get<PublicCategoriesController>(
+      PublicCategoriesController,
     );
-    await app.init();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
-    await app.close();
   });
 
-  describe('GET /api/v1/categories', () => {
+  describe('findAll', () => {
     it('should return list of active categories with pagination headers', async () => {
       // Arrange
       mockCategoriesService.findAll.mockResolvedValue({
@@ -57,17 +54,27 @@ describe('PublicCategoriesController (Integration)', () => {
         meta: { total: 1 },
       });
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/categories')
-        .expect(200);
+      const mockResponse = {
+        setHeader: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown as Response;
+
+      const query: PublicListCategoriesQueryDto = {
+        page: 1,
+        limit: 20,
+      };
+
+      // Act
+      await controller.findAll(query, mockResponse);
 
       // Assert
-      expect(response.body).toEqual([mockCategory]);
-      expect(response.headers['x-total-count']).toBe('1');
+      expect(mockResponse.setHeader).toHaveBeenCalledWith('X-Total-Count', 1);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith([mockCategory]);
       expect(mockCategoriesService.findAll).toHaveBeenCalledWith({
         page: 1,
         limit: 20,
-        search: undefined,
         includeInactive: false,
       });
     });
@@ -79,9 +86,20 @@ describe('PublicCategoriesController (Integration)', () => {
         meta: { total: 0 },
       });
 
-      await request(app.getHttpServer())
-        .get('/api/v1/categories?search=cat')
-        .expect(200);
+      const mockResponse = {
+        setHeader: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown as Response;
+
+      const query: PublicListCategoriesQueryDto = {
+        page: 1,
+        limit: 20,
+        search: 'cat',
+      };
+
+      // Act
+      await controller.findAll(query, mockResponse);
 
       // Assert
       expect(mockCategoriesService.findAll).toHaveBeenCalledWith({
@@ -93,25 +111,27 @@ describe('PublicCategoriesController (Integration)', () => {
     });
   });
 
-  describe('GET /api/v1/categories/:id', () => {
+  describe('findOne', () => {
     it('should return an active category', async () => {
       // Arrange
       mockCategoriesService.findOne.mockResolvedValue(mockCategory);
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/categories/cat-1')
-        .expect(200);
+      // Act
+      const result = await controller.findOne('cat-1');
 
       // Assert
-      expect(response.body).toEqual(mockCategory);
+      expect(result).toEqual(mockCategory);
+      expect(mockCategoriesService.findOne).toHaveBeenCalledWith('cat-1');
     });
 
-    it('should return 404 Not Found if category is inactive', async () => {
+    it('should throw NotFoundException if category is inactive', async () => {
+      // Arrange
       mockCategoriesService.findOne.mockResolvedValue(mockInactiveCategory);
 
-      await request(app.getHttpServer())
-        .get('/api/v1/categories/cat-2')
-        .expect(404);
+      // Act & Assert
+      await expect(controller.findOne('cat-2')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

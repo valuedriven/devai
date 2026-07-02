@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CustomersController } from './customers.controller';
 import { CustomersService } from '../services/customers.service';
-import { NotFoundException, ConflictException } from '@nestjs/common';
-import { AuthGuard } from '../../../core/guards/auth.guard';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
-import type { App } from 'supertest/types';
+import {
+  NotFoundException,
+  ConflictException,
+  ValidationPipe,
+} from '@nestjs/common';
+import { CreateCustomerDto } from '../dto/create-customer.dto';
+import { UpdateCustomerDto } from '../dto/update-customer.dto';
+import { SyncCustomerDto } from '../dto/sync-customer.dto';
 
-describe('CustomersController (Integration)', () => {
-  let app: INestApplication<App>;
+describe('CustomersController', () => {
+  let controller: CustomersController;
 
   const mockCustomersService = {
     create: jest.fn(),
@@ -29,174 +32,235 @@ describe('CustomersController (Integration)', () => {
           useValue: mockCustomersService,
         },
       ],
-    })
-      .overrideGuard(AuthGuard)
-      .useValue({ canActivate: () => true })
-      .compile();
+    }).compile();
 
-    app = module.createNestApplication<INestApplication<App>>();
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
-    );
-    await app.init();
+    controller = module.get<CustomersController>(CustomersController);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
-    await app.close();
   });
 
-  describe('POST /customers', () => {
+  describe('create', () => {
     it('should create a customer with valid data', async () => {
-      const dto = { name: 'John Doe', email: 'john@example.com' };
-      mockCustomersService.create.mockResolvedValue({ id: 'uuid-1', ...dto });
+      // Arrange
+      const dto: CreateCustomerDto = {
+        name: 'John Doe',
+        email: 'john@example.com',
+      };
+      const expectedResult = { id: 'uuid-1', ...dto };
+      mockCustomersService.create.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer())
-        .post('/customers')
-        .send(dto)
-        .expect(201);
+      // Act
+      const result = await controller.create(dto);
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.create).toHaveBeenCalledWith(dto);
     });
 
-    it('should reject creation when name is empty', async () => {
-      return request(app.getHttpServer())
-        .post('/customers')
-        .send({ name: '', email: 'john@example.com' })
-        .expect(400);
+    it('should reject creation when name is empty via ValidationPipe', async () => {
+      const target = new ValidationPipe({ transform: true, whitelist: true });
+      const metadata = {
+        type: 'body' as const,
+        metatype: CreateCustomerDto,
+        data: '',
+      };
+
+      await expect(
+        target.transform({ name: '', email: 'john@example.com' }, metadata),
+      ).rejects.toThrow();
     });
 
-    it('should reject creation when email is invalid', async () => {
-      return request(app.getHttpServer())
-        .post('/customers')
-        .send({ name: 'John', email: 'not-an-email' })
-        .expect(400);
+    it('should reject creation when email is invalid via ValidationPipe', async () => {
+      const target = new ValidationPipe({ transform: true, whitelist: true });
+      const metadata = {
+        type: 'body' as const,
+        metatype: CreateCustomerDto,
+        data: '',
+      };
+
+      await expect(
+        target.transform({ name: 'John', email: 'not-an-email' }, metadata),
+      ).rejects.toThrow();
     });
 
-    it('should reject creation when email is missing', async () => {
-      return request(app.getHttpServer())
-        .post('/customers')
-        .send({ name: 'John' })
-        .expect(400);
+    it('should reject creation when email is missing via ValidationPipe', async () => {
+      const target = new ValidationPipe({ transform: true, whitelist: true });
+      const metadata = {
+        type: 'body' as const,
+        metatype: CreateCustomerDto,
+        data: '',
+      };
+
+      await expect(
+        target.transform({ name: 'John' }, metadata),
+      ).rejects.toThrow();
     });
   });
 
-  describe('POST /customers/sync', () => {
+  describe('syncCustomer', () => {
     it('should sync a customer', async () => {
-      mockCustomersService.syncCustomer.mockResolvedValue({
+      // Arrange
+      const dto: SyncCustomerDto = {
+        email: 'john@example.com',
+        name: 'John Doe',
+      };
+      const expectedResult = {
         id: 'uuid-1',
         email: 'john@example.com',
         name: 'John Doe',
-      });
+      };
+      mockCustomersService.syncCustomer.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer())
-        .post('/customers/sync')
-        .send({ email: 'john@example.com', name: 'John Doe' })
-        .expect(201);
+      // Act
+      const result = await controller.syncCustomer(dto);
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.syncCustomer).toHaveBeenCalledWith(
+        dto.email,
+        dto.name,
+      );
     });
 
-    it('should reject sync when email is missing', async () => {
-      return request(app.getHttpServer())
-        .post('/customers/sync')
-        .send({ name: 'John' })
-        .expect(400);
+    it('should reject sync when email is missing via ValidationPipe', async () => {
+      const target = new ValidationPipe({ transform: true, whitelist: true });
+      const metadata = {
+        type: 'body' as const,
+        metatype: SyncCustomerDto,
+        data: '',
+      };
+
+      await expect(
+        target.transform({ name: 'John' }, metadata),
+      ).rejects.toThrow();
     });
 
-    it('should reject sync when name is missing', async () => {
-      return request(app.getHttpServer())
-        .post('/customers/sync')
-        .send({ email: 'john@example.com' })
-        .expect(400);
+    it('should reject sync when name is missing via ValidationPipe', async () => {
+      const target = new ValidationPipe({ transform: true, whitelist: true });
+      const metadata = {
+        type: 'body' as const,
+        metatype: SyncCustomerDto,
+        data: '',
+      };
+
+      await expect(
+        target.transform({ email: 'john@example.com' }, metadata),
+      ).rejects.toThrow();
     });
   });
 
-  describe('GET /customers', () => {
+  describe('findAll', () => {
     it('should return all customers', async () => {
-      mockCustomersService.findAll.mockResolvedValue([
-        { id: '1', name: 'John' },
-      ]);
+      // Arrange
+      const expectedResult = [{ id: '1', name: 'John' }];
+      mockCustomersService.findAll.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer()).get('/customers').expect(200);
+      // Act
+      const result = await controller.findAll();
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.findAll).toHaveBeenCalledWith(undefined);
     });
 
     it('should support search query parameter', async () => {
       // Arrange
-      mockCustomersService.findAll.mockResolvedValue([
-        { id: '1', name: 'John' },
-      ]);
+      const expectedResult = [{ id: '1', name: 'John' }];
+      mockCustomersService.findAll.mockResolvedValue(expectedResult);
 
-      await request(app.getHttpServer())
-        .get('/customers?search=John')
-        .expect(200);
+      // Act
+      const result = await controller.findAll('John');
 
       // Assert
+      expect(result).toEqual(expectedResult);
       expect(mockCustomersService.findAll).toHaveBeenCalledWith('John');
     });
   });
 
-  describe('GET /customers/active', () => {
+  describe('findAllActive', () => {
     it('should return active customers', async () => {
-      mockCustomersService.findAllActive.mockResolvedValue([
-        { id: '1', name: 'John', active: true },
-      ]);
+      // Arrange
+      const expectedResult = [{ id: '1', name: 'John', active: true }];
+      mockCustomersService.findAllActive.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer()).get('/customers/active').expect(200);
+      // Act
+      const result = await controller.findAllActive();
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.findAllActive).toHaveBeenCalled();
     });
   });
 
-  describe('GET /customers/:id', () => {
+  describe('findOne', () => {
     it('should return a customer by id', async () => {
-      mockCustomersService.findOne.mockResolvedValue({
-        id: 'uuid-1',
-        name: 'John',
-      });
+      // Arrange
+      const expectedResult = { id: 'uuid-1', name: 'John' };
+      mockCustomersService.findOne.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer()).get('/customers/uuid-1').expect(200);
+      // Act
+      const result = await controller.findOne('uuid-1');
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.findOne).toHaveBeenCalledWith('uuid-1');
     });
 
-    it('should return 404 when customer not found', async () => {
+    it('should throw NotFoundException when customer not found', async () => {
+      // Arrange
       mockCustomersService.findOne.mockRejectedValue(
         new NotFoundException('Customer with ID non-existent not found'),
       );
 
-      return request(app.getHttpServer())
-        .get('/customers/non-existent')
-        .expect(404);
+      // Act & Assert
+      await expect(controller.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
-  describe('PATCH /customers/:id', () => {
+  describe('update', () => {
     it('should update a customer', async () => {
-      mockCustomersService.update.mockResolvedValue({
-        id: 'uuid-1',
-        name: 'Updated',
-      });
+      // Arrange
+      const dto: UpdateCustomerDto = { name: 'Updated' };
+      const expectedResult = { id: 'uuid-1', name: 'Updated' };
+      mockCustomersService.update.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer())
-        .patch('/customers/uuid-1')
-        .send({ name: 'Updated' })
-        .expect(200);
+      // Act
+      const result = await controller.update('uuid-1', dto);
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.update).toHaveBeenCalledWith('uuid-1', dto);
     });
   });
 
-  describe('DELETE /customers/:id', () => {
+  describe('remove', () => {
     it('should delete a customer', async () => {
-      mockCustomersService.remove.mockResolvedValue({
-        id: 'uuid-1',
-        name: 'John',
-      });
+      // Arrange
+      const expectedResult = { id: 'uuid-1', name: 'John' };
+      mockCustomersService.remove.mockResolvedValue(expectedResult);
 
-      return request(app.getHttpServer())
-        .delete('/customers/uuid-1')
-        .expect(200);
+      // Act
+      const result = await controller.remove('uuid-1');
+
+      // Assert
+      expect(result).toEqual(expectedResult);
+      expect(mockCustomersService.remove).toHaveBeenCalledWith('uuid-1');
     });
 
-    it('should return 409 conflict when customer has associated orders', async () => {
+    it('should throw ConflictException when customer has associated orders', async () => {
+      // Arrange
       mockCustomersService.remove.mockRejectedValue(
         new ConflictException('Cannot delete customer with associated orders'),
       );
 
-      return request(app.getHttpServer())
-        .delete('/customers/uuid-1')
-        .expect(409);
+      // Act & Assert
+      await expect(controller.remove('uuid-1')).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 });

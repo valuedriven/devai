@@ -63,25 +63,28 @@ describe('Admin Orders (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/admin/orders')
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as unknown[];
       expect(Array.isArray(body)).toBe(true);
       expect(body.length).toBeGreaterThan(0);
     });
 
     it('returns 401 without auth header', async () => {
-      await request(app.getHttpServer())
-        .get('/api/v1/admin/orders')
-        .expect(401);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/admin/orders',
+      );
+
+      expect(response.status).toBe(401);
     });
 
     it('returns 403 for customer role', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/api/v1/admin/orders')
-        .set(customerAuthHeader())
-        .expect(403);
+        .set(customerAuthHeader());
+
+      expect(response.status).toBe(403);
     });
   });
 
@@ -91,9 +94,9 @@ describe('Admin Orders (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/admin/orders/${order.id}`)
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as { id: string };
       expect(body.id).toBe(order.id);
       expect(body).toHaveProperty('customer');
@@ -103,13 +106,12 @@ describe('Admin Orders (integration)', () => {
     });
 
     it('returns 404 for non-existent order', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/api/v1/admin/orders/00000000-0000-0000-0000-000000000000')
-        .set(adminAuthHeader)
-        .expect(404)
-        .expect((res) => {
-          expect(res.body).toMatchObject({ status: 404 });
-        });
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toMatchObject({ status: 404 });
     });
   });
 
@@ -120,9 +122,9 @@ describe('Admin Orders (integration)', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/admin/orders/${order.id}/status`)
         .set(adminAuthHeader)
-        .send({ status: OrderStatus.PAID })
-        .expect(200);
+        .send({ status: OrderStatus.PAID });
 
+      expect(response.status).toBe(200);
       const body = response.body as { status: string };
       expect(body.status).toBe(OrderStatus.PAID);
     });
@@ -130,14 +132,13 @@ describe('Admin Orders (integration)', () => {
     it('returns 422 for invalid transition (New -> Shipped)', async () => {
       const { order } = await createTestOrder();
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .patch(`/api/v1/admin/orders/${order.id}/status`)
         .set(adminAuthHeader)
-        .send({ status: OrderStatus.SHIPPED })
-        .expect(422)
-        .expect((res) => {
-          expect(res.body).toMatchObject({ status: 422 });
-        });
+        .send({ status: OrderStatus.SHIPPED });
+
+      expect(response.status).toBe(422);
+      expect(response.body).toMatchObject({ status: 422 });
     });
   });
 
@@ -145,7 +146,7 @@ describe('Admin Orders (integration)', () => {
     it('registers a confirmed payment and auto-transitions order to Paid', async () => {
       const { order } = await createTestOrder();
 
-      await request(app.getHttpServer())
+      const payResponse = await request(app.getHttpServer())
         .post(`/api/v1/admin/orders/${order.id}/payments`)
         .set(adminAuthHeader)
         .send({
@@ -153,14 +154,15 @@ describe('Admin Orders (integration)', () => {
           method: 'Credit Card',
           date: new Date().toISOString(),
           status: PaymentStatus.CONFIRMED,
-        })
-        .expect(201);
+        });
+
+      expect(payResponse.status).toBe(201);
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/admin/orders/${order.id}`)
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as {
         status: string;
         payments: Array<{ status: string }>;
@@ -175,17 +177,18 @@ describe('Admin Orders (integration)', () => {
     it('creates audit entries for status transitions', async () => {
       const { order } = await createTestOrder();
 
-      await request(app.getHttpServer())
+      const updateResponse = await request(app.getHttpServer())
         .patch(`/api/v1/admin/orders/${order.id}/status`)
         .set(adminAuthHeader)
-        .send({ status: OrderStatus.PAID, notes: 'Processing payment' })
-        .expect(200);
+        .send({ status: OrderStatus.PAID, notes: 'Processing payment' });
+
+      expect(updateResponse.status).toBe(200);
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/admin/orders/${order.id}`)
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as {
         auditLogs: Array<{
           action: string;

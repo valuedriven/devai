@@ -38,8 +38,9 @@ describe('Customers (integration)', () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/customers')
         .set(adminAuthHeader)
-        .send(data)
-        .expect(201);
+        .send(data);
+
+      expect(response.status).toBe(201);
 
       const body = response.body as {
         id: string;
@@ -59,23 +60,22 @@ describe('Customers (integration)', () => {
     });
 
     it('returns 400 when required fields are missing', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/v1/customers')
         .set(adminAuthHeader)
-        .send({})
-        .expect(400)
-        .expect((res) => {
-          const body = res.body as {
-            type: string;
-            title: string;
-            status: number;
-          };
-          expect(body).toMatchObject({
-            type: expect.any(String) as string,
-            title: 'Bad Request',
-            status: 400,
-          });
-        });
+        .send({});
+
+      expect(response.status).toBe(400);
+      const body = response.body as {
+        type: string;
+        title: string;
+        status: number;
+      };
+      expect(body).toMatchObject({
+        type: expect.any(String) as string,
+        title: 'Bad Request',
+        status: 400,
+      });
     });
 
     it('returns 409 when email already exists', async () => {
@@ -83,35 +83,36 @@ describe('Customers (integration)', () => {
         data: makeCustomer(),
       });
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/v1/customers')
         .set(adminAuthHeader)
-        .send({ name: 'Duplicate', email: customer.email })
-        .expect(409)
-        .expect((res) => {
-          const body = res.body as { type: string; status: number };
-          expect(body).toMatchObject({
-            type: expect.any(String) as string,
-            status: 409,
-          });
-        });
+        .send({ name: 'Duplicate', email: customer.email });
+
+      expect(response.status).toBe(409);
+      const body = response.body as { type: string; status: number };
+      expect(body).toMatchObject({
+        type: expect.any(String) as string,
+        status: 409,
+      });
     });
 
     it('returns 401 without auth header', async () => {
       const data = makeCustomer();
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/v1/customers')
-        .send(data)
-        .expect(401);
+        .send(data);
+
+      expect(response.status).toBe(401);
     });
 
     it('returns 403 for customer role', async () => {
       const data = makeCustomer();
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/v1/customers')
         .set(customerAuthHeader())
-        .send(data)
-        .expect(403);
+        .send(data);
+
+      expect(response.status).toBe(403);
     });
   });
 
@@ -126,9 +127,9 @@ describe('Customers (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/customers')
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as Array<{ name: string; active: boolean }>;
       expect(Array.isArray(body)).toBe(true);
       expect(body.length).toBe(2);
@@ -144,23 +145,27 @@ describe('Customers (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/customers?search=Alpha')
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as Array<{ name: string }>;
       expect(body.length).toBe(1);
       expect(body[0].name).toContain('Alpha');
     });
 
     it('returns 401 without auth header', async () => {
-      await request(app.getHttpServer()).get('/api/v1/customers').expect(401);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/customers',
+      );
+      expect(response.status).toBe(401);
     });
 
     it('returns 403 for customer role', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/api/v1/customers')
-        .set(customerAuthHeader())
-        .expect(403);
+        .set(customerAuthHeader());
+
+      expect(response.status).toBe(403);
     });
   });
 
@@ -175,9 +180,9 @@ describe('Customers (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/customers/active')
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as Array<{ active: boolean }>;
       expect(Array.isArray(body)).toBe(true);
       expect(body.length).toBe(1);
@@ -193,26 +198,25 @@ describe('Customers (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/customers/${customer.id}`)
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as { id: string; email: string };
       expect(body.id).toBe(customer.id);
       expect(body.email).toBe(customer.email);
     });
 
     it('returns 404 for non-existent customer', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/api/v1/customers/00000000-0000-0000-0000-000000000000')
-        .set(adminAuthHeader)
-        .expect(404)
-        .expect((res) => {
-          const body = res.body as { type: string; status: number };
-          expect(body).toMatchObject({
-            type: expect.any(String) as string,
-            status: 404,
-          });
-        });
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(404);
+      const body = response.body as { type: string; status: number };
+      expect(body).toMatchObject({
+        type: expect.any(String) as string,
+        status: 404,
+      });
     });
   });
 
@@ -225,19 +229,20 @@ describe('Customers (integration)', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/customers/${customer.id}`)
         .set(adminAuthHeader)
-        .send({ name: 'Updated Name' })
-        .expect(200);
+        .send({ name: 'Updated Name' });
 
+      expect(response.status).toBe(200);
       const body = response.body as { name: string };
       expect(body.name).toBe('Updated Name');
     });
 
     it('returns 404 for non-existent customer', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .patch('/api/v1/customers/00000000-0000-0000-0000-000000000000')
         .set(adminAuthHeader)
-        .send({ name: 'Nope' })
-        .expect(404);
+        .send({ name: 'Nope' });
+
+      expect(response.status).toBe(404);
     });
   });
 
@@ -247,10 +252,11 @@ describe('Customers (integration)', () => {
         data: makeCustomer(),
       });
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete(`/api/v1/customers/${customer.id}`)
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(200);
 
       const saved = await prisma.customer.findUnique({
         where: { id: customer.id },
@@ -281,24 +287,24 @@ describe('Customers (integration)', () => {
         },
       });
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete(`/api/v1/customers/${customer.id}`)
-        .set(adminAuthHeader)
-        .expect(409)
-        .expect((res) => {
-          const body = res.body as { type: string; status: number };
-          expect(body).toMatchObject({
-            type: expect.any(String) as string,
-            status: 409,
-          });
-        });
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(409);
+      const body = response.body as { type: string; status: number };
+      expect(body).toMatchObject({
+        type: expect.any(String) as string,
+        status: 409,
+      });
     });
 
     it('returns 404 for non-existent customer', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete('/api/v1/customers/00000000-0000-0000-0000-000000000000')
-        .set(adminAuthHeader)
-        .expect(404);
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(404);
     });
   });
 });

@@ -16,15 +16,15 @@ export class StorefrontPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.heading = page.getByRole('heading', { level: 1 });
-    this.addToCartButton = page.getByRole('button', { name: /Adicionar ao Carrinho/i });
-    this.welcomeHeading = page.getByRole('heading', { name: 'Bem-vindo à DevAI Store' });
-    this.highlightsHeading = page.getByRole('heading', { name: 'Destaques' });
-    this.backToStoreLink = page.getByRole('link', { name: 'Voltar para a loja' });
+    this.heading = page.getByRole('heading', { level: 1 }).first();
+    this.addToCartButton = page.getByRole('button', { name: /Adicionar ao Carrinho/i }).first();
+    this.welcomeHeading = page.getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first();
+    this.highlightsHeading = page.getByRole('heading', { name: 'Destaques' }).first();
+    this.backToStoreLink = page.getByRole('link', { name: 'Voltar para a loja' }).first();
     this.productCards = page.locator('.products-grid').getByTestId('product-card');
-    this.outOfStockBadge = page.getByRole('main').getByText('Esgotado');
-    this.price = page.locator('main').locator('.text-4xl.font-bold.text-primary');
-    this.notFoundMessage = page.getByText(/404|not found|não encontrad/i);
+    this.outOfStockBadge = page.getByRole('main').getByText('Esgotado').first();
+    this.price = page.locator('main').locator('.text-4xl.font-bold.text-primary').first();
+    this.notFoundMessage = page.getByText(/404|not found|não encontrad/i).first();
   }
 
   productCard(name: string): ProductCardComponent {
@@ -32,7 +32,7 @@ export class StorefrontPage {
   }
 
   productCardByName(name: string): Locator {
-    return this.productCards.filter({ hasText: name });
+    return this.productCards.filter({ hasText: name }).first();
   }
 
   categoryLink(name: string): Locator {

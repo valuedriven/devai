@@ -20,7 +20,7 @@ export class CustomerPage {
     this.page = page;
     this.heading = page.getByRole('heading', { level: 1 });
     this.table = page.getByRole('table');
-    this.searchInput = page.getByPlaceholder('Pesquisar clientes...');
+    this.searchInput = page.getByPlaceholder('Pesquisar clientes...').and(page.locator(':visible'));
     this.newCustomerLink = page.getByRole('link', { name: /Novo Cliente/i });
     this.nameInput = page.getByLabel(/Nome Completo/i);
     this.emailInput = page.getByLabel(/E-mail/i);

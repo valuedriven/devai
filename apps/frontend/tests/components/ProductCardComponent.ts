@@ -8,10 +8,10 @@ export class ProductCardComponent {
   readonly unavailableButton: Locator;
 
   constructor(root: Locator) {
-    this.name = root.getByRole('heading');
-    this.price = root.getByTestId('product-price');
-    this.addButton = root.getByRole('button', { name: /adicionar/i });
-    this.outOfStockBadge = root.getByText('Esgotado');
-    this.unavailableButton = root.getByRole('button', { name: /indisponível/i });
+    this.name = root.getByRole('heading').first();
+    this.price = root.getByTestId('product-price').first();
+    this.addButton = root.getByRole('button', { name: /adicionar/i }).first();
+    this.outOfStockBadge = root.getByText('Esgotado').first();
+    this.unavailableButton = root.getByRole('button', { name: /indisponível/i }).first();
   }
 }

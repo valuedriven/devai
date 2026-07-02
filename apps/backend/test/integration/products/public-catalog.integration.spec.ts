@@ -71,10 +71,11 @@ describe('Public Catalog (integration)', () => {
     it('returns only active categories to unauthenticated users', async () => {
       await seedData();
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/categories')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/categories',
+      );
 
+      expect(response.status).toBe(200);
       const body = response.body as Array<{ name: string }>;
       const names = body.map((c) => c.name);
       expect(names).toContain('Public Category');
@@ -84,10 +85,11 @@ describe('Public Catalog (integration)', () => {
     it('returns X-Total-Count header', async () => {
       await seedData();
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/categories')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/categories',
+      );
 
+      expect(response.status).toBe(200);
       expect(response.headers['x-total-count']).toBeDefined();
     });
   });
@@ -96,10 +98,11 @@ describe('Public Catalog (integration)', () => {
     it('returns an active category', async () => {
       const { cat } = await seedData();
 
-      const response = await request(app.getHttpServer())
-        .get(`/api/v1/categories/${cat.id}`)
-        .expect(200);
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/categories/${cat.id}`,
+      );
 
+      expect(response.status).toBe(200);
       const body = response.body as { id: string; name: string };
       expect(body.id).toBe(cat.id);
       expect(body.name).toBe('Public Category');
@@ -116,9 +119,11 @@ describe('Public Catalog (integration)', () => {
         },
       });
 
-      await request(app.getHttpServer())
-        .get(`/api/v1/categories/${inactiveCat.id}`)
-        .expect(404);
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/categories/${inactiveCat.id}`,
+      );
+
+      expect(response.status).toBe(404);
     });
   });
 
@@ -126,10 +131,11 @@ describe('Public Catalog (integration)', () => {
     it('returns only active products to unauthenticated users', async () => {
       await seedData();
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/products')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/products',
+      );
 
+      expect(response.status).toBe(200);
       const body = response.body as Array<{ name: string }>;
       const names = body.map((p) => p.name);
       expect(names).toContain('Public Product');
@@ -139,20 +145,21 @@ describe('Public Catalog (integration)', () => {
     it('returns X-Total-Count header', async () => {
       await seedData();
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/products')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/products',
+      );
 
+      expect(response.status).toBe(200);
       expect(response.headers['x-total-count']).toBeDefined();
     });
 
     it('returns 400 for invalid pagination params', async () => {
-      await request(app.getHttpServer())
-        .get('/api/v1/products?page=-1')
-        .expect(400)
-        .expect((res) => {
-          expect(res.body).toMatchObject({ status: 400 });
-        });
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/products?page=-1',
+      );
+
+      expect(response.status).toBe(400);
+      expect(response.body).toMatchObject({ status: 400 });
     });
   });
 
@@ -160,10 +167,11 @@ describe('Public Catalog (integration)', () => {
     it('returns an active product', async () => {
       const { product } = await seedData();
 
-      const response = await request(app.getHttpServer())
-        .get(`/api/v1/products/${product.id}`)
-        .expect(200);
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/products/${product.id}`,
+      );
 
+      expect(response.status).toBe(200);
       const body = response.body as { id: string; name: string };
       expect(body.id).toBe(product.id);
       expect(body.name).toBe('Public Product');
@@ -172,18 +180,20 @@ describe('Public Catalog (integration)', () => {
     it('returns 404 for an inactive product', async () => {
       const { inactiveProduct } = await seedData();
 
-      await request(app.getHttpServer())
-        .get(`/api/v1/products/${inactiveProduct.id}`)
-        .expect(404)
-        .expect((res) => {
-          expect(res.body).toMatchObject({ status: 404 });
-        });
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/products/${inactiveProduct.id}`,
+      );
+
+      expect(response.status).toBe(404);
+      expect(response.body).toMatchObject({ status: 404 });
     });
 
     it('returns 404 for non-existent product', async () => {
-      await request(app.getHttpServer())
-        .get('/api/v1/products/00000000-0000-0000-0000-000000000000')
-        .expect(404);
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/products/00000000-0000-0000-0000-000000000000',
+      );
+
+      expect(response.status).toBe(404);
     });
   });
 });

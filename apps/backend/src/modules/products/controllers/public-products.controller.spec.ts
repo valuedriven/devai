@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { PublicProductsController } from './public-products.controller';
 import { ProductsService } from '../services/products.service';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
-import { App } from 'supertest/types';
+import { NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
+import { PublicListProductsQueryDto } from '../dto/public-list-products-query.dto';
 
-describe('PublicProductsController (Integration)', () => {
-  let app: INestApplication<App>;
+describe('PublicProductsController', () => {
+  let controller: PublicProductsController;
 
   const mockProduct = {
     id: 'prod-1',
@@ -44,20 +45,14 @@ describe('PublicProductsController (Integration)', () => {
       ],
     }).compile();
 
-    app = module.createNestApplication<INestApplication<App>>();
-    app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
-    );
-    await app.init();
+    controller = module.get<PublicProductsController>(PublicProductsController);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
-    await app.close();
   });
 
-  describe('GET /api/v1/products', () => {
+  describe('findAll', () => {
     it('should return list of active products with pagination headers', async () => {
       // Arrange
       mockProductsService.findAll.mockResolvedValue({
@@ -65,18 +60,27 @@ describe('PublicProductsController (Integration)', () => {
         meta: { total: 1 },
       });
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/products')
-        .expect(200);
+      const mockResponse = {
+        setHeader: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown as Response;
+
+      const query: PublicListProductsQueryDto = {
+        page: 1,
+        limit: 20,
+      };
+
+      // Act
+      await controller.findAll(query, mockResponse);
 
       // Assert
-      expect(response.body).toEqual([mockProduct]);
-      expect(response.headers['x-total-count']).toBe('1');
+      expect(mockResponse.setHeader).toHaveBeenCalledWith('X-Total-Count', 1);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith([mockProduct]);
       expect(mockProductsService.findAll).toHaveBeenCalledWith({
         page: 1,
         limit: 20,
-        search: undefined,
-        categoryId: undefined,
         includeInactive: false,
       });
     });
@@ -88,9 +92,21 @@ describe('PublicProductsController (Integration)', () => {
         meta: { total: 0 },
       });
 
-      await request(app.getHttpServer())
-        .get('/api/v1/products?search=active&categoryId=cat-1')
-        .expect(200);
+      const mockResponse = {
+        setHeader: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown as Response;
+
+      const query: PublicListProductsQueryDto = {
+        page: 1,
+        limit: 20,
+        search: 'active',
+        categoryId: 'cat-1',
+      };
+
+      // Act
+      await controller.findAll(query, mockResponse);
 
       // Assert
       expect(mockProductsService.findAll).toHaveBeenCalledWith({
@@ -103,25 +119,27 @@ describe('PublicProductsController (Integration)', () => {
     });
   });
 
-  describe('GET /api/v1/products/:id', () => {
+  describe('findOne', () => {
     it('should return an active product', async () => {
       // Arrange
       mockProductsService.findOne.mockResolvedValue(mockProduct);
 
-      const response = await request(app.getHttpServer())
-        .get('/api/v1/products/prod-1')
-        .expect(200);
+      // Act
+      const result = await controller.findOne('prod-1');
 
       // Assert
-      expect(response.body).toEqual(mockProduct);
+      expect(result).toEqual(mockProduct);
+      expect(mockProductsService.findOne).toHaveBeenCalledWith('prod-1');
     });
 
-    it('should return 404 Not Found if product is inactive', async () => {
+    it('should throw NotFoundException if product is inactive', async () => {
+      // Arrange
       mockProductsService.findOne.mockResolvedValue(mockInactiveProduct);
 
-      await request(app.getHttpServer())
-        .get('/api/v1/products/prod-2')
-        .expect(404);
+      // Act & Assert
+      await expect(controller.findOne('prod-2')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

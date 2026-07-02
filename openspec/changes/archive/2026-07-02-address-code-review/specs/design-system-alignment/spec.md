@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Design System Sizing Consistency
 The design system CSS tokens (`globals.css`) SHALL use a consistent unit system (e.g., exclusively `rem` or strictly defined variables) for sizing and border-radius properties, avoiding hardcoded `px` overrides.

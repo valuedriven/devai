@@ -1,11 +1,8 @@
 ---
 name: jest-unit-tests
 description: >
-  Defines architectural standards, constraints, and best practices for writing high-quality
-  unit tests using Jest in the e-micro-commerce backend (NestJS 11+ / Node.js 24+ / TypeScript).
-  Use this skill whenever implementing or modifying unit tests for services, use cases,
-  domain entities, value objects, guards, pipes, interceptors, utility functions, shared
-  libraries, or Jest test utilities inside apps/backend/src.
+  Defines architectural standards, constraints, and best practices for  writing high-quality unit tests using Jest in the e-micro-commerce backend (NestJS 11+ / Node.js 24+ / TypeScript).
+  Use this skill whenever implementing or modifying unit tests for services, use cases, domain entities, value objects, guards, pipes, interceptors, utility functions, shared libraries, or Jest test utilities inside apps/backend/src.
   Do NOT use for integration tests (use supertest-integration-tests skill),
   E2E tests (use playwright-e2e-tests skill), or frontend component tests.
 ---
@@ -105,6 +102,7 @@ jest.mock('./orders.service');
 ## Scope
 
 **Use this skill for:**
+- Controllers (by instantiating/retrieving controller instances and calling methods directly with Jest mocks, without using Supertest or bootstrapping HTTP servers)
 - Services (`*.service.ts`)
 - Use Cases / Command Handlers / Query Handlers
 - Domain Entities and Value Objects
@@ -115,10 +113,10 @@ jest.mock('./orders.service');
 - Shared libraries (`core/`)
 
 **Do NOT use this skill for:**
-- Controllers (covered by integration tests)
 - Database repositories (use real DB in integration tests)
 - NestJS modules
 - Frontend components
+- Supertest or HTTP server bootstrapping (these belong in integration tests under `apps/backend/test/integration`)
 
 ---
 
@@ -444,6 +442,7 @@ Never share mock history, implementations, or return values between tests.
 
 Never generate code that:
 
+- Uses Supertest (`supertest`) or bootstraps an HTTP server (these belong strictly under `apps/backend/test/integration`)
 - Mocks the SUT
 - Calls real Prisma or connects to PostgreSQL
 - Calls Clerk APIs

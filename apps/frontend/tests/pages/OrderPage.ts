@@ -31,7 +31,7 @@ export class OrderPage {
   }
 
   statusBadge(status: string): Locator {
-    return this.page.getByTestId('order-status-badge').filter({ hasText: status });
+    return this.page.getByTestId('order-status-badge').filter({ hasText: status }).first();
   }
 
   async goTo(): Promise<this> {

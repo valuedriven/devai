@@ -129,6 +129,9 @@ export class ProductsController {
         }
         cb(null, true);
       },
+      limits: {
+        fileSize: 8 * 1024 * 1024, // 8 MB
+      },
     }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {

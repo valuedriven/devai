@@ -1,31 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from '../services/orders.service';
-import { RolesGuard } from '../../../core/guards/roles.guard';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import type { Request, Response, NextFunction } from 'express';
-import request from 'supertest';
-import type { App } from 'supertest/types';
+import { NotFoundException } from '@nestjs/common';
+import { CreateOrderDto } from '../dto/create-order.dto';
+import { UpdateOrderDto } from '../dto/update-order.dto';
+import type { AuthUser } from '../../../core/auth/interfaces/auth-user.interface';
 
-const adminUser = {
+const adminUser: AuthUser = {
   id: 'admin-id',
   clerkId: 'admin-id',
   email: 'admin@example.com',
-  role: 'ADMIN' as const,
-  publicMetadata: { roles: ['admin'] },
-  emailAddresses: [{ emailAddress: 'admin@example.com' }],
+  role: 'ADMIN',
 };
 
-const customerUser = {
+const customerUser: AuthUser = {
   id: 'cust-id',
   clerkId: 'cust-id',
   email: 'john@example.com',
-  role: 'CUSTOMER' as const,
-  publicMetadata: { roles: ['customer'] },
-  emailAddresses: [{ emailAddress: 'john@example.com' }],
+  role: 'CUSTOMER',
 };
 
-describe('OrdersController (Integration)', () => {
+describe('OrdersController', () => {
+  let controller: OrdersController;
+
   const mockOrdersService = {
     create: jest.fn(),
     findAll: jest.fn(),
@@ -36,7 +33,7 @@ describe('OrdersController (Integration)', () => {
     cancel: jest.fn(),
   };
 
-  const buildApp = async (user: Record<string, unknown>) => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [OrdersController],
       providers: [
@@ -45,91 +42,50 @@ describe('OrdersController (Integration)', () => {
           useValue: mockOrdersService,
         },
       ],
-    })
-      .overrideGuard(RolesGuard)
-      .useValue({ canActivate: () => true })
-      .compile();
+    }).compile();
 
-    const app = module.createNestApplication<INestApplication<App>>();
-    app.use((req: Request, _res: Response, next: NextFunction) => {
-      const typedUser = user as {
-        role?: string;
-        email?: string;
-        publicMetadata?: {
-          roles?: string[] | string;
-          role?: string[] | string;
-        };
-        emailAddresses?: Array<{ emailAddress?: string }>;
-      };
-      (req as Request & { user: Record<string, unknown> }).user = {
-        ...user,
-        role:
-          typedUser.role ||
-          (typedUser.publicMetadata?.roles?.includes('admin') ||
-          typedUser.publicMetadata?.role === 'admin'
-            ? 'ADMIN'
-            : 'CUSTOMER'),
-        email: typedUser.email || typedUser.emailAddresses?.[0]?.emailAddress,
-      };
-      next();
-    });
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
-    );
-    await app.init();
-    return app;
-  };
+    controller = module.get<OrdersController>(OrdersController);
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   describe('as admin', () => {
-    let app: INestApplication<App>;
-
-    beforeEach(async () => {
-      app = await buildApp(adminUser);
-    });
-
-    afterEach(async () => {
-      await app.close();
-    });
-
-    describe('POST /orders', () => {
+    describe('create', () => {
       it('should create an order using customerId from body', async () => {
         // Arrange
-        const dto = {
+        const dto: CreateOrderDto = {
           customerId: 'cust-1',
           totalAmount: 150.0,
           order_items: [{ productId: 'prod-1', quantity: 2, unitPrice: 50.0 }],
         };
+        const expectedResult = { id: 'order-1', ...dto };
+        mockOrdersService.create.mockResolvedValue(expectedResult);
 
-        mockOrdersService.create.mockResolvedValue({ id: 'order-1', ...dto });
-
-        await request(app.getHttpServer())
-          .post('/orders')
-          .send(dto)
-          .expect(201);
+        // Act
+        const result = await controller.create(dto, adminUser);
 
         // Assert
-        expect(mockOrdersService.create).toHaveBeenCalledWith(
-          expect.any(Object),
-          undefined,
-        );
+        expect(result).toEqual(expectedResult);
+        expect(mockOrdersService.create).toHaveBeenCalledWith(dto, undefined);
       });
     });
 
-    describe('GET /orders', () => {
+    describe('findAll', () => {
       it('should return all orders', async () => {
         // Arrange
-        mockOrdersService.findAll.mockResolvedValue({
+        const expectedResult = {
           data: [{ id: 'order-1' }],
           total: 1,
-        });
+        };
+        mockOrdersService.findAll.mockResolvedValue(expectedResult);
 
-        await request(app.getHttpServer()).get('/orders').expect(200);
+        // Act
+        const result = await controller.findAll(adminUser);
 
         // Assert
+        expect(result).toEqual(expectedResult);
         expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined, {
           skip: 0,
           take: 20,
@@ -139,16 +95,17 @@ describe('OrdersController (Integration)', () => {
 
       it('should filter orders by status', async () => {
         // Arrange
-        mockOrdersService.findAll.mockResolvedValue({
+        const expectedResult = {
           data: [{ id: 'order-1' }],
           total: 1,
-        });
+        };
+        mockOrdersService.findAll.mockResolvedValue(expectedResult);
 
-        await request(app.getHttpServer())
-          .get('/orders?status=Novo')
-          .expect(200);
+        // Act
+        const result = await controller.findAll(adminUser, undefined, 'Novo');
 
         // Assert
+        expect(result).toEqual(expectedResult);
         expect(mockOrdersService.findAll).toHaveBeenCalledWith(undefined, {
           skip: 0,
           take: 20,
@@ -157,168 +114,130 @@ describe('OrdersController (Integration)', () => {
       });
     });
 
-    describe('PATCH /orders/:id/status', () => {
+    describe('updateStatus', () => {
       it('should update order status', async () => {
-        mockOrdersService.updateStatus.mockResolvedValue({
+        // Arrange
+        const expectedResult = {
           id: 'order-1',
           status: 'Enviado',
-        });
+        };
+        mockOrdersService.updateStatus.mockResolvedValue(expectedResult);
 
-        return request(app.getHttpServer())
-          .patch('/orders/order-1/status')
-          .send({ status: 'Enviado' })
-          .expect(200);
+        // Act
+        const result = await controller.updateStatus('order-1', 'Enviado');
+
+        // Assert
+        expect(result).toEqual(expectedResult);
+        expect(mockOrdersService.updateStatus).toHaveBeenCalledWith(
+          'order-1',
+          'Enviado',
+        );
       });
     });
 
-    describe('PATCH /orders/:id', () => {
+    describe('update', () => {
       it('should update an order', async () => {
-        mockOrdersService.update.mockResolvedValue({
+        // Arrange
+        const dto: UpdateOrderDto = { shippingAddress: 'New Address' };
+        const expectedResult = {
           id: 'order-1',
           shippingAddress: 'New Address',
-        });
+        };
+        mockOrdersService.update.mockResolvedValue(expectedResult);
 
-        return request(app.getHttpServer())
-          .patch('/orders/order-1')
-          .send({ shippingAddress: 'New Address' })
-          .expect(200);
+        // Act
+        const result = await controller.update('order-1', dto, adminUser);
+
+        // Assert
+        expect(result).toEqual(expectedResult);
+        expect(mockOrdersService.update).toHaveBeenCalledWith('order-1', dto);
       });
     });
 
-    describe('DELETE /orders/:id', () => {
+    describe('remove', () => {
       it('should delete an order as admin', async () => {
-        mockOrdersService.remove.mockResolvedValue({ id: 'order-1' });
-
-        return request(app.getHttpServer())
-          .delete('/orders/order-1')
-          .expect(200);
-      });
-    });
-
-    describe('role parsing variants', () => {
-      it('should accept admin role as a single string in metadata.roles', async () => {
         // Arrange
-        const roleStringApp = await buildApp({
-          publicMetadata: { roles: 'admin' },
-          emailAddresses: [{ emailAddress: 'admin@example.com' }],
-        });
-
-        mockOrdersService.findAll.mockResolvedValue({
-          data: [{ id: 'order-1' }],
-          total: 1,
-        });
-
-        await request(roleStringApp.getHttpServer()).get('/orders').expect(200);
+        const expectedResult = { id: 'order-1' };
+        mockOrdersService.remove.mockResolvedValue(expectedResult);
 
         // Act
-        await roleStringApp.close();
-      });
+        const result = await controller.remove('order-1');
 
-      it('should accept admin role in metadata.role array', async () => {
-        // Arrange
-        const roleArrayApp = await buildApp({
-          publicMetadata: { role: ['admin'] },
-          emailAddresses: [{ emailAddress: 'admin@example.com' }],
-        });
-
-        mockOrdersService.findAll.mockResolvedValue({
-          data: [{ id: 'order-1' }],
-          total: 1,
-        });
-
-        await request(roleArrayApp.getHttpServer()).get('/orders').expect(200);
-
-        // Act
-        await roleArrayApp.close();
-      });
-
-      it('should accept admin role as a single string in metadata.role', async () => {
-        // Arrange
-        const roleStringApp = await buildApp({
-          publicMetadata: { role: 'admin' },
-          emailAddresses: [{ emailAddress: 'admin@example.com' }],
-        });
-
-        mockOrdersService.findAll.mockResolvedValue({
-          data: [{ id: 'order-1' }],
-          total: 1,
-        });
-
-        await request(roleStringApp.getHttpServer()).get('/orders').expect(200);
-
-        // Act
-        await roleStringApp.close();
+        // Assert
+        expect(result).toEqual(expectedResult);
+        expect(mockOrdersService.remove).toHaveBeenCalledWith('order-1');
       });
     });
   });
 
   describe('as customer', () => {
-    let app: INestApplication<App>;
-
-    beforeEach(async () => {
-      app = await buildApp(customerUser);
-    });
-
-    afterEach(async () => {
-      await app.close();
-    });
-
-    describe('POST /orders', () => {
+    describe('create', () => {
       it('should force create using authenticated user email', async () => {
         // Arrange
-        const dto = {
+        const dto: CreateOrderDto = {
           totalAmount: 150.0,
           order_items: [{ productId: 'prod-1', quantity: 2, unitPrice: 50.0 }],
         };
+        const expectedResult = { id: 'order-1', ...dto };
+        mockOrdersService.create.mockResolvedValue(expectedResult);
 
-        mockOrdersService.create.mockResolvedValue({ id: 'order-1', ...dto });
-
-        await request(app.getHttpServer())
-          .post('/orders')
-          .send(dto)
-          .expect(201);
+        // Act
+        const result = await controller.create(dto, customerUser);
 
         // Assert
+        expect(result).toEqual(expectedResult);
         expect(mockOrdersService.create).toHaveBeenCalledWith(
-          expect.any(Object),
+          dto,
           'john@example.com',
         );
       });
     });
 
-    describe('GET /orders/:id', () => {
-      it('should return 404 when order belongs to another customer', async () => {
+    describe('findOne', () => {
+      it('should throw NotFoundException when order belongs to another customer', async () => {
+        // Arrange
         mockOrdersService.findOne.mockResolvedValue({
           id: 'order-1',
           customer: { email: 'other@example.com' },
         });
 
-        return request(app.getHttpServer()).get('/orders/order-1').expect(404);
+        // Act & Assert
+        await expect(
+          controller.findOne('order-1', customerUser),
+        ).rejects.toThrow(NotFoundException);
       });
 
       it('should return the order when it belongs to the customer', async () => {
-        mockOrdersService.findOne.mockResolvedValue({
+        // Arrange
+        const expectedResult = {
           id: 'order-1',
           customer: { email: 'john@example.com' },
-        });
+        };
+        mockOrdersService.findOne.mockResolvedValue(expectedResult);
 
-        return request(app.getHttpServer()).get('/orders/order-1').expect(200);
+        // Act
+        const result = await controller.findOne('order-1', customerUser);
+
+        // Assert
+        expect(result).toEqual(expectedResult);
+        expect(mockOrdersService.findOne).toHaveBeenCalledWith('order-1');
       });
     });
 
-    describe('POST /orders/:id/cancel', () => {
+    describe('cancel', () => {
       it('should cancel the order', async () => {
         // Arrange
-        mockOrdersService.cancel.mockResolvedValue({
+        const expectedResult = {
           id: 'order-1',
           status: 'Cancelado',
-        });
+        };
+        mockOrdersService.cancel.mockResolvedValue(expectedResult);
 
-        await request(app.getHttpServer())
-          .post('/orders/order-1/cancel')
-          .expect(201);
+        // Act
+        const result = await controller.cancel('order-1', customerUser);
 
         // Assert
+        expect(result).toEqual(expectedResult);
         expect(mockOrdersService.cancel).toHaveBeenCalledWith(
           'order-1',
           'john@example.com',
@@ -326,12 +245,16 @@ describe('OrdersController (Integration)', () => {
       });
     });
 
-    describe('PATCH /orders/:id', () => {
-      it('should return 404 for customer update attempts', async () => {
-        return request(app.getHttpServer())
-          .patch('/orders/order-1')
-          .send({ shippingAddress: 'New Address' })
-          .expect(404);
+    describe('update', () => {
+      it('should throw NotFoundException for customer update attempts', () => {
+        // Arrange & Act & Assert
+        expect(() =>
+          controller.update(
+            'order-1',
+            { shippingAddress: 'New Address' },
+            customerUser,
+          ),
+        ).toThrow(NotFoundException);
       });
     });
   });

@@ -56,9 +56,9 @@ describe('Admin Products (integration)', () => {
           price: 150.5,
           stock: 20,
           categoryId,
-        })
-        .expect(201);
+        });
 
+      expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('id');
       const body = response.body as { name: string; price: number };
       expect(body.name).toBe('New Product');
@@ -66,30 +66,30 @@ describe('Admin Products (integration)', () => {
     });
 
     it('returns 400 when price is negative', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/v1/admin/products')
         .set(adminAuthHeader)
         .send({
           name: 'Bad Price',
           price: -5,
           stock: 10,
-        })
-        .expect(400)
-        .expect((res) => {
-          expect(res.body).toMatchObject({ status: 400 });
         });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toMatchObject({ status: 400 });
     });
 
     it('returns 403 for non-admin users', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post('/api/v1/admin/products')
         .set(customerAuthHeader())
         .send({
           name: 'Block Me',
           price: 10,
           stock: 10,
-        })
-        .expect(403);
+        });
+
+      expect(response.status).toBe(403);
     });
   });
 
@@ -104,9 +104,9 @@ describe('Admin Products (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get('/api/v1/admin/products')
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
       const body = response.body as Array<{ name: string }>;
       expect(body.length).toBe(2);
@@ -123,9 +123,9 @@ describe('Admin Products (integration)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/admin/products/${product.id}`)
-        .set(adminAuthHeader)
-        .expect(200);
+        .set(adminAuthHeader);
 
+      expect(response.status).toBe(200);
       const body = response.body as { id: string; name: string };
       expect(body.id).toBe(product.id);
       expect(body.name).toBe('Specific');
@@ -133,13 +133,12 @@ describe('Admin Products (integration)', () => {
     });
 
     it('returns 404 for non-existent product', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .get('/api/v1/admin/products/00000000-0000-0000-0000-000000000000')
-        .set(adminAuthHeader)
-        .expect(404)
-        .expect((res) => {
-          expect(res.body).toMatchObject({ status: 404 });
-        });
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toMatchObject({ status: 404 });
     });
   });
 
@@ -152,9 +151,9 @@ describe('Admin Products (integration)', () => {
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/admin/products/${product.id}`)
         .set(adminAuthHeader)
-        .send({ price: 199.99 })
-        .expect(200);
+        .send({ price: 199.99 });
 
+      expect(response.status).toBe(200);
       const body = response.body as { price: number };
       expect(Number(body.price)).toBe(199.99);
     });
@@ -166,10 +165,11 @@ describe('Admin Products (integration)', () => {
         data: { name: 'To Delete', price: 50, stock: 1, categoryId },
       });
 
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete(`/api/v1/admin/products/${product.id}`)
-        .set(adminAuthHeader)
-        .expect(204);
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(204);
 
       const saved = await prisma.product.findUnique({
         where: { id: product.id },
@@ -178,10 +178,11 @@ describe('Admin Products (integration)', () => {
     });
 
     it('returns 404 for non-existent product', async () => {
-      await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .delete('/api/v1/admin/products/00000000-0000-0000-0000-000000000000')
-        .set(adminAuthHeader)
-        .expect(404);
+        .set(adminAuthHeader);
+
+      expect(response.status).toBe(404);
     });
   });
 });

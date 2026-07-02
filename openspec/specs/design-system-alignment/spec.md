@@ -2,9 +2,7 @@
 
 ## Purpose
 TBD: This capability covers the implementation of the core brand design system in the frontend, defining styling rules and constants.
-
 ## Requirements
-
 ### Requirement: Color Palette Compliance
 The frontend implementation SHALL restrict colors strictly to the palette defined in docs/design.md. The primary colors include Nike Black (#111111) for primary text and CTAs, Pure White (#ffffff) for canvas, and Soft Cloud (#f5f5f5) for product backgrounds and secondary CTAs.
 
@@ -41,3 +39,11 @@ Typography across the frontend SHALL match the Helvetica Now Display / Inter typ
 #### Scenario: Button text typography
 - **WHEN** a standard button is rendered
 - **THEN** the button text SHALL use 16px size and 500 weight
+
+### Requirement: Design System Sizing Consistency
+The design system CSS tokens (`globals.css`) SHALL use a consistent unit system (e.g., exclusively `rem` or strictly defined variables) for sizing and border-radius properties, avoiding hardcoded `px` overrides.
+
+#### Scenario: Defining border radius
+- **WHEN** the border-radius variables are defined
+- **THEN** they MUST use the standard unit defined for the system (e.g., `rem`) without mixing absolute `px` values.
+

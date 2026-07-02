@@ -7,7 +7,7 @@
 ## 2. Design System Alignment
 
 - [x] 2.1 Refactor `apps/frontend/src/app/globals.css` to use a consistent unit (e.g., `rem` or correctly structured design tokens) for border-radius and spacing, replacing hardcoded `px` overrides where appropriate.
-- [ ] 2.2 Visually verify the frontend to ensure no layout regressions occurred after the CSS standardization.
+- [x] 2.2 Visually verify the frontend to ensure no layout regressions occurred after the CSS standardization.
 
 ## 3. Playwright Locators Refactoring
 
