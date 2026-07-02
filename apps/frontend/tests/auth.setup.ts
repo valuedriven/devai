@@ -7,7 +7,7 @@ import path from 'path';
 const ADMIN_AUTH_FILE = path.resolve(__dirname, '.auth/admin.json');
 const CUSTOMER_AUTH_FILE = path.resolve(__dirname, '.auth/customer.json');
 
-setup('authenticate as admin', async ({ loginPage, page }) => {
+setup('authenticate as admin', async ({ loginPage, storefrontPage, page }) => {
   const email = process.env.ADMIN_EMAIL!;
   const password = process.env.ADMIN_PASSWORD!;
 
@@ -18,17 +18,15 @@ setup('authenticate as admin', async ({ loginPage, page }) => {
   await loginPage.goTo();
   await loginPage.login(email, password);
 
-  // Aguardar redirecionamento para /
-  await page.waitForURL('/');
-
-  // Verificar user-dropdown-container visível
+  // Aguardar redirecionamento para / e verificar user-dropdown-container visível
+  await expect(storefrontPage.welcomeHeading).toBeVisible();
   await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
 
   // Salvar storageState
   await page.context().storageState({ path: ADMIN_AUTH_FILE });
 });
 
-setup('authenticate as customer', async ({ loginPage, page }) => {
+setup('authenticate as customer', async ({ loginPage, storefrontPage, page }) => {
   const email = process.env.CUSTOMER_EMAIL!;
   const password = process.env.CUSTOMER_PASSWORD!;
 
@@ -39,10 +37,8 @@ setup('authenticate as customer', async ({ loginPage, page }) => {
   await loginPage.goTo();
   await loginPage.login(email, password);
 
-  // Aguardar redirecionamento para /
-  await page.waitForURL('/');
-
-  // Verificar user-dropdown-container visível
+  // Aguardar redirecionamento para / e verificar user-dropdown-container visível
+  await expect(storefrontPage.welcomeHeading).toBeVisible();
   await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
 
   // Salvar storageState

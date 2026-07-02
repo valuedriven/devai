@@ -30,19 +30,29 @@ export async function deleteCategoryAction(id: string, token?: string) {
 }
 
 export async function createCategoryAction(category: Omit<Category, 'id'>, token?: string) {
-    const result = await createCategory(category, token);
-    if (result) {
-        revalidatePath("/admin/categories");
+    try {
+        const result = await createCategory(category, token);
+        if (result) {
+            revalidatePath("/admin/categories");
+            return { success: true, data: result };
+        }
+        return { success: false, error: "Erro ao criar categoria." };
+    } catch (error: any) {
+        return { success: false, error: error.message || "Erro ao criar categoria." };
     }
-    return result;
 }
 
 export async function updateCategoryAction(id: string, category: Partial<Omit<Category, 'id'>>, token?: string) {
-    const result = await updateCategory(id, category, token);
-    if (result) {
-        revalidatePath("/admin/categories");
+    try {
+        const result = await updateCategory(id, category, token);
+        if (result) {
+            revalidatePath("/admin/categories");
+            return { success: true, data: result };
+        }
+        return { success: false, error: "Erro ao atualizar categoria." };
+    } catch (error: any) {
+        return { success: false, error: error.message || "Erro ao atualizar categoria." };
     }
-    return result;
 }
 
 export async function deleteCustomerAction(id: string, token?: string) {

@@ -43,7 +43,7 @@ export class CategoryPage {
   }
 
   async editCategory(oldName: string, newName: string): Promise<this> {
-    const row = this.categoryTable.getByRole('row', { name: new RegExp(oldName) });
+    const row = this.categoryTable.locator('tr', { has: this.page.locator('td').getByText(oldName, { exact: true }) });
     await expect(row).toBeVisible();
     await row.getByTitle('Edit category').click();
     await expect(this.dialog).toBeVisible();
@@ -54,7 +54,7 @@ export class CategoryPage {
   }
 
   async deleteCategory(name: string): Promise<this> {
-    const row = this.categoryTable.getByRole('row', { name: new RegExp(name) });
+    const row = this.categoryTable.locator('tr', { has: this.page.locator('td').getByText(name, { exact: true }) });
     await expect(row).toBeVisible();
     await row.getByTitle('Delete category').click();
     await expect(this.confirmDeleteButton).toBeVisible();

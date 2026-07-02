@@ -56,7 +56,7 @@ export class ProductPage {
     await this.priceInput.fill(price);
     await this.stockInput.fill(stock);
     await this.descriptionInput.fill(description);
-    await this.categorySelect.getByRole('option').nth(1).waitFor({ state: 'attached', timeout: 10000 });
+    await expect(this.categorySelect.getByRole('option').nth(1)).toBeAttached({ timeout: 10000 });
     await this.categorySelect.selectOption({ value: categoryId });
     return this;
   }
@@ -80,7 +80,9 @@ export class ProductPage {
     const row = this.table.getByRole('row', { name: new RegExp(name) });
     await expect(row).toBeVisible();
     await row.getByTitle('Excluir').click();
+    await expect(this.dialog).toBeVisible();
     await this.confirmDeleteButton.click();
+    await expect(this.dialog).toBeHidden();
     return this;
   }
 }

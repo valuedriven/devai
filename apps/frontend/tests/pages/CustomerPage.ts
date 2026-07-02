@@ -84,7 +84,9 @@ export class CustomerPage {
     const row = this.table.getByRole('row', { name: new RegExp(name) });
     await expect(row).toBeVisible();
     await row.getByTitle('Excluir').click();
+    await expect(this.dialog).toBeVisible();
     await this.confirmDeleteButton.click();
+    await expect(this.dialog).toBeHidden();
     return this;
   }
 }

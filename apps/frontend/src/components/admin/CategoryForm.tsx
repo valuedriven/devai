@@ -24,12 +24,14 @@ export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormP
     const [isActive, setIsActive] = useState(initialData?.active ?? true);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [errorMsg, setErrorMsg] = useState("");
     const isEditing = !!initialData;
 
     const handleSave = async () => {
         if (!name.trim()) return;
 
         setIsLoading(true);
+        setErrorMsg("");
         try {
             let result;
             if (isEditing && initialData?.id) {
@@ -44,7 +46,7 @@ export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormP
                 }, token ?? undefined);
             }
 
-            if (result) {
+            if (result.success) {
                 if (onSuccess) {
                     onSuccess();
                 } else {
@@ -52,11 +54,11 @@ export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormP
                 }
                 router.refresh();
             } else {
-                alert("Erro ao salvar categoria. Verifique o console.");
+                setErrorMsg(result.error || "Erro ao salvar categoria.");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("Erro inesperado ao salvar categoria.");
+            setErrorMsg("Erro inesperado ao salvar categoria.");
         } finally {
             setIsLoading(false);
         }
@@ -80,6 +82,12 @@ export function CategoryForm({ initialData, onSuccess, onCancel }: CategoryFormP
                             disabled={isLoading}
                         />
                     </div>
+
+                    {errorMsg && (
+                        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
+                            {errorMsg}
+                        </div>
+                    )}
 
                     <div className="flex items-center gap-2">
                         <input

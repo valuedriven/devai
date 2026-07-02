@@ -23,8 +23,10 @@ import {
   createCustomerApi,
   deleteCustomerApi,
   SeededCustomer,
+  createOrderApi,
+  SeededOrder,
 } from '../utils/api';
-import { makeCategory, makeProduct, makeCustomer } from '../utils/data';
+import { makeCategory, makeProduct, makeCustomer, makeOrder, makeOrderItem } from '../utils/data';
 import { LoginPage } from '../pages/LoginPage';
 import { CategoryPage } from '../pages/CategoryPage';
 import { ProductPage } from '../pages/ProductPage';
@@ -52,6 +54,8 @@ type Fixtures = {
   seededProduct: SeededProduct;
   /** A customer created via API before the test and deleted in teardown. */
   seededCustomer: SeededCustomer;
+  /** An order created via API before the test and deleted in teardown. */
+  seededOrder: SeededOrder;
   loginPage: LoginPage;
   categoryPage: CategoryPage;
   productPage: ProductPage;
@@ -97,21 +101,36 @@ export const test = base.extend<Fixtures>({
   },
 
   seededCategory: async ({ request, adminAuthToken, faker }, use) => {
+    if (!adminAuthToken) base.info().skip(true, 'adminAuthToken is missing');
     const category = await createCategory(request, adminAuthToken, makeCategory(faker));
     await use(category);
     await deleteCategory(request, adminAuthToken, category.id);
   },
 
   seededProduct: async ({ request, adminAuthToken, seededCategory, faker }, use) => {
+    if (!adminAuthToken) base.info().skip(true, 'adminAuthToken is missing');
     const product = await createProduct(request, adminAuthToken, makeProduct(seededCategory.id, undefined, faker));
     await use(product);
     await deleteProduct(request, adminAuthToken, product.id);
   },
 
   seededCustomer: async ({ request, adminAuthToken, faker }, use) => {
+    if (!adminAuthToken) base.info().skip(true, 'adminAuthToken is missing');
     const customer = await createCustomerApi(request, adminAuthToken, makeCustomer(faker));
     await use(customer);
     await deleteCustomerApi(request, adminAuthToken, customer.id);
+  },
+
+  seededOrder: async ({ request, adminAuthToken, seededProduct, seededCustomer, faker }, use) => {
+    if (!adminAuthToken) base.info().skip(true, 'adminAuthToken is missing');
+    const order = await createOrderApi(
+      request,
+      adminAuthToken,
+      makeOrder(seededCustomer.id, [makeOrderItem(seededProduct.id, 1, seededProduct.price)]),
+      faker
+    );
+    await use(order);
+    // Order deletion might not exist in the API yet, so we just let it be.
   },
 
   loginPage: async ({ page }, use) => {

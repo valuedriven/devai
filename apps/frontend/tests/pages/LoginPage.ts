@@ -25,7 +25,7 @@ export class LoginPage {
 
   async login(email: string, pass: string): Promise<void> {
     // Wait for React to finish mounting the form before interacting
-    await this.page.locator('form.login-form[data-state="ready"]').waitFor({ timeout: 10_000 });
+    await expect(this.page.locator('form.login-form[data-state="ready"]')).toBeVisible({ timeout: 10_000 });
     await this.emailInput.fill(email);
     await this.passwordInput.fill(pass);
     await this.submitButton.click();

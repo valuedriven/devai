@@ -23,7 +23,7 @@ test.describe('9. Fluxo de Redirecionamento Pós-Login', () => {
         process.env.ADMIN_EMAIL!,
         process.env.ADMIN_PASSWORD!
       );
-      await page.waitForURL(/^(?!.*login).*\/orders$/, { timeout: 15_000 });
+      await expect(customerOrdersPage.heading).toBeVisible();
     });
 
     await test.step('verify redirect to original URL and page renders', async () => {
@@ -52,7 +52,7 @@ test.describe('9. Fluxo de Redirecionamento Pós-Login', () => {
         process.env.CUSTOMER_EMAIL!,
         process.env.CUSTOMER_PASSWORD!
       );
-      await page.waitForURL(/^(?!.*login).*\/orders$/, { timeout: 15_000 });
+      await expect(customerOrdersPage.heading).toBeVisible();
     });
 
     await test.step('verify redirect to original URL and page renders', async () => {

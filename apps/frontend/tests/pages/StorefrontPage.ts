@@ -18,21 +18,21 @@ export class StorefrontPage {
     this.page = page;
     this.heading = page.getByRole('heading', { level: 1 });
     this.addToCartButton = page.getByRole('button', { name: /Adicionar ao Carrinho/i });
-    this.welcomeHeading = page.getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first();
-    this.highlightsHeading = page.getByRole('heading', { name: 'Destaques' }).first();
-    this.backToStoreLink = page.getByRole('link', { name: 'Voltar para a loja' }).first();
+    this.welcomeHeading = page.getByRole('heading', { name: 'Bem-vindo à DevAI Store' });
+    this.highlightsHeading = page.getByRole('heading', { name: 'Destaques' });
+    this.backToStoreLink = page.getByRole('link', { name: 'Voltar para a loja' });
     this.productCards = page.getByTestId('product-card');
-    this.outOfStockBadge = page.getByText('Esgotado').first();
-    this.price = page.getByText(/R\$/).first();
+    this.outOfStockBadge = page.getByRole('main').getByText('Esgotado').first();
+    this.price = page.getByText(/R\$/);
     this.notFoundMessage = page.getByText(/404|not found|não encontrad/i);
   }
 
   productCard(name: string): ProductCardComponent {
-    return new ProductCardComponent(this.productCards.filter({ hasText: name }).first());
+    return new ProductCardComponent(this.productCards.filter({ hasText: name }));
   }
 
   productCardByName(name: string): Locator {
-    return this.productCards.filter({ hasText: name }).first();
+    return this.productCards.filter({ hasText: name });
   }
 
   categoryLink(name: string): Locator {
@@ -49,6 +49,7 @@ export class StorefrontPage {
 
   async gotoProductDetail(productId: string): Promise<this> {
     await this.page.goto(`/products/${productId}`);
+    await expect(this.heading).toBeVisible();
     return this;
   }
 

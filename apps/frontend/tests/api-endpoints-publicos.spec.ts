@@ -1,5 +1,6 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
 import { test, expect } from './fixtures/baseTest';
+import { API_BASE } from './utils/api';
 
 test.describe('8. Endpoints Públicos', () => {
 
@@ -7,7 +8,7 @@ test.describe('8. Endpoints Públicos', () => {
     // Estado inicial: Não autenticado
 
     // 1. Fazer requisição GET /api/v1/products
-    const response = await request.get('http://localhost:3001/api/v1/products');
+    const response = await request.get(`${API_BASE}/products`);
 
     // Resultado esperado:
     // - Status 200
@@ -26,7 +27,7 @@ test.describe('8. Endpoints Públicos', () => {
     expect(token).toBeDefined();
 
     // 1. Fazer requisição GET /api/v1/products com token válido
-    const response = await request.get('http://localhost:3001/api/v1/products', {
+    const response = await request.get(`${API_BASE}/products`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -39,7 +40,7 @@ test.describe('8. Endpoints Públicos', () => {
 
   test('8.3 Acesso público a categorias', async ({ request }) => {
     // 1. Fazer requisição GET /api/v1/categories
-    const response = await request.get('http://localhost:3001/api/v1/categories');
+    const response = await request.get(`${API_BASE}/categories`);
 
     // Resultado esperado:
     // - Status 200

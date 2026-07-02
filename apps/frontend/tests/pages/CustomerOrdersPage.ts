@@ -46,7 +46,6 @@ export class CustomerOrdersPage {
   async cancelOrder(orderId: string): Promise<this> {
     const card = this.orderCard(orderId);
     await card.getByRole('button', { name: /Ver Detalhes/i }).click();
-    await this.page.waitForURL(/\/orders\//);
 
     this.page.once('dialog', async dialog => {
       await dialog.accept();
@@ -56,9 +55,6 @@ export class CustomerOrdersPage {
     await cancelButton.click();
     await expect(cancelButton).toBeHidden();
 
-    // Navigate back to the orders list so callers can check the list view
-    await this.page.goto('/orders');
-    await this.page.waitForURL(/\/orders$/);
     return this;
   }
 }

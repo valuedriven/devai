@@ -1,34 +1,16 @@
 import { test, expect } from './fixtures/baseTest';
-import { createProduct, createCustomerApi, createOrderApi } from './utils/api';
-import { makeProduct, makeCustomer } from './utils/data';
+import { API_BASE, createOrderApi } from './utils/api';
+import { makeOrder, makeOrderItem } from './utils/data';
 
 test.describe('Order Management Lifecycle', () => {
 
   test('Scenario 2: Error Path - Reject Invalid Transition (Novo to Despachado)', async ({
     request,
     authToken,
-    seededCategory,
-    orderPage,
-    faker
+    seededOrder,
+    orderPage
   }) => {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001/api/v1';
-    let orderId: string;
-
-    await test.step('seed customer, product, and order via API', async () => {
-      const customer = await createCustomerApi(request, authToken, makeCustomer(faker));
-
-      const product = await createProduct(request, authToken, {
-        ...makeProduct(seededCategory.id, undefined, faker),
-        stock: 100
-      });
-
-      const order = await createOrderApi(request, authToken, {
-        customerId: customer.id,
-        totalAmount: 200,
-        order_items: [{ productId: product.id, quantity: 1, unitPrice: 200 }]
-      }, faker);
-      orderId = order.id;
-    });
+    const orderId = seededOrder.id;
 
     await test.step('attempt invalid status transition Novo → Despachado via API', async () => {
       const response = await request.patch(`${API_BASE}/admin/orders/${orderId}/status`, {
@@ -52,33 +34,29 @@ test.describe('Order Management Lifecycle', () => {
   test('Scenario 3: Happy Path - Order Cancellation', async ({
     request,
     authToken,
-    seededCategory,
+    seededCustomer,
+    seededProduct,
     orderPage,
     faker
   }) => {
     let orderAId: string;
     let orderBId: string;
 
-    await test.step('seed customer, product, and two orders via API', async () => {
-      const customer = await createCustomerApi(request, authToken, makeCustomer(faker));
-
-      const product = await createProduct(request, authToken, {
-        ...makeProduct(seededCategory.id, undefined, faker),
-        stock: 100
-      });
-
-      const orderA = await createOrderApi(request, authToken, {
-        customerId: customer.id,
-        totalAmount: 100,
-        order_items: [{ productId: product.id, quantity: 1, unitPrice: 100 }]
-      }, faker);
+    await test.step('seed two orders via API', async () => {
+      const orderA = await createOrderApi(
+        request, 
+        authToken, 
+        makeOrder(seededCustomer.id, [makeOrderItem(seededProduct.id, 1, 100)]), 
+        faker
+      );
       orderAId = orderA.id;
 
-      const orderB = await createOrderApi(request, authToken, {
-        customerId: customer.id,
-        totalAmount: 100,
-        order_items: [{ productId: product.id, quantity: 1, unitPrice: 100 }]
-      }, faker);
+      const orderB = await createOrderApi(
+        request, 
+        authToken, 
+        makeOrder(seededCustomer.id, [makeOrderItem(seededProduct.id, 1, 100)]), 
+        faker
+      );
       orderBId = orderB.id;
     });
 

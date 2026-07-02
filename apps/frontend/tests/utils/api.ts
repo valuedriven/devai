@@ -1,8 +1,8 @@
 import { APIRequestContext, Page } from '@playwright/test';
-import { CategoryData, CustomerData, makeCategory, ProductData } from './data';
+import { CategoryData, CustomerData, makeCategory, ProductData, OrderData } from './data';
 import { faker as globalFaker } from '@faker-js/faker';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001/api/v1';
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3001/api/v1';
 
 export const AUTH_COOKIE_NAME = 'devai_auth_token';
 
@@ -157,17 +157,14 @@ export interface SeededOrder {
 export async function createOrderApi(
   request: APIRequestContext,
   token: string,
-  data: {
-    customerId: string;
-    totalAmount: number;
-    order_items: { productId: string; quantity: number; unitPrice?: number }[];
-  },
+  data: OrderData,
   faker = globalFaker,
 ): Promise<SeededOrder> {
   const res = await request.post(`${API_BASE}/orders`, {
     headers: adminHeaders(token),
     data: {
       ...data,
+      order_items: data.items,
       number: `E2E-${faker.string.numeric(10)}`,
     },
   });

@@ -5,7 +5,7 @@ import { makeCategory } from './utils/data';
 
 test.describe('Category Management', () => {
 
-  test.beforeEach(async ({ categoryPage }) => {
+  test.beforeEach(async ({ categoryPage, page }) => {
     // Navigate to categories page
     await categoryPage.goTo();
   });
@@ -23,17 +23,15 @@ test.describe('Category Management', () => {
     });
   });
 
-  test('9.2 Admin can edit a category', async ({ request, authToken, categoryPage, faker }) => {
+  test('9.2 Admin can edit a category', async ({ seededCategory, categoryPage, faker, page }) => {
     const editName = makeCategory(faker).name;
-    let category: SeededCategory;
 
-    await test.step('seed category via API', async () => {
-      category = await createCategory(request, authToken, makeCategory(faker));
+    await test.step('reload page to see seeded category', async () => {
       await categoryPage.goTo();
     });
 
     await test.step('edit category via UI', async () => {
-      await categoryPage.editCategory(category.name, editName);
+      await categoryPage.editCategory(seededCategory.name, editName);
     });
 
     await test.step('verify updated category name in list', async () => {
@@ -42,22 +40,18 @@ test.describe('Category Management', () => {
     });
   });
 
-  test('9.3 Admin can delete a category', async ({ request, authToken, categoryPage, faker }) => {
-    let category: SeededCategory;
-
-
-    await test.step('seed category via API', async () => {
-      category = await createCategory(request, authToken, makeCategory(faker));
+  test('9.3 Admin can delete a category', async ({ seededCategory, categoryPage }) => {
+    await test.step('reload page to see seeded category', async () => {
       await categoryPage.goTo();
     });
 
     await test.step('delete category via UI', async () => {
-      await categoryPage.deleteCategory(category.name);
+      await categoryPage.deleteCategory(seededCategory.name);
     });
 
     await test.step('verify category is removed from list', async () => {
       await expect(categoryPage.dialog).toBeHidden();
-      await expect(categoryPage.categoryTable.getByText(category.name)).toBeHidden();
+      await expect(categoryPage.categoryTable.getByText(seededCategory.name)).toBeHidden();
     });
   });
 
@@ -75,7 +69,7 @@ test.describe('Category Management', () => {
         process.env.CUSTOMER_EMAIL!,
         process.env.CUSTOMER_PASSWORD!
       );
-      await page.waitForURL('/');
+      await expect(storefrontPage.welcomeHeading).toBeVisible();
     });
 
     await test.step('attempt to access admin categories page and verify 403', async () => {

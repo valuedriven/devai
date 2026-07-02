@@ -1,5 +1,6 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
 import { test, expect } from './fixtures/baseTest';
+import { API_BASE } from './utils/api';
 
 test.describe('7. Validação de Token (Backend)', () => {
 
@@ -11,7 +12,7 @@ test.describe('7. Validação de Token (Backend)', () => {
     const expiredToken = `${header}.${payload}.${signature}`;
 
     // 2. Fazer requisição para endpoint protegido com Authorization: Bearer <token_expirado>
-    const response = await request.get('http://localhost:3001/api/v1/auth/me', {
+    const response = await request.get(`${API_BASE}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${expiredToken}`
       }
@@ -24,7 +25,7 @@ test.describe('7. Validação de Token (Backend)', () => {
 
   test('7.2 Token inválido/mal formatado', async ({ request }) => {
     // 1. Fazer requisição para endpoint protegido com Authorization: Bearer token_invalido
-    const response = await request.get('http://localhost:3001/api/v1/auth/me', {
+    const response = await request.get(`${API_BASE}/auth/me`, {
       headers: {
         'Authorization': `Bearer token_totalmente_invalido`
       }
@@ -37,7 +38,7 @@ test.describe('7. Validação de Token (Backend)', () => {
 
   test('7.3 Token ausente', async ({ request }) => {
     // 1. Fazer requisição para endpoint protegido sem header Authorization
-    const response = await request.get('http://localhost:3001/api/v1/auth/me');
+    const response = await request.get(`${API_BASE}/auth/me`);
 
     // Resultado esperado:
     // - Status 401

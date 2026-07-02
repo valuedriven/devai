@@ -9,6 +9,8 @@ export class OrderPage {
   readonly paymentModalButton: Locator;
   readonly paymentValueInput: Locator;
   readonly paymentMethodSelect: Locator;
+  readonly paymentSubmitButton: Locator;
+  readonly dialog: Locator;
   readonly auditLog: Locator;
 
   constructor(page: Page) {
@@ -19,6 +21,8 @@ export class OrderPage {
     this.paymentModalButton = page.getByRole('button', { name: /Registrar Pagamento/i });
     this.paymentValueInput = page.getByRole('spinbutton', { name: /valor do pagamento/i });
     this.paymentMethodSelect = page.getByRole('combobox');
+    this.paymentSubmitButton = page.getByRole('button', { name: 'Registrar', exact: true });
+    this.dialog = page.locator('.fixed.inset-0');
     this.auditLog = page.getByTestId('audit-log');
   }
 
@@ -49,7 +53,7 @@ export class OrderPage {
   }
 
   async viewOrder(id: string): Promise<this> {
-    const row = this.table.getByRole('row', { name: new RegExp(id) }).first();
+    const row = this.table.getByRole('row', { name: new RegExp(id) });
     await row.getByTitle(/Ver detalhes/i).click();
     return this;
   }
@@ -65,14 +69,15 @@ export class OrderPage {
 
   async openPaymentModal(): Promise<this> {
     await this.paymentModalButton.click();
+    await expect(this.dialog).toBeVisible();
     return this;
   }
 
   async fillPaymentForm(value: string, method: string): Promise<this> {
-    await this.paymentValueInput.waitFor({ state: 'visible' });
+    await expect(this.paymentValueInput).toBeVisible();
     await this.paymentValueInput.fill(value);
     await this.paymentMethodSelect.selectOption({ label: method });
-    await this.paymentValueInput.press('Enter');
+    await this.paymentSubmitButton.click();
     return this;
   }
 }

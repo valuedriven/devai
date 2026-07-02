@@ -6,31 +6,11 @@ test.describe('Order Lifecycle', () => {
   test.setTimeout(60_000);
 
   test('Admin can manage order lifecycle from New to Delivered', async ({
-    request,
-    authToken,
-    seededCategory,
-    orderPage,
-    faker
+    seededOrder,
+    orderPage
   }) => {
-    let orderId: string;
-    let orderNumber: string;
-
-    await test.step('seed customer, product and order', async () => {
-        const customer = await createCustomerApi(request, authToken, makeCustomer(faker));
-
-        const product = await createProduct(request, authToken, {
-            ...makeProduct(seededCategory.id, undefined, faker),
-            stock: 100
-        });
-
-        const order = await createOrderApi(request, authToken, {
-            customerId: customer.id,
-            totalAmount: 150,
-            order_items: [{ productId: product.id, quantity: 1, unitPrice: 150 }]
-        }, faker);
-        orderId = order.id;
-        orderNumber = order.number;
-    });
+    const orderId = seededOrder.id;
+    const orderNumber = seededOrder.number;
 
     await test.step('navigate to order list and find order', async () => {
         await orderPage.goTo();

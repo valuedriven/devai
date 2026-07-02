@@ -7,8 +7,16 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    files: ['tests/**'],
+    files: ['tests/**/*.ts', 'tests/**/*.tsx'],
     extends: [playwright.configs['flat/recommended']],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
   },
   {
     files: ['**/*.tsx', '**/*.jsx'],

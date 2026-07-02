@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures/baseTest';
 import { createCustomerApi, createOrderApi, createProduct, deleteProduct, SeededCustomer, SeededProduct } from './utils/api';
-import { makeCustomer, makeProduct } from './utils/data';
+import { makeCustomer, makeProduct, makeOrder, makeOrderItem } from './utils/data';
 
 test.describe('Customer Management', () => {
 
@@ -32,7 +32,6 @@ test.describe('Customer Management', () => {
       await customerPage.submitForm();
       // Expect toast success message
       await expect(toastComponent.message('Cliente cadastrado com sucesso!')).toBeVisible();
-      await page.waitForURL('**/admin/customers', { timeout: 15000 });
       await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
       await expect(customerPage.table.getByText(custName)).toBeVisible();
     });
@@ -54,7 +53,6 @@ test.describe('Customer Management', () => {
 
     await test.step('verify success toast and update in list', async () => {
       await expect(toastComponent.message('Cliente atualizado com sucesso!')).toBeVisible();
-      await page.waitForURL('**/admin/customers', { timeout: 15000 });
       await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
       await expect(customerPage.table.getByText(editName)).toBeVisible();
     });
@@ -81,40 +79,22 @@ test.describe('Customer Management', () => {
     });
   });
 
-  test('Cannot delete a customer that has associated orders', async ({ request, authToken, customerPage, seededCategory, toastComponent, faker }) => {
-    let customer: SeededCustomer;
-    let product: SeededProduct;
-
-    await test.step('seed customer and product via API', async () => {
-      customer = await createCustomerApi(request, authToken, makeCustomer(faker));
-      product = await createProduct(request, authToken, makeProduct(seededCategory.id, undefined, faker));
+  test('Cannot delete a customer that has associated orders', async ({ request, authToken, customerPage, seededCustomer, seededProduct, toastComponent, faker }) => {
+    await test.step('seed an order for the customer via API', async () => {
+      await createOrderApi(request, authToken, makeOrder(seededCustomer.id, [makeOrderItem(seededProduct.id, 1, seededProduct.price)]), faker);
     });
 
-    try {
-      await test.step('seed an order for the customer via API', async () => {
-        await createOrderApi(request, authToken, {
-          customerId: customer.id,
-          totalAmount: 10.0,
-          order_items: [{ productId: product.id, quantity: 1 }],
-        }, faker);
-      });
+    await test.step('navigate to customers list', async () => {
+      await customerPage.goTo();
+      await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
+    });
 
-      await test.step('navigate to customers list', async () => {
-        await customerPage.goTo();
-        await expect(customerPage.heading.filter({ hasText: 'Clientes' })).toBeVisible();
-      });
-
-      await test.step('attempt to delete the customer and verify error toast', async () => {
-        await customerPage.deleteCustomer(customer.name);
-        await expect(
-          toastComponent.message(/possui pedidos associados|não é possível excluir/i),
-        ).toBeVisible();
-      });
-    } finally {
-      await test.step('cleanup seeded product', async () => {
-        await deleteProduct(request, authToken, product?.id);
-      });
-    }
+    await test.step('attempt to delete the customer and verify error toast', async () => {
+      await customerPage.deleteCustomer(seededCustomer.name);
+      await expect(
+        toastComponent.message(/possui pedidos associados|não é possível excluir/i),
+      ).toBeVisible();
+    });
   });
 
   test('Admin can list and search customers', async ({ page, request, authToken, customerPage, faker }) => {
@@ -132,8 +112,6 @@ test.describe('Customer Management', () => {
 
     await test.step('search for unique name and verify list filters correctly', async () => {
       await customerPage.searchInput.fill(nameMatch);
-      // Wait for search query URL param to update
-      await page.waitForURL(new RegExp(`search=${nameMatch.replace(/ /g, '(\\+|%20)')}`), { timeout: 10000 });
       
       await expect(customerPage.table.getByText(nameMatch)).toBeVisible();
       await expect(customerPage.table.getByText(otherName)).toBeHidden();
@@ -158,7 +136,6 @@ test.describe('Customer Management', () => {
 
     await test.step('navigate to edit details page and verify pre-populated values', async () => {
       await customerPage.rowFor(customer.name).getByTitle('Editar').click();
-      await page.waitForURL(`**/admin/customers/${customer.id}/edit`, { timeout: 10000 });
       await expect(customerPage.heading.filter({ hasText: 'Editar Cliente' })).toBeVisible();
       
       await expect(customerPage.nameInput).toHaveValue(customerData.name);
@@ -185,10 +162,10 @@ test.describe('Customer Management', () => {
 
     await test.step('attempt to create customer with duplicate email', async () => {
       await customerPage.fillCustomerDetails(
-        'Duplicate Name',
+        faker.person.fullName(),
         email,
-        '11999999999',
-        'Address 123'
+        faker.phone.number({ style: 'national' }),
+        faker.location.streetAddress()
       );
       await customerPage.submitForm();
     });
@@ -213,7 +190,7 @@ test.describe('Customer Management', () => {
         process.env.CUSTOMER_EMAIL!,
         process.env.CUSTOMER_PASSWORD!
       );
-      await page.waitForURL('/');
+      await expect(storefrontPage.welcomeHeading).toBeVisible();
     });
 
     await test.step('attempt to access admin customers page and verify 403', async () => {

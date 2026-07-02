@@ -1,5 +1,6 @@
 // spec: openspec/changes/change-03-auth-security/test-plan.md
 import { test, expect } from './fixtures/baseTest';
+import { API_BASE } from './utils/api';
 
 test.describe('6. Endpoint GET /v1/auth/me', () => {
 
@@ -11,7 +12,7 @@ test.describe('6. Endpoint GET /v1/auth/me', () => {
 
     expect(token).toBeDefined();
 
-    const response = await request.get('http://localhost:3001/api/v1/auth/me', {
+    const response = await request.get(`${API_BASE}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -30,7 +31,7 @@ test.describe('6. Endpoint GET /v1/auth/me', () => {
 
   test('6.2 Perfil sem autenticação', async ({ request }) => {
     // 1. Fazer requisição GET /api/v1/auth/me sem cookie
-    const response = await request.get('http://localhost:3001/api/v1/auth/me');
+    const response = await request.get(`${API_BASE}/auth/me`);
 
     // Resultado esperado:
     // - Status 401

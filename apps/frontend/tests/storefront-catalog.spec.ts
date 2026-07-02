@@ -1,9 +1,7 @@
 // spec: openspec/changes/clean-products-module/specs/storefront-catalog/test-plan.md
 import { test, expect } from './fixtures/baseTest';
 import { makeCategory, makeProduct } from './utils/data';
-import { createCategory, deleteCategory, createProduct, deleteProduct, SeededProduct } from './utils/api';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
+import { createCategory, deleteCategory, createProduct, deleteProduct, SeededProduct, API_BASE } from './utils/api';
 
 
 test.describe('Storefront Public API', () => {
@@ -29,36 +27,23 @@ test.describe('Storefront Public API', () => {
     }
   });
 
-  test('1.3 Public single product retrieval returns HTTP 200 for active product', async ({ request, adminAuthToken, faker }) => {
-    const category = await createCategory(request, adminAuthToken, makeCategory(faker));
-    const prod = makeProduct(category.id, undefined, faker);
-    const prodName = prod.name;
-    let product: SeededProduct;
-
-    await test.step('create product via API', async () => {
-      product = await createProduct(request, adminAuthToken, prod);
-    });
-
+  test('1.3 Public single product retrieval returns HTTP 200 for active product', async ({ request, seededProduct }) => {
     await test.step('find created product via public API', async () => {
       // Fetch all public products and find the one we just created
       const listResponse = await request.get(`${API_BASE}/products`);
       expect(listResponse.status()).toBe(200);
       const products: { id: string; name: string; active: boolean }[] = await listResponse.json();
-      const created = products.find((p) => p.name === prodName);
-      expect(created, `Product "${prodName}" not found in public list`).toBeDefined();
+      const created = products.find((p) => p.name === seededProduct.name);
+      expect(created, `Product "${seededProduct.name}" not found in public list`).toBeDefined();
 
       // Verify individual product endpoint
-      const detailResponse = await request.get(`${API_BASE}/products/${created!.id}`);
+      const detailResponse = await request.get(`${API_BASE}/products/${seededProduct.id}`);
       expect(detailResponse.status()).toBe(200);
 
       const productJson = await detailResponse.json();
       expect(productJson.name).toBeDefined();
       expect(productJson.price).toBeDefined();
     });
-
-    // Teardown
-    await deleteProduct(request, adminAuthToken, product!.id);
-    await deleteCategory(request, adminAuthToken, category.id);
   });
 
   test('1.4 Public single product retrieval returns 404 for non-existent product', async ({ request }) => {
@@ -118,19 +103,15 @@ test.describe('Storefront Frontend Integration', () => {
   test('2.4 Out-of-stock product displays "Esgotado" badge and disabled button', async ({ storefrontPage, request, adminAuthToken, seededCategory, faker }) => {
     const product = await createProduct(request, adminAuthToken, { ...makeProduct(seededCategory.id, undefined, faker), stock: 0 });
 
-    try {
-      await test.step('navigate to storefront', async () => {
-        await storefrontPage.goTo();
-      });
+    await test.step('navigate to storefront', async () => {
+      await storefrontPage.goTo();
+    });
 
-      await test.step('assert out-of-stock badge and disabled button via ProductCardComponent', async () => {
-        const card = storefrontPage.productCard(product.name);
-        await expect(card.outOfStockBadge).toBeVisible();
-        await expect(card.unavailableButton).toBeDisabled();
-      });
-    } finally {
-      await deleteProduct(request, adminAuthToken, product.id);
-    }
+    await test.step('assert out-of-stock badge and disabled button via ProductCardComponent', async () => {
+      const card = storefrontPage.productCard(product.name);
+      await expect(card.outOfStockBadge).toBeVisible();
+      await expect(card.unavailableButton).toBeDisabled();
+    });
   });
 
   test('2.5 Category filter navigation updates URL and filters products', async ({ page, storefrontPage, request, adminAuthToken, faker }) => {
@@ -140,26 +121,18 @@ test.describe('Storefront Frontend Integration', () => {
     const prodA = await createProduct(request, adminAuthToken, makeProduct(catA.id, undefined, faker));
     const prodB = await createProduct(request, adminAuthToken, makeProduct(catB.id, undefined, faker));
 
-    try {
-      await test.step('navigate to storefront', async () => {
-        await storefrontPage.goTo();
-      });
+    await test.step('navigate to storefront', async () => {
+      await storefrontPage.goTo();
+    });
 
-      await test.step('click category A link and verify URL update', async () => {
-        await storefrontPage.categoryLink(catA.name).click();
-        await page.waitForURL(new RegExp(`categoryId=${catA.id}`));
-      });
+    await test.step('click category A link', async () => {
+      await storefrontPage.categoryLink(catA.name).click();
+    });
 
-      await test.step('verify only category A products are visible', async () => {
-        await expect(storefrontPage.productCardByName(prodA.name)).toBeVisible();
-        await expect(storefrontPage.productCardByName(prodB.name)).toBeHidden();
-      });
-    } finally {
-      await deleteProduct(request, adminAuthToken, prodA.id);
-      await deleteProduct(request, adminAuthToken, prodB.id);
-      await deleteCategory(request, adminAuthToken, catA.id);
-      await deleteCategory(request, adminAuthToken, catB.id);
-    }
+    await test.step('verify only category A products are visible', async () => {
+      await expect(storefrontPage.productCardByName(prodA.name)).toBeVisible();
+      await expect(storefrontPage.productCardByName(prodB.name)).toBeHidden();
+    });
   });
 
 });

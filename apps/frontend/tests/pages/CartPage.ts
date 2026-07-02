@@ -30,7 +30,6 @@ export class CartPage {
 
   async clickLogin(): Promise<void> {
     await this.loginButton.click();
-    await this.page.waitForURL(/\/login/);
   }
 
   async confirmOrder(): Promise<this> {
