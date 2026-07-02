@@ -22,3 +22,4 @@ apps/frontend/playwright-report/index.html
 # stryker temp files
 .stryker-tmp
 apps/backend/reports/mutation/mutation.html
+apps/backend/test/coverage/lcov-report/block-navigation.js
