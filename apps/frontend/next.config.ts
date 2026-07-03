@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 import path from "path";
+import fs from "fs";
 
-process.loadEnvFile(path.join(__dirname, "../../.env"));
+const envPath = path.join(__dirname, "../../.env");
+if (fs.existsSync(envPath)) {
+  process.loadEnvFile(envPath);
+}
 
 const nextConfig: NextConfig = {
   /* config options here */

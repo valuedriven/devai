@@ -1496,17 +1496,17 @@ a.btn-primary {
 
 .sidebar-section-label {
   padding: 0 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748b;
+  letter-spacing: 0;
+  color: var(--color-ink);
 }
 
 .sidebar-link {
   width: 100%;
   justify-content: flex-start;
-  color: #475569;
+  color: var(--color-charcoal);
   transition: all 0.2s;
   border-radius: var(--radius);
   padding: 0.5rem 1rem;
@@ -1515,13 +1515,13 @@ a.btn-primary {
 }
 
 .sidebar-link:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background-color: var(--color-soft-cloud);
+  color: var(--color-ink);
 }
 
 .sidebar-link.active {
-  background-color: #f1f5f9;
-  color: #4f46e5;
+  background-color: var(--color-soft-cloud);
+  color: var(--color-ink);
   font-weight: 600;
 }
 

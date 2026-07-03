@@ -12,12 +12,12 @@
     "dev:backend": "npm run start:dev --workspace=backend",
     "build:frontend": "npm run build --workspace=frontend",
     "build:backend": "npm run build --workspace=backend",
-    "lint": "npx eslint . && npm run lint --workspaces --if-present",
+    "lint": "npx eslint . --fix && npm run lint --workspaces --if-present -- --fix",
     "test": "npm run test:all",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:e2e": "npm run db:reset --workspace=backend && npm run test --workspace=frontend -- --workers=1",
     "test:unit": "npm run test --workspace=backend -- --coverage",
-    "test:integration": "npm run test:e2e --workspace=backend -- --coverage"
+    "test:integration": "docker compose up -d db && npm run test:e2e --workspace=backend -- --coverage"
   },
   "devDependencies": {
     "@omniroute/opencode-provider": "^0.1.0",

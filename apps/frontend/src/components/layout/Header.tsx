@@ -55,9 +55,7 @@ export function Header() {
                         <Menu className="icon-md" />
                         <span className="sr-only">Menu</span>
                     </button>
-                    <Link href="/" className="header-logo ml-2 flex items-center">
-                        DevAI
-                    </Link>
+                    {/* DevAI label removed as per request */}
                 </div>
 
                 {/* Search Bar - Desktop */}

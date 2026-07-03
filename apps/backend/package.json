@@ -16,7 +16,7 @@
     "start:dev": "npm run prisma:generate && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint": "npm run prisma:generate && eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "npm run prisma:generate && jest",
     "test:unit": "jest",
     "test:watch": "npm run prisma:generate && jest --watch",

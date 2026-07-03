@@ -2,6 +2,7 @@
 
 import { Category } from "@/types/models";
 import { Pencil, Trash2, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 interface CategoryTableProps {
   categories: Category[];
@@ -66,28 +67,37 @@ export function CategoryTable({
               <td className="py-3 px-4">
                 <div className="flex items-center justify-end gap-2">
                   {showInactiveToggle && !category.active && onRestore && (
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => onRestore(category)}
-                      className="p-2 text-gray-400 hover:text-green-600 transition-colors"
+                      className="h-8 w-8 text-gray-500"
                       title="Restore category"
                     >
-                      <RotateCcw className="w-4 h-4" />
-                    </button>
+                      <RotateCcw className="h-4 w-4" />
+                      <span className="sr-only">Restore</span>
+                    </Button>
                   )}
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onEdit(category)}
-                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                    className="h-8 w-8 text-gray-500"
                     title="Edit category"
                   >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
+                    <Pencil className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onDelete(category)}
-                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                     title="Delete category"
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
                 </div>
               </td>
             </tr>

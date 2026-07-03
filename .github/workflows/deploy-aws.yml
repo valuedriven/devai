@@ -44,17 +44,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint Backend
-        run: npm run lint
-
       - name: Gerar schema
         run: npm run prisma:generate --workspace=backend
 
+      - name: Lint
+        run: npm run lint
+      
       - name: Unit Test 
         run: npm run test:unit
 
-      - name: Lint Frontend
-        run: npm run lint --workspace=frontend
+      - name: Integration Test 
+        run: npm run test:integration
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+        working-directory: apps/frontend
+
+      - name: Run Playwright tests
+        run: npx playwright test
+        working-directory: apps/frontend
+        
+      #- uses: actions/upload-artifact@v4
+      #  if: ${{ !cancelled() }}
+      #  with:
+      #    name: playwright-report
+      #  path: apps/frontend/playwright-report/
+      #  retention-days: 30
+
 
   terraform:
     name: Terraform Apply
