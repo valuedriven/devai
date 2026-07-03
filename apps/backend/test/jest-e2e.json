@@ -8,5 +8,6 @@
   },
   "collectCoverageFrom": ["src/**/*.(t|j)s"],
   "coveragePathIgnorePatterns": [".*\\.spec\\.ts$"],
-  "coverageDirectory": "./coverage"
+  "coverageDirectory": "./coverage",
+  "setupFiles": ["<rootDir>/test/setup.ts"]
 }
