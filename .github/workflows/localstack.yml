@@ -1,39 +1,20 @@
-name: Deploy to AWS (ECS Fargate)
+name: Test on LocalStack
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch: # Permite disparar manualmente
+on:  
+  workflow_dispatch:              # allow manual runs from the Actions tab
 
 env:
-  PROJECT_NAME: devai
-  ENVIRONMENT: dev
-  BACKEND_BUCKET: ${{ vars.BACKEND_BUCKET }}
-  TF_VAR_project_name: devai
-  TF_VAR_environment: dev
-  AUTOMATION: true
-  AWS_EC2_METADATA_DISABLED: true
-  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
-  NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-  CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-  CLERK_JWT_KEY: ${{ secrets.CLERK_JWT_KEY }}
-  JWT_SECRET: ${{ secrets.JWT_SECRET }}
-  TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  AWS_DEFAULT_REGION: us-east-1     # dummy creds are fine with LocalStack
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: test
+  AWS_SECRET_ACCESS_KEY: test
+
 
 jobs:
-  
   quality:
-    name: Lint & Testing
+    name: Deploy on LocalStack
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: postgresql://user:password@localhost:5432/dbname?schema=public
-      DIRECT_URL: postgresql://user:password@localhost:5432/dbname?schema=public
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,14 +57,8 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test --project=cicd
         working-directory: apps/frontend
-        
-      #- uses: actions/upload-artifact@v4
-      #  if: ${{ !cancelled() }}
-      #  with:
-      #    name: playwright-report
-      #  path: apps/frontend/playwright-report/
-      #  retention-days: 30
 
+     
 
   terraform:
     name: Terraform Apply
@@ -95,6 +70,16 @@ jobs:
       run:
         working-directory: ./infra/environments/dev
     steps:
+          # 6) Start LocalStack with Pro features enabled
+      - name: Start LocalStack
+        uses: LocalStack/setup-localstack@main
+        with:
+          image-tag: 'latest'        # pull the latest LocalStack image
+          install-awslocal: true     # also install the awslocal helper
+          use-pro: false              # turn on Pro features
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+
       - name: Checkout
         uses: actions/checkout@v4
 
