@@ -29,14 +29,14 @@ export default defineConfig({
     {
       command: 'npm run prisma:generate && npx nest start',
       url: 'http://127.0.0.1:3001/api/v1/products',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 120 * 1000,
       cwd: backendDir,
     },
     {
       command: 'npm run dev',
       url: 'http://127.0.0.1:3000',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 120 * 1000,
     },
   ],
@@ -70,6 +70,15 @@ export default defineConfig({
         /order-lifecycle\.spec\.ts/
       ],
     },
+    {
+      name: 'cicd',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: path.resolve(__dirname, 'tests/.auth/admin.json'),
+      },
+      dependencies: ['setup'],
+      testMatch: /fluxo-completo-carrinho\.spec\.ts/,
+    }
   ],
 });
 

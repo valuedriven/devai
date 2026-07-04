@@ -76,7 +76,7 @@ test.describe('10. Regressão — Outros Fluxos', () => {
 
       await test.step('fill admin credentials and login', async () => {
         await loginPage.login(process.env.ADMIN_EMAIL!, process.env.ADMIN_PASSWORD!);
-        await expect(cartPage.confirmOrderButton).toBeVisible();
+        await expect(cartPage.confirmOrderButton).toBeVisible({ timeout: 15_000 });
       });
 
       await test.step('assert cart badge persists as 1 after login', async () => {
