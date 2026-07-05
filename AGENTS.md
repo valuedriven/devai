@@ -1,10 +1,8 @@
-# AGENTS.md — Engineering Operating Constitution
+# AGENTS.md
 
-## Purpose
+# Rule Precedence
 
-This document defines the operational rules for AI coding agents working in this repository (Claude Code, Cursor Agent, Antigravity, OpenCode, Aider, and similar tools).
-
-When rules conflict, follow the order of precedence:
+When instructions conflict, apply them in the following order:
 
 1. Security
 2. Architecture
@@ -14,136 +12,130 @@ When rules conflict, follow the order of precedence:
 
 ---
 
+# Purpose
+
+This document contains the permanent operating rules that apply to nearly every development task in this repository.
+
+Task-specific procedures (testing, Playwright, Docker, Prisma, infrastructure, etc.) must be loaded from dedicated skill files only when required.
+
+---
+
 # 1. Core Principles
 
 ## Think Before Acting
 
 Before implementing:
 
-* Analyze the request.
-* State assumptions when uncertainty exists.
-* Present alternatives and tradeoffs when relevant.
-* Ask for clarification if requirements are ambiguous.
+- Understand the request.
+- Identify assumptions.
+- Present alternatives when meaningful.
+- Ask for clarification when requirements are ambiguous.
 
-Never start coding before understanding the problem.
+Never begin implementation without understanding the problem.
 
 ---
 
 ## Simplicity First
 
-Prefer:
+Always prefer:
 
-* Simple solutions
-* Existing patterns
-* Minimal changes
+- Existing patterns
+- Small changes
+- Straightforward implementations
 
 Avoid:
 
-* Premature abstractions
-* Speculative features
-* Unnecessary refactoring
-
-Implement only what is required.
+- Premature abstraction
+- Speculative features
+- Unnecessary refactoring
 
 ---
 
 ## Surgical Changes
 
-Modify only files directly related to the task.
+Modify only the files directly related to the requested work.
 
-Do not:
+Avoid unrelated:
 
-* Reformat unrelated files
-* Rename unrelated symbols
-* Refactor adjacent code without explicit justification
+- formatting
+- renaming
+- refactoring
 
-Keep diffs small and focused.
+Keep pull requests focused.
 
 ---
 
 ## Goal-Oriented Development
 
-Whenever possible:
+Whenever practical:
 
-1. Reproduce the problem.
-2. Create or update tests.
-3. Implement the fix.
-4. Validate the solution.
+1. Understand the problem.
+2. Update or create automated tests.
+3. Implement the solution.
+4. Validate the result.
 
 ---
 
-# 2. Architecture Constraints
+# 2. Architecture
 
 ## Frontend
 
-Technology:
+Technology
 
-* Next.js (App Router)
-* TypeScript
-* Vanilla CSS
+- Next.js (App Router)
+- TypeScript
+- Vanilla CSS
 
-Responsibilities:
+Responsibilities
 
-* UI rendering
-* User interaction
-* API consumption
+- Rendering
+- User interaction
+- API consumption
 
-Forbidden:
+Forbidden
 
-* Business rules
-* Authorization logic
-* Database access
-* Prisma usage
-* Mixing Sizing Units: Design system tokens in `globals.css` must use a consistent unit system (e.g., exclusively `rem`). Do not mix hardcoded `px` overrides if the system uses `rem` or variables.
+- Business rules
+- Authorization
+- Database access
+- Prisma
 
-Frontend must remain a presentation layer.
+The frontend is a presentation layer only.
 
 ---
 
 ## Backend
 
-Technology:
+Technology
 
-* NestJS
-* TypeScript
-* Prisma
-* PostgreSQL
+- NestJS
+- Prisma
+- PostgreSQL
 
-Responsibilities:
+Responsibilities
 
-* Business rules
-* Authorization
-* Validation
-* Persistence
+- Business rules
+- Validation
+- Authorization
+- Persistence
 
-All business decisions must be enforced on the backend.
+All business decisions belong to the backend.
 
 ---
 
 ## Database
 
-Primary database:
+Requirements
 
-* PostgreSQL
+- PostgreSQL
+- Prisma migrations
+- Versioned schema changes
 
-Requirements:
+Never:
 
-* Use Prisma as the data access layer.
-* All schema changes must be versioned through migrations.
+- modify production schemas manually
+- introduce database-specific features that reduce portability
 
-Forbidden:
-
-* Manual production schema changes
-* Vendor-specific database features that reduce portability
-
-The system must remain compatible with:
-
-* Local PostgreSQL (Docker)
-* Managed PostgreSQL providers:
-
-  * Supabase
-  * AWS RDS
-  * Similar services
+The application must remain portable across local Docker environments and managed PostgreSQL providers.
 
 ---
 
@@ -151,250 +143,142 @@ The system must remain compatible with:
 
 ```text
 apps/
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── features/
-│   ├── services/
-│   ├── hooks/
-│   └── types/
-
-└── backend/
-    └── modules/
-        ├── catalog/
-        ├── customers/
-        └── orders/
+    frontend/
+    backend/
 
 docs/
 ```
 
-Follow existing project conventions before introducing new structure.
+Follow existing project conventions before introducing new structures.
 
 ---
 
 # 4. Development Workflow
 
-For every non-trivial task:
+For non-trivial tasks:
 
-## Phase 1 — Analysis
+## Analysis
 
-* Understand requirements.
-* Inspect affected files.
-* Identify risks.
+- Understand requirements
+- Inspect affected files
+- Identify risks
 
-## Phase 2 — Planning
+## Planning
 
 Describe:
 
-* Files to modify
-* Expected behavior
-* Validation strategy
+- files to modify
+- implementation strategy
+- validation approach
 
-## Phase 3 — Implementation
+## Implementation
 
-Apply the smallest change that satisfies the requirement.
+Make the smallest change that satisfies the requirement.
 
-## Phase 4 — Validation
+## Validation
 
-Run applicable checks:
+Run only the validation steps applicable to the modified code.
 
-```bash
-npm run lint
-npm run test
-npm run build
-```
-
-Execute only what is relevant to the scope of the change.
-
-## Phase 5 — Report
+## Report
 
 Summarize:
 
-* What changed
-* Validation performed
-* Remaining risks
-* Assumptions made
+- implemented changes
+- validation performed
+- remaining risks
+- assumptions
 
 ---
 
-# 5. Terminal Governance
+# 5. Terminal Operations
 
-## Safe Command Execution
+Commands should be:
 
-Commands should:
+- reproducible
+- deterministic
+- non-interactive
 
-* Be reproducible
-* Be non-interactive
-* Have predictable outcomes
+Prefer explicit working directories instead of chained `cd` commands.
 
-Prefer:
-
-```bash
---yes
--y
---force-with-lease
-```
-
-when appropriate.
-
----
-
-## Working Directory
-
-When the tool supports it:
-
-* Use an explicit working directory.
-* Avoid chained navigation commands.
-
-Prefer:
-
-```bash
-cwd=apps/backend
-```
-
-over:
-
-```bash
-cd apps/backend && ...
-```
-
----
-
-## Long-Running Processes
-
-Do not start processes that block execution unless explicitly requested.
-
-Examples:
-
-* Development servers
-* Watch mode
-* Interactive shells
-
----
-
-## Port and Service Conflict Management
-
-* **Conflict Detection**: Before starting services that bind to host ports (such as PostgreSQL on `5432`, Next.js on `3000`, or NestJS on `3001`), verify whether those ports are already in use.
-* **Docker Container Management**: If a port is occupied by conflicting or legacy Docker containers (e.g., leftover containers such as `devai-db`), safely inspect (`docker ps`) and stop (`docker stop`) them to free the required resources.
-* **Port Mapping Verification**: After starting containerized services, always verify port mappings (e.g., using `docker ps`) to ensure host ports are correctly bound and that no binding failures occurred.
-
----
-
-## CLI Diagnostics
-
-* **Error Output Analysis**: When CLI tools fail (such as database migrations or npm installations), carefully inspect command output to identify version-specific changes or constraints (e.g., Prisma 7 configuration structure updates) before attempting to rerun the command.
-
----
-
-## Autonomy in File Operations and Validation
-
-* **Proactive File Modifications**: The agent is fully authorized to proactively read, create, modify, and delete files within the workspace to complete tasks. It should apply edits directly rather than requesting permission before each operation.
-* **Handling Permission Failures**: If file read/write permission errors occur, the agent must proactively request the minimum required permission scope using the appropriate system tools to continue without unnecessarily interrupting the user.
-* **Autonomous Testing**: After modifying files, the agent should proactively run validation checks, tests, or linters without requiring prior user approval, report findings, and fix issues whenever possible.
+Avoid starting long-running processes unless explicitly requested.
 
 ---
 
 # 6. Quality Standards
 
-## Quality Gate
+A task is complete only when:
 
-Never consider a task complete without:
+- requirements are satisfied
+- relevant automated validation succeeds
+- no known regression has been introduced
 
-* Creating or updating the necessary automated tests.
-* Running lint, tests, and coverage checks.
-* Fixing all detected failures.
+Whenever applicable:
 
-Block task completion if any of the following exist:
-
-* Lint errors.
-* Failing tests.
-* Coverage below the required minimum threshold.
-
-### Testing Guidelines
-
-* Never ignore and never change the linter config files. 
-* Unit tests must be used exclusively in the backend to validate business rules, services, use cases, and components in isolation.
-* Integration tests must be used exclusively for the backend REST API to validate endpoints, data persistence, authentication, authorization, and component integration.
-* End-to-end (E2E) tests must validate the application's critical user journeys, covering the integration between frontend, backend, and any required supporting services.
-* **Playwright Restrictions**: The use of `.first()` or `.nth()` to resolve locator strict mode violations is explicitly forbidden. You must use robust, uniquely scoped locators or text filters.
-
-Tests should cover, when applicable:
-
-* Happy Path
-* Failure Path
-* Relevant edge cases
-
-Every business rule change must be accompanied by automated tests appropriate to the affected layer.
+- update automated tests
+- execute the project's validation commands
+- resolve validation failures before completion
 
 ---
 
-## Definition of Done
+# 7. Documentation
 
-A task is complete when:
+Before implementing significant changes, consult the relevant project documentation.
 
-* Requirements are satisfied.
-* Relevant tests pass.
-* Lint passes.
-* Build succeeds.
-* No known regression has been introduced.
+Typical references include:
 
-### Task Completion Criteria: Linting Requirement
+| Document | Purpose |
+|-----------|---------|
+| Product Requirements | Business behavior |
+| Technical Specification | Architecture and implementation decisions |
+| UI Specification | Interface behavior |
+| Design System | Visual consistency |
 
-- **Mandatory Check**: You must run `npm run lint` before marking any task as complete.
-- **Zero Tolerance**: Do not conclude a task if the linter returns any errors or warnings.
-- **Resolution**: You must fix all identified linting issues before final submission.
-
----
-
-# 7. Documentation Usage
-
-Before implementing significant changes, review the relevant documents in `/docs`.
-
-Priority order:
-
-1. PRD
-2. Technical Specification
-3. UI Specification
-4. Design System
-5. Problem Definition
-
-Project documentation takes precedence over assumptions.
+Project documentation always takes precedence over assumptions.
 
 ---
 
-# 8. External Documentation
+# 8. External Knowledge
 
-When framework or library behavior is uncertain:
-
-Use MCP tools to retrieve authoritative documentation.
+When framework or library behavior is uncertain, consult authoritative documentation instead of relying on memory.
 
 Preferred sources:
 
-* Context7
-* Official documentation
-* Official RFCs
-* Vendor documentation
-
-Avoid relying on memory when documentation can be queried.
+- Context7 for framework APIs
+- Official documentation
+- Official RFCs
+- Vendor documentation
 
 ---
 
 # 9. Continuous Improvement
 
-At the end of significant tasks:
+If you identify recurring corrections, outdated guidance, or missing project conventions, propose improvements to this AGENTS.md.
 
-* Identify recurring issues.
-* Identify obsolete rules.
-* Suggest improvements to this AGENTS.md.
-
-The operating constitution should evolve alongside the project.
+The configuration should evolve together with the project.
 
 ---
 
-# Environment Variables
+# Skill Loading
 
-* Both the frontend and backend modules must always load environment variables from the single `.env` file located at the project root.
-* Creating `.env`, `.env.local`, or symbolic links to `.env` files within any workspace subdirectory or module directory (such as `apps/frontend/` or `apps/backend/`) is strictly prohibited.
-* Environment variables must be loaded programmatically from the root directory (for example, using `process.loadEnvFile` in `next.config.ts` for Next.js, or NestJS `ConfigModule` with `envFilePath` explicitly resolved to the project root).
+Load specialized skills only when required by the current task.
+
+Examples:
+
+| Skill | When to Load |
+|--------|--------------|
+| backend-testing | Implementing backend tests |
+| playwright-testing | Writing or modifying E2E tests |
+| docker | Container or infrastructure work |
+| prisma | Database schema or migration changes |
+| environment | Environment configuration |
+| architecture | Large architectural modifications |
 
 ---
+
+# Environment
+
+This repository uses a single `.env` file located at the project root.
+
+Frontend and backend must load configuration from this shared file.
+
+Do not create module-specific `.env` files unless the project architecture explicitly changes.
