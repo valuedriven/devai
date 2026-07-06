@@ -81,7 +81,8 @@ resource "aws_ecs_task_definition" "backend" {
       environment = [
         { name = "NODE_ENV", value = "production" },
         { name = "PORT", value = "3001" },
-        { name = "BACKEND_PORT", value = "3001" }
+        { name = "BACKEND_PORT", value = "3001" },
+        { name = "CORS_ORIGINS", value = "http://${var.alb_dns_name},https://${var.alb_dns_name}" }
       ]
       secrets = [
         { name = "DATABASE_URL", valueFrom = "${var.secret_arn}:DATABASE_URL::" },

@@ -70,6 +70,7 @@ module "compute" {
   backend_target_group_arn  = module.loadbalancer.backend_target_group_arn
   secret_arn                = module.secrets.secret_arn
   aws_region                = var.aws_region
+  alb_dns_name              = module.loadbalancer.alb_dns_name
 }
 
 module "monitoring" {

@@ -64,3 +64,8 @@ variable "backend_image_tag" {
   type        = string
   default     = "latest"
 }
+
+variable "alb_dns_name" {
+  description = "DNS name of the ALB, used to configure CORS_ORIGINS on the backend"
+  type        = string
+}
