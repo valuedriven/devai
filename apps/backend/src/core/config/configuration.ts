@@ -9,7 +9,7 @@ export default () => ({
     publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   },
   cors: {
-    origins: process.env.CORS_ORIGINS?.split(',') ?? ['http://localhost:3000'],
+    origins: process.env.CORS_ORIGINS?.split(',').map(s => s.trim()) ?? ['http://localhost:3000'],
   },
   jwt: {
     secret: process.env.JWT_SECRET,

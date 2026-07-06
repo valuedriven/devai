@@ -32,6 +32,8 @@ export default defineConfig({
       reuseExistingServer: true,
       timeout: 120 * 1000,
       cwd: backendDir,
+      stdout: 'pipe',
+      stderr: 'pipe',
     },
     {
       command: 'npm run dev',

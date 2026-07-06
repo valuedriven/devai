@@ -14,6 +14,9 @@ setup('authenticate as admin', async ({ loginPage, storefrontPage, page }) => {
   expect(email).toBeTruthy();
   expect(password).toBeTruthy();
 
+  page.on('console', msg => console.log('BROWSER CONSOLE:', msg.text()));
+  page.on('pageerror', err => console.log('BROWSER ERROR:', err.message));
+
   // Navegar para /login & autenticar usando LoginPage POM
   await loginPage.goTo();
   await loginPage.login(email, password);
