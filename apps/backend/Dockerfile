@@ -72,6 +72,11 @@ COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
 COPY --from=builder /app/apps/backend/src/database/prisma ./apps/backend/src/database/prisma
 # Copy prisma.config.ts so Prisma 7 can resolve datasource.url at runtime
 COPY --from=builder /app/apps/backend/prisma.config.ts ./apps/backend/prisma.config.ts
+# Copy public directory and ensure permissions for uploads
+COPY --from=builder /app/apps/backend/public ./apps/backend/public
+
+# Ensure the upload directory exists and is owned by the nestjs user
+RUN mkdir -p ./apps/backend/public/uploads && chown -R nestjs:nodejs /app
 
 WORKDIR /app/apps/backend
 
