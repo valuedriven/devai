@@ -57,7 +57,6 @@ jobs:
   integration-e2e-tests:
     name: Integration & E2E Testing
     runs-on: ubuntu-latest
-    needs: [lint-unit-test]
     env:
       DATABASE_URL: postgresql://user:password@127.0.0.1:5432/dbname?schema=public
       DIRECT_URL: postgresql://user:password@127.0.0.1:5432/dbname?schema=public
@@ -111,7 +110,6 @@ jobs:
 
   terraform:
     name: Terraform Apply
-    needs: [integration-e2e-tests]
     outputs:
       alb_dns_name: ${{ steps.outputs.outputs.alb_dns_name }}
     runs-on: ubuntu-latest
@@ -125,17 +123,8 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
 
-      - name: Install AWS CLI
-        if: ${{ env.AUTOMATION == 'true' }}
-        run: |
-          if ! command -v aws &> /dev/null; then
-            echo "Installing AWS CLI..."
-            curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
-            unzip -q /tmp/awscliv2.zip -d /tmp
-            /tmp/aws/install
-            rm -rf /tmp/awscliv2.zip /tmp/aws
-          fi
-          aws --version
+      - name: Verify AWS CLI
+        run: aws --version
 
       - name: Ensure Terraform State Bucket
         id: tf-state-bucket
@@ -247,58 +236,44 @@ jobs:
           echo "Secrets updated successfully in AWS Secrets Manager."
 
   build-and-push:
-    name: Build and Push to ECR
-    needs: [integration-e2e-tests, terraform]
+    name: Build and Push to ECR (${{ matrix.service }})
+    needs: [lint-unit-test, integration-e2e-tests, terraform]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, frontend]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push Backend image to Amazon ECR
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE: ${{ env.PROJECT_NAME }}-backend
-        run: |
-          docker build \
-            -t $REGISTRY/$IMAGE:latest \
-            -t $REGISTRY/$IMAGE:${{ github.sha }} \
-            -f apps/backend/Dockerfile .
-          docker push --all-tags $REGISTRY/$IMAGE
-
-      - name: Build and push Frontend image to Amazon ECR
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE: ${{ env.PROJECT_NAME }}-frontend
-          ALB_DNS: ${{ needs.terraform.outputs.alb_dns_name }}
-          CLERK_PUB_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-        run: |
-          docker build \
-            --build-arg NEXT_PUBLIC_API_URL=/api/v1 \
-            --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$CLERK_PUB_KEY \
-            -t $REGISTRY/$IMAGE:latest \
-            -t $REGISTRY/$IMAGE:${{ github.sha }} \
-            -f apps/frontend/Dockerfile .
-          docker push --all-tags $REGISTRY/$IMAGE
+      - name: Build and push ${{ matrix.service }} image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.PROJECT_NAME }}-${{ matrix.service }}:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.PROJECT_NAME }}-${{ matrix.service }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=/api/v1
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
   deploy:
     name: Deploy to ECS
     needs: [build-and-push, terraform]
     runs-on: ubuntu-latest
     steps:
-      - name: Install AWS CLI
-        if: ${{ env.AUTOMATION == 'true' }}
-        run: |
-          if ! command -v aws &> /dev/null; then
-            echo "Installing AWS CLI..."
-            curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
-            unzip -q /tmp/awscliv2.zip -d /tmp
-            /tmp/aws/install
-            rm -rf /tmp/awscliv2.zip /tmp/aws
-          fi
-          aws --version
+      - name: Verify AWS CLI
+        run: aws --version
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -362,32 +337,34 @@ jobs:
           echo "Registered frontend task definition: $NEW_TASK_ARN"
           echo "task_def_arn=$NEW_TASK_ARN" >> $GITHUB_OUTPUT
 
-      - name: Deploy Backend to ECS
+      - name: Update ECS Services
         run: |
+          echo "Updating backend service..."
           aws ecs update-service \
             --cluster ${{ env.PROJECT_NAME }}-cluster \
             --service ${{ env.PROJECT_NAME }}-backend-service \
             --task-definition ${{ steps.backend-task-def.outputs.task_def_arn }} \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ env.AWS_REGION }} > /dev/null
 
-          echo "Waiting for backend service to stabilize..."
-          aws ecs wait services-stable \
-            --cluster ${{ env.PROJECT_NAME }}-cluster \
-            --services ${{ env.PROJECT_NAME }}-backend-service \
-            --region ${{ env.AWS_REGION }}
-          echo "Backend service is stable."
-
-      - name: Deploy Frontend to ECS
-        run: |
+          echo "Updating frontend service..."
           aws ecs update-service \
             --cluster ${{ env.PROJECT_NAME }}-cluster \
             --service ${{ env.PROJECT_NAME }}-frontend-service \
             --task-definition ${{ steps.frontend-task-def.outputs.task_def_arn }} \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ env.AWS_REGION }} > /dev/null
 
-          echo "Waiting for frontend service to stabilize..."
+      - name: Wait for Services to Stabilize
+        run: |
+          echo "Waiting for both services to stabilize..."
+          aws ecs wait services-stable \
+            --cluster ${{ env.PROJECT_NAME }}-cluster \
+            --services ${{ env.PROJECT_NAME }}-backend-service \
+            --region ${{ env.AWS_REGION }} &
+            
           aws ecs wait services-stable \
             --cluster ${{ env.PROJECT_NAME }}-cluster \
             --services ${{ env.PROJECT_NAME }}-frontend-service \
-            --region ${{ env.AWS_REGION }}
-          echo "Frontend service is stable."
+            --region ${{ env.AWS_REGION }} &
+            
+          wait
+          echo "All services are stable."
