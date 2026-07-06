@@ -88,6 +88,7 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "DATABASE_URL", valueFrom = "${var.secret_arn}:DATABASE_URL::" },
         { name = "DIRECT_URL", valueFrom = "${var.secret_arn}:DIRECT_URL::" },
         { name = "CLERK_SECRET_KEY", valueFrom = "${var.secret_arn}:CLERK_SECRET_KEY::" },
+        { name = "CLERK_JWT_KEY", valueFrom = "${var.secret_arn}:CLERK_JWT_KEY::" },
         { name = "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", valueFrom = "${var.secret_arn}:NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY::" },
         { name = "JWT_SECRET", valueFrom = "${var.secret_arn}:JWT_SECRET::" }
       ]
