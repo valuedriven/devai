@@ -1,0 +1,99 @@
+
+Running 2 tests using 2 workers
+
+[1A[2K[1/2] [setup] › tests/auth.setup.ts:32:6 › authenticate as customer
+[1A[2K[2/2] [setup] › tests/auth.setup.ts:10:6 › authenticate as admin
+[1A[2K[setup] › tests/auth.setup.ts:10:6 › authenticate as admin
+BROWSER CONSOLE: Access to fetch at 'http://127.0.0.1:3001/api/v1/auth/login' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+[1A[2KBROWSER CONSOLE: Failed to load resource: net::ERR_FAILED
+
+[1A[2KBROWSER CONSOLE: Login failed: TypeError: Failed to fetch
+    at n (http://127.0.0.1:3000/_next/static/chunks/e6a0aeca92bfbbb3.js:3:16588)
+    at a (http://127.0.0.1:3000/_next/static/chunks/e6a0aeca92bfbbb3.js:3:17342)
+    at g (http://127.0.0.1:3000/_next/static/chunks/e6a0aeca92bfbbb3.js:3:18514)
+    at p (http://127.0.0.1:3000/_next/static/chunks/75a18185aad6f0c4.js:1:505)
+    at sY (http://127.0.0.1:3000/_next/static/chunks/aee6c7720838f8a2.js:1:161798)
+    at http://127.0.0.1:3000/_next/static/chunks/aee6c7720838f8a2.js:1:167686
+    at tD (http://127.0.0.1:3000/_next/static/chunks/aee6c7720838f8a2.js:1:30293)
+    at s3 (http://127.0.0.1:3000/_next/static/chunks/aee6c7720838f8a2.js:1:163031)
+    at fC (http://127.0.0.1:3000/_next/static/chunks/aee6c7720838f8a2.js:1:198997)
+    at fP (http://127.0.0.1:3000/_next/static/chunks/aee6c7720838f8a2.js:1:198819)
+
+[1A[2KBROWSER CONSOLE: The resource http://127.0.0.1:3000/_next/static/chunks/d97b1ac7fb3ab2b7.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+
+[1A[2KBROWSER CONSOLE: The resource http://127.0.0.1:3000/_next/static/chunks/91c4fbe313d1b25a.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+
+[1A[2K  1) [setup] › tests/auth.setup.ts:32:6 › authenticate as customer ─────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()[22m
+
+
+      42 |
+      43 |   // Aguardar redirecionamento para / e verificar user-dropdown-container visível
+    > 44 |   await expect(storefrontPage.welcomeHeading).toBeVisible();
+         |                                               ^
+      45 |   await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
+      46 |
+      47 |   // Salvar storageState
+        at /home/junilson/projetos/devai/apps/frontend/tests/auth.setup.ts:44:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-customer-setup/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-customer-setup/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth.setup.ts-authenticate-as-customer-setup/error-context.md
+
+
+[1A[2K  2) [setup] › tests/auth.setup.ts:10:6 › authenticate as admin ────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()[22m
+
+
+      23 |
+      24 |   // Aguardar redirecionamento para / e verificar user-dropdown-container visível
+    > 25 |   await expect(storefrontPage.welcomeHeading).toBeVisible();
+         |                                               ^
+      26 |   await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
+      27 |
+      28 |   // Salvar storageState
+        at /home/junilson/projetos/devai/apps/frontend/tests/auth.setup.ts:25:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-admin-setup/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-admin-setup/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth.setup.ts-authenticate-as-admin-setup/error-context.md
+
+
+[1A[2K  2 failed
+    [setup] › tests/auth.setup.ts:10:6 › authenticate as admin ─────────────────────────────────────
+    [setup] › tests/auth.setup.ts:32:6 › authenticate as customer ──────────────────────────────────
+
+[36m  Serving HTML report at http://localhost:34241. Press Ctrl+C to quit.[39m

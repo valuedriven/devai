@@ -1,0 +1,78 @@
+
+Running 2 tests using 2 workers
+
+[1A[2K[1/2] [setup] › tests/auth.setup.ts:10:6 › authenticate as admin
+[1A[2K[2/2] [setup] › tests/auth.setup.ts:29:6 › authenticate as customer
+[1A[2K  1) [setup] › tests/auth.setup.ts:29:6 › authenticate as customer ─────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()[22m
+
+
+      39 |
+      40 |   // Aguardar redirecionamento para / e verificar user-dropdown-container visível
+    > 41 |   await expect(storefrontPage.welcomeHeading).toBeVisible();
+         |                                               ^
+      42 |   await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
+      43 |
+      44 |   // Salvar storageState
+        at /home/junilson/projetos/devai/apps/frontend/tests/auth.setup.ts:41:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-customer-setup/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-customer-setup/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth.setup.ts-authenticate-as-customer-setup/error-context.md
+
+
+[1A[2K  2) [setup] › tests/auth.setup.ts:10:6 › authenticate as admin ────────────────────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Bem-vindo à DevAI Store' }).first()[22m
+
+
+      20 |
+      21 |   // Aguardar redirecionamento para / e verificar user-dropdown-container visível
+    > 22 |   await expect(storefrontPage.welcomeHeading).toBeVisible();
+         |                                               ^
+      23 |   await expect(page.getByTestId('user-dropdown-container')).toBeVisible();
+      24 |
+      25 |   // Salvar storageState
+        at /home/junilson/projetos/devai/apps/frontend/tests/auth.setup.ts:22:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-admin-setup/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth.setup.ts-authenticate-as-admin-setup/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth.setup.ts-authenticate-as-admin-setup/error-context.md
+
+
+[1A[2K  2 failed
+    [setup] › tests/auth.setup.ts:10:6 › authenticate as admin ─────────────────────────────────────
+    [setup] › tests/auth.setup.ts:29:6 › authenticate as customer ──────────────────────────────────
+
+[36m  Serving HTML report at http://localhost:37799. Press Ctrl+C to quit.[39m
