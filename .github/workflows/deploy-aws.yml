@@ -42,7 +42,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -62,6 +62,7 @@ jobs:
       DATABASE_URL: postgresql://user:password@127.0.0.1:5432/dbname?schema=public
       DIRECT_URL: postgresql://user:password@127.0.0.1:5432/dbname?schema=public
       NEXT_PUBLIC_API_URL: http://127.0.0.1:3001/api/v1
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,7 +70,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
