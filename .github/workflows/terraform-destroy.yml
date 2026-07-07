@@ -26,9 +26,50 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
+      - name: Install AWS CLI (if missing)
         run: |
-          terraform init -backend-config="bucket=${{ env.BACKEND_BUCKET }}" 
+          if ! command -v aws &> /dev/null; then
+            echo "Installing AWS CLI..."
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -q awscliv2.zip
+            sudo ./aws/install || ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+            rm -rf awscliv2.zip aws
+          fi
+
+      - name: Verify AWS CLI
+        run: aws --version
+
+      - name: Ensure Terraform State Bucket
+        id: tf-state-bucket
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          BUCKET_NAME="devai-tfstate-${ACCOUNT_ID}"
+          REGION="${{ env.AWS_REGION }}"
+          echo "bucket=$BUCKET_NAME" >> $GITHUB_OUTPUT
+          echo "Using bucket $BUCKET_NAME in region $REGION (account $ACCOUNT_ID)..."
+          
+          if ! aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
+            echo "Bucket $BUCKET_NAME not found. Creating..."
+            if [ "$REGION" = "us-east-1" ]; then
+              aws s3api create-bucket --bucket "$BUCKET_NAME" --region "$REGION" --no-cli-pager
+            else
+              aws s3api create-bucket --bucket "$BUCKET_NAME" --region "$REGION" --create-bucket-configuration LocationConstraint="$REGION" --no-cli-pager
+            fi
+            
+            echo "Waiting for bucket to be available..."
+            aws s3api wait bucket-exists --bucket "$BUCKET_NAME"
+            
+            echo "Configuring versioning..."
+            aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --versioning-configuration Status=Enabled
+            
+            echo "Configuring encryption..."
+            aws s3api put-bucket-encryption --bucket "$BUCKET_NAME" --server-side-encryption-configuration '{"Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]}'
+          else
+            echo "Bucket $BUCKET_NAME already exists."
+          fi
+
+      - name: Terraform Init
+        run: terraform init -input=false -backend-config="bucket=${{ steps.tf-state-bucket.outputs.bucket }}" 
 
 
       - name: Terraform Plan Destroy
