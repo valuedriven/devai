@@ -75,6 +75,9 @@ COPY --from=builder /app/apps/backend/prisma.config.ts ./apps/backend/prisma.con
 # Copy public directory and ensure permissions for uploads
 COPY --from=builder /app/apps/backend/public ./apps/backend/public
 
+# Copy entrypoint script
+COPY apps/backend/docker-entrypoint.sh ./apps/backend/docker-entrypoint.sh
+
 # Ensure the upload directory exists and is owned by the nestjs user
 RUN mkdir -p ./apps/backend/public/uploads && chown -R nestjs:nodejs /app
 
@@ -84,6 +87,6 @@ USER nestjs
 
 EXPOSE $PORT
 
-# Run migrations then start app
+# Run migrations (with P3005 baseline handling) then start app
 # Prisma 7 automatically picks up prisma.config.ts from the working directory
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+ENTRYPOINT ["sh", "docker-entrypoint.sh"]
