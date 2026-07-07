@@ -19,7 +19,7 @@ variable "environment" {
 variable "db_name" {
   description = "Name of the database"
   type        = string
-  default     = "devaidvdb"
+  default     = "devai_dev_db"
 }
 
 variable "db_username" {
