@@ -15,14 +15,23 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
-
+  // Use refs in event handler directly, or keep track of email and password values via standard state
   // Refs ensure the async handler always uses the latest values regardless of
   // when the React Compiler memoized the closure.
   const emailRef = useRef(email)
   const passwordRef = useRef(password)
-  emailRef.current = email
-  passwordRef.current = password
+  
+  useEffect(() => {
+    emailRef.current = email
+  }, [email])
+
+  useEffect(() => {
+    passwordRef.current = password
+  }, [password])
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogin = async () => {
     setError(null)

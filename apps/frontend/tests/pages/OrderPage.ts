@@ -17,7 +17,7 @@ export class OrderPage {
     this.page = page;
     this.heading = page.getByRole('heading', { level: 1 });
     this.table = page.getByRole('table');
-    this.searchInput = page.getByPlaceholder(/Pesquisar/i);
+    this.searchInput = page.getByPlaceholder('Pesquisar pedidos...').first();
     this.paymentModalButton = page.getByRole('button', { name: /Registrar Pagamento/i });
     this.paymentValueInput = page.getByRole('spinbutton', { name: /valor do pagamento/i });
     this.paymentMethodSelect = page.getByRole('combobox');

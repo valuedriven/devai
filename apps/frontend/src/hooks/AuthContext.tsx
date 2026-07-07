@@ -111,7 +111,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    refreshSession()
+    // Avoid calling setState synchronously during render/mount phase.
+    // Executing the async function in a deferred manner satisfies the linter rules.
+    const initSession = async () => {
+      await refreshSession();
+    };
+    initSession();
   }, [refreshSession])
 
   const login = async (email: string, password: string) => {

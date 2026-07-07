@@ -8,6 +8,7 @@ if (fs.existsSync(envPath)) {
 }
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
   /* config options here */
   distDir: process.env.VERCEL ? '.next' : undefined,
   reactCompiler: true,
