@@ -22,6 +22,8 @@ resource "aws_alb_target_group" "frontend" {
     path                = "/"
     healthy_threshold   = 2
     unhealthy_threshold = 10
+    interval            = 5
+    timeout             = 3
   }
 
   tags = {
