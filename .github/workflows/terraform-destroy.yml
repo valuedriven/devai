@@ -4,13 +4,20 @@ on:
   workflow_dispatch:
 
 env:
-  BACKEND_BUCKET: ${{ vars.BACKEND_BUCKET }}
+  PROJECT_NAME: devai
+  ENVIRONMENT: dev
+  TF_VAR_project_name: devai
+  TF_VAR_environment: dev
+  AUTOMATION: true
+  AWS_EC2_METADATA_DISABLED: true
+  AWS_PAGER: ""
   TF_VAR_notification_email: ${{ secrets.NOTIFICATION_EMAIL }}
+  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+  TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
 
 jobs:
   terraform-destroy:
@@ -21,7 +28,7 @@ jobs:
         working-directory: ./infra/environments/dev
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
