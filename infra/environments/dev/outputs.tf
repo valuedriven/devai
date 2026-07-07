@@ -18,6 +18,10 @@ output "db_instance_address" {
   value = module.database.db_instance_address
 }
 
+output "db_name" {
+  value = module.database.db_name
+}
+
 output "secret_arn" {
   value = module.secrets.secret_arn
 }

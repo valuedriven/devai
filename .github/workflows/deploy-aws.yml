@@ -179,6 +179,7 @@ jobs:
         run: |
           # Obter outputs do Terraform
           DB_ADDRESS=$(terraform output -raw db_instance_address)
+          DB_NAME=$(terraform output -raw db_name)
           ALB_DNS=$(terraform output -raw alb_dns_name)
           SECRET_ARN=$(terraform output -raw secret_arn)
           
@@ -188,8 +189,8 @@ jobs:
           fi
 
           # Construir variáveis
-          DATABASE_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/devai?schema=public"
-          DIRECT_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/devai?schema=public"
+          DATABASE_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/${DB_NAME}?schema=public"
+          DIRECT_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/${DB_NAME}?schema=public"
           NEXT_PUBLIC_API_URL="http://${ALB_DNS}/api/v1"
           
           echo "Updating secrets in Secrets Manager..."
