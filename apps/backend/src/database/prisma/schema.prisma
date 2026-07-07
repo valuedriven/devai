@@ -32,7 +32,7 @@ model Product {
   active      Boolean       @default(true)
   categoryId  String?       @map("category_id")
   createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
   orderItems  OrderItem[]
   category    Category?     @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
