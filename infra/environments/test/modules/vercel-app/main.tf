@@ -24,7 +24,10 @@ resource "vercel_project" "this" {
   build_command              = var.build_command
   install_command            = var.install_command
   output_directory           = var.output_directory
-  serverless_function_region = var.serverless_function_region
+  
+  resource_config = {
+    function_default_regions = [var.serverless_function_region] 
+  }
 }
 
 # One resource per environment variable. Keyed by the variable name (static),
