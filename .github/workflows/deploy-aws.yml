@@ -189,8 +189,8 @@ jobs:
           fi
 
           # Construir variáveis
-          DATABASE_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/${DB_NAME}?schema=public"
-          DIRECT_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/${DB_NAME}?schema=public"
+          DATABASE_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/${DB_NAME}?sslmode=no-verify&schema=public"
+          DIRECT_URL="postgresql://postgres:${{ secrets.DB_PASSWORD }}@${DB_ADDRESS}:5432/${DB_NAME}?sslmode=no-verify&schema=public"
           NEXT_PUBLIC_API_URL="http://${ALB_DNS}/api/v1"
           
           echo "Updating secrets in Secrets Manager..."
