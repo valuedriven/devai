@@ -1,61 +1,93 @@
-# Fluxo de Delivery
+# Roteiro de Entrega
 
-## 1.Visão geral do fluxo
+Este roteiro descreve o passo a passo da construção, da liberação e da evolução da solução. Os conceitos por trás de cada atividade estão no material de aula das Unidades 2 e 3; os requisitos que a solução precisa atender estão no documento Requisitos do Projeto.
 
-Resultados:
-- Roadmap de mudanças
-- Propostas de mudança
-- Planos de testes
-- Casos de teste
-- Incremento de Produto
+As atividades são individuais e podem ser executadas no seu próprio ritmo, sem necessidade de encontros ao vivo.
 
-Participantes:
-- Designer UX
-- Desenvolvedor
+> O repositório [valuedriven/devai](https://github.com/valuedriven/devai) é um **blueprint**: serve de exemplo de forma para os artefatos e a configuração, e é citado nos prompts. O projeto é seu, com domínio próprio e requisitos funcionais próprios.
 
-Ferramentas:
-- Agentes de IA para desenvolvimento (Antigravity, Claude Code, Cursor, Codex, Opencode etc.)
-- Ferramentas de Spec-Driven Development (Openspec, BMAD, Spec-kit, GSD etc.)
-- Ferramentas para automação de testes de Spec-Driven Development (Playwright) 
+---
+
+## 1. Visão geral do fluxo
+
+**Resultados:**
+
+* Agente de desenvolvimento configurado (`AGENTS.md`, skills, MCP servers)
+* Backlog de mudanças (`backlog.md`) e propostas de mudança
+* Esqueleto andante com integração contínua
+* Incrementos de produto com testes de unidade, integração e aceite
+* Pipeline de CI/CD e MVP publicado
+* Solução migrada para a versão final, em roteiro específico
+* Mudança evolutiva em sistema existente
+
+**Ferramentas:**
+
+* Agente de desenvolvimento: Google Antigravity (<https://antigravity.google>) no ambiente de referência, ou OpenCode (<https://opencode.ai/>) no ambiente open source. Outras alternativas: Claude Code, Cursor, Codex, DeepSeek Harness.
+* Spec-driven development: OpenSpec (<https://openspec.dev/>). Alternativas: BMAD, Spec-kit, GSD.
+* Automação de testes: Playwright (<https://playwright.dev/>).
+* Inspeção de código: SonarQube.
+* Integração e entrega contínuas: GitHub Actions.
+* Infraestrutura como código: Terraform, usado no roteiro de migração.
+
+O roteiro é escrito de forma independente da ferramenta de agente. Os passos específicos de cada ambiente estão nos documentos de setup, indicados na seção 4.
 
 ---
 
 ## 2. Orientações gerais
 
-Os comandos executados neste roteiro consideram tanto execuções via terminal quanto interface de chat do agente de IA. Fique atento a cada execução.
+Os comandos deste roteiro consideram tanto execuções via terminal quanto pela interface de chat do agente de IA. Fique atento ao contexto de cada execução.
+
+### Estratégia de implantação em duas etapas
+
+| Etapa | Objetivo | Plataformas | Onde é tratada |
+| :---- | :---- | :---- | :---- |
+| MVP | Validar os fluxos de negócio ponta a ponta com rapidez | Vercel, Supabase, Clerk | Seções 3 a 8 deste roteiro |
+| Versão final | Atender integralmente aos requisitos de portabilidade e implantação | AWS, com contêineres OCI e Terraform | [Roteiro de migração](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/configuracao_aws.md), indicado na seção 9 |
+
+A **AWS é a referência desejada** para a versão final, e a migração acontece em roteiro específico, depois que o MVP estiver validado.
+
+A versão final não descarta a primeira: o Clerk continua como provedor de identidade e o código permanece o mesmo. O que muda é onde a aplicação executa e como o ambiente é criado.
 
 ### Pré-requisitos
 
-- Google Antigravity IDE <https://antigravity.google> instalado localmente.
-- Node.js e npm <https://nodejs.org/> instalados localmentes.
-- Git <https://git-scm.com/> instalado localmente.
-- Docker e Docker Compose <https://docker.com> instalados localmente.
-- Openspec <https://openspec.dev/> instalado localmente.
-- Playwright <https://playwright.dev/> instalado localmente.
-- Conta GitHub <https://github.com/>.
-- Conta Vercel <https://vercel.com/>.
-- Conta Supabase <https://www.supabase.com/>.
-- Conta Clerk <https://clerk.com/>.
-- Conta Context7 <https://context7.com/>.
+Ferramentas instaladas localmente:
 
-Certifique-se de estar logado nessses serviços ao realizar o roteiro.
+* [Node.js e npm](https://nodejs.org/)
+* [Git](https://git-scm.com/)
+* [Docker e Docker Compose](https://docker.com)
+* [OpenSpec](https://openspec.dev/)
+* [Playwright](https://playwright.dev/)
 
-Como complemento, pode ser configurado o fluxo para utilização de ferramentas opensource, disponível [aqui](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/setup_opensource.md)
+O agente de desenvolvimento e o acesso a modelos são instalados no setup do ambiente, na seção 4. Para a migração à versão final, o roteiro específico lista seus próprios pré-requisitos, entre eles o Terraform e o gerenciador `uv`.
+
+Contas:
+
+* [GitHub](https://github.com/)
+* [Vercel](https://vercel.com/)
+* [Supabase](https://www.supabase.com/)
+* [Clerk](https://clerk.com/)
+* [Context7](https://context7.com/)
+* AWS, para a versão final (criada no momento da migração)
+
+Certifique-se de estar autenticado nesses serviços antes de executar o roteiro.
 
 ### Gerenciamento da janela de contexto
 
-- Priorize a criação de novas conversa no Antigravity para cada tarefa. Para tanto, acesse o painel Agent, comando +, Start a New Conversation.
+* Inicie uma sessão nova do agente para cada tarefa.
+* Referencie arquivos e diretórios com o caractere `@` em vez de colar o conteúdo. O agente carrega o arquivo quando precisa.
+* Em sessões longas, compacte o contexto ou reinicie a sessão.
 
-### Ciclo Planejar/Executar (Research/Plan/Implement)
+### Ciclo planejar/executar
 
-- Priorize a estruturação das tarefas no ciclo Planejar/Executar.
-- Para o planejamento, priorize, sempre que disponíveis, modelos com maior capacidade de reasoning ou "thinking". 
-- Para execução podem ser selecionados modelos mais rápidos ou simples.
-   
+* Estruture as tarefas no ciclo planejar/executar.
+* Para o planejamento, prefira modelos com maior capacidade de raciocínio e, quando a ferramenta oferecer, um modo de agente sem permissão de edição.
+* Para a execução, modelos mais rápidos e baratos costumam bastar.
+* Para a revisão, use uma sessão nova ou um modelo diferente daquele que implementou.
+
 ### Ajuste nos prompts
 
-- Para vários exemplos de prompts disponibilizados, atente para a necessidade de substituir os valores entre os símbolos "<" e ">" pelos valores específicos de seu projeto.
-- Quando estiver editando um prompt, utilize o caracter "@" para referenciar recursos como arquivos, diretórios, rules e mcp servers.
+* Substitua os valores entre `<` e `>` pelos valores do seu projeto.
+* Use `@` para referenciar arquivos, diretórios, regras e MCP servers.
 
 ---
 
@@ -63,37 +95,30 @@ Como complemento, pode ser configurado o fluxo para utilização de ferramentas 
 
 ### Documentação geral do projeto
 
-- Certifique-se que a documentação geral do projeto esteja disponível no diretório específico, conforme orientações anteriores do fluxo de descoberta:
+Certifique-se de que a documentação produzida na descoberta esteja disponível no repositório:
 
-```
+```text
 ├── docs
 │   ├── architecture.md
 │   ├── design.md
 │   ├── prd.md
 │   ├── problem.md
 │   ├── spec.md
-
+│   ├── diagramas/
+│   ├── prototypes/
+│   └── ai-log.md
 ```
+
+A pasta `docs/prototypes/` é obrigatória: o agente não acessa a ferramenta de prototipação e trabalhará a partir desses arquivos.
 
 ### Configuração de variáveis de ambiente
 
-- No diretório raiz do projeto crie arquivo .env com o conteúdo a seguir (os endereços correspondem aos locais onde os dados podem ser obtidos)
-- Acesse os endereços informados junto a cada credencial
-- Navegue em cada endereço e obtenha os valores solicitados
+* No diretório raiz do projeto, crie o arquivo `.env` com o conteúdo a seguir.
+* Acesse os endereços indicados junto a cada credencial e obtenha os valores solicitados.
 
-```
+```bash
 PROJECT_NAME=<nome do projeto>
 GLOBAL_PREFIX=api/v1
-
-# Context7
-# https://context7.com/dashboard
-# Seção API Keys, comando Create API Key
-CONTEXT7_API_KEY=
-
-# Stitch
-# https://stitch.withgoogle.com/settings
-# Seção Chave de API, comando Criar chave
-STITCH_API_KEY=
 
 # Vercel
 # https://vercel.com/account/settings/tokens
@@ -105,10 +130,10 @@ VERCEL_API_TOKEN=
 # Seção Classic Tokens, comando Generate new token
 SUPABASE_ACCESS_TOKEN=
 # [deixar os itens a seguir em branco inicialmente]
-NEXT_PUBLIC_SUPABASE_URL=[deixar em branco inicialmente]
-NEXT_PUBLIC_SUPABASE_ANON_KEY=[deixar em branco inicialmente]
-DATABASE_URL=[deixar em branco inicialmente]
-DIRECT_URL=[deixar em branco inicialmente]
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+DATABASE_URL=
+DIRECT_URL=
 
 # Clerk
 # https://dashboard.clerk.com/apps/
@@ -116,43 +141,66 @@ DIRECT_URL=[deixar em branco inicialmente]
 # Selecionar a aplicação criada, menu Configure, seção API Keys, comando Quick copy
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
-# Seção API Keys, item JWKS Public Key (usar aspas duplas para envolver conteúdo)
+# Seção API Keys, item JWKS Public Key (usar aspas duplas para envolver o conteúdo)
 CLERK_JWT_KEY=
 
 # Aplicação
 FRONTEND_PORT=3000
 BACKEND_PORT=3001
-NEXT_PUBLIC_API_URL=http://localhost:3005/v1
+NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 ```
 
-- Crie ou atualize o arquivo .gitignore e inclua nele o seguinte conteúdo:
-  
-```
+> O valor de `NEXT_PUBLIC_API_URL` precisa coincidir com `BACKEND_PORT` e `GLOBAL_PREFIX`. Divergências aqui produzem erros de integração difíceis de diagnosticar.
+
+* Crie ou atualize o arquivo `.gitignore` e inclua nele:
+
+```text
 .env
 ```
 
+* Crie também um arquivo `.env.example` com as mesmas chaves e sem os valores. Esse arquivo é versionado e documenta as variáveis necessárias.
 
-### Criação de README.md
+> O setup do ambiente, na seção 4, acrescenta a este arquivo as variáveis do agente e dos modelos. Preencha-as lá.
 
-- Crie uma nova sessão do agente.
-- Solicite ao agente a criação do arquivo README.md.
+### Criação do README.md
 
-```
+* Inicie uma nova sessão do agente.
+* Execute o prompt a seguir.
+
+```text
 Crie o arquivo README.md para o repositório com base na documentação disponível em @docs.
 
-Siga as boas práticas recomendadas pelo GitHub disponíveis em <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes>
+Inclua as instruções de instalação, configuração de variáveis de ambiente, execução local
+e execução dos testes.
+
+Siga as boas práticas recomendadas pelo GitHub, disponíveis em
+<https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes>
 ```
 
+---
 
-## 4 Configuração do Agente de IA
+## 4. Preparação do agente de IA
 
-### Configuração de regras no arquivo AGENTS.md
+### Setup do ambiente
 
-- Crie uma nova sessão no agente.
-- Informe o prompt a seguir:
+Escolha um dos dois ambientes e execute o documento correspondente antes de prosseguir. Os dois levam ao mesmo resultado, e o restante deste roteiro funciona igual nos dois.
 
-```
-Crie ou atualize o `AGENTS.md` com base na documentação do projeto (`docs/*`), incluindo:
+| Ambiente | Agente | Acesso a modelos | Documento |
+| :---- | :---- | :---- | :---- |
+| Referência | Google Antigravity | Modelos da própria ferramenta | [setup_environment.md](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/setup_environment.md) |
+| Open source | OpenCode | Providers de modelos via OmniRoute | [setup_environment_opensource.md](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/setup_environment_opensource.md) |
+
+Cada documento cobre a instalação do agente, o acesso aos modelos, os servidores MCP, as skills, os comandos do OpenSpec e os agentes do Playwright, além das variáveis de ambiente correspondentes.
+
+Ao terminar o setup, retome aqui.
+
+### Regras no arquivo AGENTS.md
+
+* Inicie uma nova sessão do agente.
+* Execute o prompt a seguir.
+
+```text
+Crie ou atualize o AGENTS.md com base na documentação do projeto (@docs), incluindo:
 
 * Comportamento do agente
 * Stack tecnológica
@@ -166,187 +214,87 @@ Crie ou atualize o `AGENTS.md` com base na documentação do projeto (`docs/*`),
 
 Utilize como referência:
 
-* https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md
-* https://github.com/valuedriven/devai/tree/main/.fluxo/concepts/agents-md-guidelines.md
+* https://github.com/valuedriven/devai/blob/main/.fluxo/concepts/agents-md-guidelines.md
 
-Adapte as diretrizes ao contexto do projeto, preserve conteúdo válido existente, remova duplicações e valide o resultado conforme as recomendações de AGENTS.md.
-```
-- Verifique o resultado
-- Peça ajuda a alguma IA de fronteira para validar o resultado.
+Adapte as diretrizes ao contexto do projeto, preserve o conteúdo válido existente,
+remova duplicações e valide o resultado conforme as recomendações de AGENTS.md.
 
-
-- Ao final de cada sessão, pode ser interessante avaliar o nível de autonomia dos agentes na execução das tarefas. Use um prompt análogo ao seguinte:
-
-```
-Analise o histórico de conversações desta sessão e proponha ajustes no arquivo AGENTS.md, seção Governança e uso de terminal, de forma a aumentar a autonomia do agente na execução de tarefas como leitura e escrita de arquivos.
+Mantenha o arquivo curto: ele entra no contexto de toda sessão. Ele é um índice que
+aponta para @docs, não um manual que repete a documentação.
 ```
 
-[AGENTS.md do projeto de referência](https://github.com/valuedriven/devai/blob/main/AGENTS.md)
+* Verifique o resultado e peça a uma IA de fronteira que o valide.
+* Arquivo de referência: [AGENTS.md do projeto de referência](https://github.com/valuedriven/devai/blob/main/AGENTS.md).
 
+Ao final de sessões relevantes, avalie o nível de autonomia do agente:
 
+```text
+Analise o histórico desta sessão e o arquivo @docs/ai-log.md.
 
-### Configuração de skills
+Identifique padrões de desvio: instruções que precisei repetir, convenções que não foram
+seguidas, decisões tomadas sem consultar a documentação.
 
-Os comandos a seguir, criarão a seguinte estrutura de diretórios:
+Para cada padrão, proponha:
+- um guia (regra no AGENTS.md ou skill) que reduza a chance de o desvio acontecer; ou
+- um sensor (teste, regra de lint, checagem) que detecte o desvio automaticamente.
 
-```
-.agents/
-├── skills/
-    <nome da skill>/
-    ├── SKILL.md          # Required: metadata + instructions
-    ├── scripts/          # Optional: executable code
-    ├── references/       # Optional: documentation
-    ├── assets/           # Optional: templates, resources
-    └── ...               # Any additional files or directories
-- 
-```
+Formato: tabela com as colunas
+Desvio observado | Tipo de controle | Proposta | Onde implementar.
 
-- Acesse o terminal a partir do diretório raiz do projeto.
-- Execute os comandos a seguir:
-
-```
-npx skills add https://github.com/hashicorp/agent-skills --yes --skill terraform-style-guide --agent universal 
-
-npx skills add https://github.com/vercel/next.js/tree/canary/skills --yes --agent universal --skill next-best-practices next-cache-components deploy-to-vercel react-best-practices web-design-guidelines composition-patterns
-
-npx skills add https://github.com/prisma/skills --yes --agent universal --skill prisma-database-setup
-
-npx skills add https://github.com/supabase/agent-skills --yes --agent universal
-
-npx skills add https://github.com/clerk/skills --yes --agent universal --skill clerk-setup clerk 
-
-npx skills add https://github.com/mattpocock/skills --yes --agent universal --skill improve-codebase-architecture
-
-npx skills add https://github.com/addyosmani/agent-skills --yes --agent universal --skill frontend-ui-engineering code-review-and-quality ci-cd-and-automation  
-
-npx skills add https://github.com/sickn33/antigravity-awesome-skills --yes --agent universal --skill backend-architect nestjs-expert docker-expert github-actions-templates
-```
-- Verifique no diretório .agents se as skills foram instaladas.
-
-Quando necessário, mais skills podem ser encontradas em marketplaces como: 
-- https://skillsmp.com/
-- https://skills.sh/
-
-Skills relacionadas aos testes no projeto de referência:
-
-[Testes de unidade](https://github.com/valuedriven/devai/blob/main/.agents/skills/jest-unit-tests/SKILL.md)
-
-[Testes de integração](https://github.com/valuedriven/devai/blob/main/.agents/skills/supertest-integration-test/SKILL.md)
-
-[Testes e2e](https://github.com/valuedriven/devai/blob/main/.agents/skills/playwright-e2e-tests/SKILL.md)
-
-[Gate qualidade](https://github.com/valuedriven/devai/blob/main/.agents/skills/quality-gate/SKILL.md)
-
----
-
-### Configuração de MCP Servers
-
-Configuração no Antigravity:
-
-- Selecione o painel Agent.
-- Selecione a opção Additional options (símbolo de três pontos "...").
-- Na seção MCP Store, acione o comando Manage MCP Servers.
-- No painel Manage MCP servers, acione o comando View raw config.
-- Substitua o conteúdo existente pelo seguinte:
-- Substitua o valor de cada chave pelo valor obtido no arquivo .env
-
-```json
-{
-  "mcpServers": {
-    "stitch": {
-      "serverUrl": "https://stitch.googleapis.com/mcp",
-      "headers": {
-        "X-Goog-Api-Key": "<STITCH_API_KEY>"
-      }
-    },
-    "context7": {
-      "serverUrl": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": "<CONTEXT7_API_KEY>"
-      }
-    }
-  }
-}
-```
-- Salve o arquivo.
-- No painel Manage MCP servers, acione o comando Refresh.
-
-Teste de MCP Servers
-
-- No painel Agent, selecione a opção Start a new conversation.
-- Solicite listar os projetos disponíveis no Stitch:
-
-```
-Liste os projetos do Stitch
+Não altere arquivos; apenas proponha.
 ```
 
-## 5. Criação de mudanças
+## 5. Criação do backlog de mudanças
 
-### Configuração do Openspec
+### Personalização do config.yaml
 
-- Certifique-se de que o Openspec esteja instalado, conforme orientações disponíveis em https://openspec.dev/.
-- Acesse o terminal no diretório raiz do projeto.
-- Inicialize o Openspec, executando o comando a seguir:
+O OpenSpec foi inicializado no setup do ambiente, e os diretórios `openspec/` e os comandos do agente já devem existir. Resta ajustar o contexto do projeto que o OpenSpec injeta nos comandos.
 
-```bash
-openspec init --tools antigravity, opencode
-```
+* Em uma nova sessão do agente, execute:
 
-- Certifique-se de que as skills e commands foram instaladas nos diretórios .agents (plural) e .opencode.
-- Como resultado, devem ser criadas ou atualizadas as seguintes estruturas de pastas:
-
-```
-├── .agents
-│   ├── commands/
-│   ├── rules/
-│   ├── skills/
-│   └── workflows/
-├── .opencode
-│   ├── commands/
-│   ├── rules/
-│   ├── skills/
-│   └── workflows/
-├── openspec
-│   ├── changes
-│   ├── config.yaml
-│   └── specs
-```
-
-- Caso tenha sido criada a pasta .agent (no singular), mova seu conteúdo para a pasta .agents
-
-- Execute o seguinte comando (certifique-se de que o comando /opsx-explore seja selecionado ao clicar em "/". Faça o mesmo para o arquivo indicado, acionando "@"):
-
-```
-/opsx-explore 
-
-Personalize o arquivo config.yaml com base nas informações do projeto disponíveis em:
-@docs/prd.md @docs/spec.md @docs/design.md @docs/architecture.md (em especial as diretrizes de testes e qualidade)
-
-```
-
-[config.yaml do projeto de referência](https://github.com/valuedriven/devai/blob/main/openspec/config.yaml)
-
-
-### Definição de roadmap de mudanças
-
-- Inicie uma nova sessão do agente  . 
-- Na janela do chat, digite o caracter "/" e selecione a skill "opsx-explore".
-- Informe o conteúdo a seguir logo depois da skill (lembre-se de informar o nome do projeto stitch corretamente)
-
-```
+```text
 /opsx-explore
 
-Dimensione as mudanças necessárias para a implementação de uma aplicação web full stack de maneira incremental.
+Personalize o arquivo config.yaml com base nas informações do projeto disponíveis em
+@docs/prd.md @docs/spec.md @docs/architecture.md @docs/design.md @AGENTS.md,
+em especial as diretrizes de testes e qualidade.
+```
 
-Utilize a documentação disponível nos arquivos @docs/prd.md, @docs/spec.md e @docs/architecture.md.
+* Arquivo de referência: [config.yaml do projeto de referência](https://github.com/valuedriven/devai/blob/main/openspec/config.yaml).
 
-Obtenha os protótipos das interfaces gráficas no projeto stitch <nome do projeto> por meio do mcp server correspondente.
+### Definição do backlog de mudanças
 
-Configure as mudanças de forma que nenhuma fique com tamanho, complexidade e/ou risco maior que médio.
+* Inicie uma nova sessão do agente.
+* Digite `/` e selecione o comando `opsx-explore`.
+* Informe o conteúdo a seguir logo depois do comando.
+
+```text
+/opsx-explore
+
+Dimensione as mudanças necessárias para a implementação de uma aplicação web full stack
+de maneira incremental.
+
+Utilize a documentação disponível em @docs/prd.md (em especial a seção de escopo e
+roadmap), @docs/spec.md, @docs/architecture.md, @docs/diagramas/ e @docs/design.md.
+
+Os protótipos das interfaces gráficas estão em @docs/prototypes/.
+
+Configure as mudanças de forma que nenhuma fique com tamanho, complexidade e/ou risco
+maior que médio.
+
+Cada mudança deve ser uma fatia vertical: atravessa interface, API, regra de negócio e
+persistência, entregando algo verificável.
+
+Nomeie cada mudança pela capacidade que entrega, em kebab-case
+(exemplos: setup-monorepo, auth-perfis, carrinho-adicionar-item).
+
+As primeiras mudanças devem constituir um esqueleto andante executável:
+estrutura do monorepo, configuração externalizada, autenticação e integração contínua
+mínima (lint e build).
 
 Crie apenas o proposal.md de cada mudança.
 
-Crie um arquivo roadmap.md com um resumo do planejamento.
+Crie um arquivo backlog.md com um resumo do planejamento.
 
 Para cada mudança proposta, informe:
 - Escopo funcional
@@ -360,36 +308,60 @@ Para cada mudança proposta, informe:
 Nenhuma mudança pode ser considerada concluída sem os testes correspondentes.
 ```
 
-- Verifique se o agente identificou corretamente o projeto no Stitch. Caso contrário, informe o nome correto e peça para atualizar o plano.
-- Verifique se o agente identificou e leu corretamente os documentos do projeto.
+* Verifique se o agente leu corretamente os documentos e os protótipos.
+* É esperado que tenha sido criada uma estrutura semelhante a:
 
-- Analise os resultados apresentados. É esperado que tenha sido criada uma estrutura parecida com a seguir:
-
-```
+```text
 └── openspec
-    ├── changes
-    │   ├── archive
-    │   ├── iteracao 1 ...
-    │   │   │   |── .openspec.yaml
-    │   │   ├── proposal.md
-    │   ├── iteracao n ...
-    │   │   │   |── .openspec.yaml
-    │   │   ├── proposal.md
- ```
+    ├── backlog.md
+    └── changes
+        ├── archive/
+        ├── setup-monorepo/
+        │   ├── .openspec.yaml
+        │   └── proposal.md
+        └── auth-perfis/
+            ├── .openspec.yaml
+            └── proposal.md
+```
 
-- Analise a proposta e outros detalhes. Proceda os ajustes interagindo com o agente por meio da skill /psx-explore ou editando diretamente os arquivos.
-- Recomenda-se que a estrutura inicial do projeto e o mecanismo de autenticação estejam entre as primeiras entregas.
+### Revisão do backlog
 
-A cada etapa do fluxo de trabalho, pode ser verificado o progresso por meio do comando:
+* Em uma nova sessão, execute o prompt a seguir.
+
+```text
+Atue como: revisor de planejamento incremental.
+
+Contexto:
+@docs/prd.md (seção de escopo e roadmap)
+@openspec/backlog.md
+@openspec/changes/
+@docs/architecture.md
+
+Critérios:
+1. Cada horizonte do roadmap é coberto por ao menos uma mudança.
+2. As primeiras mudanças formam um esqueleto andante executável.
+3. Nenhuma mudança tem tamanho, complexidade ou risco maior que médio.
+4. Dependências estão explícitas e não há ciclos.
+5. Toda mudança prevê testes compatíveis com seu escopo.
+6. Os dois fluxos de negócio ponta a ponta estão fatiados verticalmente.
+
+Formato de saída: tabela com as colunas
+Mudança | Problema | Critério | Severidade | Ajuste sugerido.
+```
+
+* Ajuste o backlog interagindo com o agente por meio do comando `/opsx-explore` ou editando diretamente os arquivos.
+
+### Acompanhamento do progresso
+
+A qualquer momento, verifique o progresso:
 
 ```bash
 openspec view
-
 ```
 
-- Deve aparecer as seguintes informações:
+Resultado esperado:
 
-```
+```text
  ● Draft Changes: x
   ● Active Changes: x in progress
   ● Completed Changes: x
@@ -397,102 +369,130 @@ openspec view
 
 Draft Changes
 ────────────────────────────────────────────────────────────
-  ○ iteracao-x ...
-  ○ iteracao-y ...
-  
+  ○ setup-monorepo
+  ○ auth-perfis
+
 Active Changes
 ────────────────────────────────────────────────────────────
-  ◉ iteracao-z-xxx     [░░░░░░░░░░░░░░░░░░░░] 0%
+  ◉ setup-monorepo     [░░░░░░░░░░░░░░░░░░░░] 0%
 
 ════════════════════════════════════════════════════════════
 
 Use openspec list --changes or openspec list --specs for detailed view
 ```
 
-### Criação de propostas de mudanças
+---
 
-- Inicie uma nova sessão do agente.
-- Informe o seguinte prompt, informando a mudança desejada:
+## 6. Ciclo de implementação das mudanças
+
+O ciclo a seguir é executado para cada mudança do backlog, começando pelas do esqueleto andante.
+
+### Proposta de mudança
+
+* Inicie uma nova sessão do agente.
+* Execute:
 
 ```bash
 /opsx-propose <id da mudança>
 ```
 
-- Analise os resultados apresentados. É esperado que tenha sido criada uma estrutura parecida com a seguir:
+* É esperado que tenha sido criada uma estrutura semelhante a:
 
-```
+```text
 └── openspec
-    ├── changes
-    │   ├── archive
-    │   ├── iteracao1 ...
-    │   │   ├── design.md
-    │   │   ├── proposal.md
-    │   │   ├── specs
-    │   │   │   └── ...
-    │   │   │   |   └── spec.md
-    │   │   └── tasks.md
- ```
+    └── changes
+        └── auth-perfis
+            ├── design.md
+            ├── proposal.md
+            ├── specs
+            │   └── <capacidade>
+            │       └── spec.md
+            └── tasks.md
+```
 
-- Analise a proposta de mudança. Proceda os ajustes interagindo com o agente por meio da skill /psx-explore ou editando diretamente os arquivos.
+* **Leia a proposta antes de aplicar.** É aqui que erros custam pouco para corrigir. Ajuste interagindo com o agente por meio de `/opsx-propose` ou editando diretamente os arquivos.
 
+### Execução da mudança
 
-### Execução de propostas de mudanças
-
-- Inicie uma nova sessão do agente.
-- Informe o seguinte prompt, informando a mudança desejada:
+* Inicie uma nova sessão do agente.
+* Execute:
 
 ```bash
 /opsx-apply <id da mudança>
 ```
 
-- Acompanhe a execução do agente, analisando os resultados apresentados.
-- Caso sejam encontrados erros ou recursos não implementados, corrija-os solicitando os ajustes necessários.
+* Acompanhe a execução e revise os diffs antes de aceitá-los.
+* Caso sejam encontrados erros ou recursos não implementados, solicite os ajustes necessários.
 
+### Verificação
 
-### Avaliação de resultados
-
-- Inicie uma nova sessão do agente.
-- Execute o workflow para verificação da change aplicada:
+* Inicie uma nova sessão do agente.
+* Execute:
 
 ```bash
 /opsx-verify <id da mudança>
 ```
 
-- Ao final do processo, será gerado um relatório de validação. Verifique se o relatório indica que a change foi aplicada corretamente.
-- Caso contrário, corrija os problemas encontrados solicitando os ajustes necessários.
+* Ao final, será gerado um relatório de validação. Verifique se a mudança foi aplicada corretamente e corrija o que for necessário.
 
+### Sincronização e arquivamento
 
-### Arquivamento de mudança
-
-- Caso deseje que a documentação criada seja incluída na documentação persistente do projeto, execute:
+* Para incluir a documentação criada na documentação persistente do projeto:
 
 ```bash
 /opsx-sync
 ```
 
-- Execute o workflow de arquivamento
+* Para encerrar a mudança:
 
 ```bash
 /opsx-archive <id da mudança>
 ```
 
-- Inicie uma nova sessão do agente.
-- Solicite a execução da aplicação.
+> Sincronizar e arquivar não é formalidade. As specs de capacidade em `openspec/specs/` descrevem o comportamento atual do sistema e serão o contexto do agente nas mudanças seguintes. Spec desatualizada engana tanto você quanto o agente.
 
-O ciclo /opsx-propose -> /opsx-apply -> /opsx-verify -> /opsx-archive deverá ser executado para cada mudança, posteriormente.
+### Integração contínua mínima
+
+Entre as mudanças do esqueleto andante, inclua a configuração da integração contínua. O arquivo abaixo serve de ponto de partida:
+
+```yaml
+name: ci
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+```
+
+> Fixe a versão das actions de terceiros. Uma action apontada para `@main` executa, a cada build, o que o autor publicou naquele dia.
+
+### Experimento de harness
+
+Execute este experimento uma vez, durante as mudanças do esqueleto, para observar o efeito da configuração do agente sobre o resultado.
+
+* Escolha uma tarefa do `tasks.md` de uma mudança ainda não implementada.
+* Execute-a em duas configurações diferentes, variando apenas um fator:
+  * dois modelos diferentes, mesmo harness; ou
+  * agente de planejamento antes da execução versus execução direta; ou
+  * `AGENTS.md` completo versus `AGENTS.md` mínimo.
+* Compare resultado, aderência às convenções, tokens consumidos e número de intervenções necessárias.
+* Registre a comparação em `docs/ai-log.md`.
 
 ---
 
-## 6. Verificação de mudanças
+## 7. Verificação e testes
 
 ### Verificação manual
 
-Após a implementação de cada mudança podem ser feitas verificações.
-
-Um ciclo básico pode consistir na execução manual de comandos. Na execução de todos, interaja com o agente para eventuais correções.
-
-- Acesse o terminal.
-- No diretório raiz do projeto, execute os comandos seguir:
+Após cada mudança, execute o ciclo básico. Interaja com o agente para corrigir o que falhar.
 
 ```bash
 npm run lint
@@ -501,27 +501,25 @@ npm run build
 npm run dev
 ```
 
-- Acesse os endpoints da aplicação:
+Acesse os endereços da aplicação:
 
-```
-http://localhost:3000 (frontend)
-
-http://localhost:3001 (backend)
+```text
+http://localhost:3000   (frontend)
+http://localhost:3001   (backend)
 ```
 
 ### Configuração do Playwright
 
-- Certifique-se de que o Playwright esteja instalado, conforme orientações disponíveis em https://playwright.dev/.
-- Acesse o terminal.
-- Inicialize o Playwright, executando o comando a seguir no diretório raiz do projeto:
+* Acesse o terminal no diretório raiz do projeto.
+* Inicialize o Playwright:
 
 ```bash
 npm init playwright@latest
 ```
 
-- Informe os seguintes valores:
+* Informe os seguintes valores:
 
-```
+```text
 Do you want to use TypeScript or JavaScript? TypeScript
 Where to put your end-to-end tests? apps/frontend/tests
 Add a GitHub Actions workflow? yes
@@ -529,15 +527,15 @@ Install Playwright browsers? yes
 Install Playwright operating system dependencies? yes
 ```
 
-- Verifique a instalação:
+* Verifique a instalação:
 
 ```bash
 npx playwright test
 ```
 
-- Verifique o resultado esperado:
+* Resultado esperado:
 
-```
+```text
 Running 6 tests using 4 workers
   6 passed (4.1s)
 
@@ -546,150 +544,125 @@ To open last HTML report run:
   npx playwright show-report
 ```
 
-- Remova o arquivo apps/frontend/tests/example.spec.ts.
+* Remova o arquivo `apps/frontend/tests/example.spec.ts`.
 
-- Instale o MCP server do Playwright, executando o comando a seguir no diretório raiz do projeto a partir do terminal:
-
-```bash
-npm install -g @playwright/mcp
-```
-
-- Inclua a configuração do MCP server:
-
-```json
-{
-  "mcpServers": {
-    "playwright": {
-        "command": "npx",
-        "args": [
-            "-y",
-            "@playwright/mcp@latest"
-        ]
-    }
-  }
-}
-```
-
-- Inicialize o agente do Playwright:
-
-```bash
-npx playwright init-agents --loop=opencode
-```
-
-O Playwright não possui configuração específica para o Antigravity.
-Com isso, os arquivos criados na pasta .opencode devem ser copiados para a pasta .agents.
-
-- Verifique a criação dos seguintes arquivos:
-
-```
-.opencode
-└── prompts
-    ├── playwright-test-generator.md
-    ├── playwright-test-healer.md
-    └── playwright-test-planner.md
-
-```
+> O servidor MCP do Playwright e os agentes de planejamento, geração e correção de testes foram configurados no setup do ambiente. Se o diretório de prompts do seu agente não contiver `playwright-test-planner.md`, `playwright-test-generator.md` e `playwright-test-healer.md`, volte ao documento de setup antes de prosseguir.
 
 ### Geração de testes com agentes
 
+Antes desta seção, certifique-se de ter implementado pelo menos uma mudança com interface gráfica relevante, como login, catálogo de produtos, clientes ou pedidos.
 
-Antes de executar esta seção, certifique-se de que tenha sido implementada pelo menos uma mudança que contenha alguma interface gráfica relevante como: login, catálogo de produtos, clientes e/ou pedidos.
+#### Integração do Playwright com o Clerk
 
+* Inicie uma nova sessão do agente.
+* Execute:
 
-#### Configuração do Playwright para testes com Clerk
+```text
+Efetue as configurações necessárias para a realização de testes do Playwright de forma
+integrada ao Clerk, conforme @docs/architecture.md.
 
-- Crie uma nova seção do agente.
-- Execute o seguinte prompt:
-
-```
-Efetue as configurações necessárias para a realização de testes do Playwright de forma integrada ao Clerk conforme @docs/architecture.md
-```
-
-#### Criação de plano de testes
-
-Nesta seção será criado um plano de testes com base na especificação criada por meio do Openspec.
-
-- Crie uma nova seção do agente.
-- Execute o seguinte prompt. Substitua a especificação pelo nome correspondente em seu projeto:
-
-```
-Use as orientações disponíveis em <@.agents/prompts/playwright-test-planner.md> para criar um plano de testes para o fluxo de login com Clerk.
-
-Explore a especificação disponível em <@openspec/specs/user-authentication.md>.
-
+Configure o reaproveitamento de sessão autenticada: o login deve ser feito uma vez e o
+estado reutilizado pelos demais testes.
 ```
 
-Caso a especificação não tenha sido sincronizada ela pode ser encontrada na pasta openspec/changes ou openspec/changes/archived, caso tenha sido arquivada.
+#### Criação do plano de testes
 
-- Verifique a criação do arquivo de planejamento. Por default, ele deve se encontrar no diretório specs.
-- Caso tenha sido criada em outro local, mova-a para esse diretório.
+> Nos prompts a seguir, substitua `<prompts do agente>` pelo diretório indicado no documento de setup que você seguiu: `.agents/prompts` no ambiente de referência, `.opencode/prompts` no ambiente open source.
 
-No caso da execução realizada, o arquivo criado foi o specs/login-flow-test-plan.md.
+* Inicie uma nova sessão do agente.
+* Execute o prompt a seguir, substituindo o caminho da especificação pelo correspondente no seu projeto.
 
+```text
+Use as orientações disponíveis em @<prompts do agente>/playwright-test-planner.md para criar
+um plano de testes para o fluxo de login com Clerk.
 
-#### Geração de casos de teste
+Explore a especificação disponível em @openspec/specs/<capacidade>/spec.md.
 
-- Crie uma nova seção do agente.
-- Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto:
-
-```
-Use as orientações disponíveis em <@.agents/prompts/playwright-test-generator.md> para criar os testes para o fluxo de login.
-
-Explore o plano disponível em <@specs/login-flow-test-plan.md> e a documentação disponível em <@docs/spec.md>.
-
-Crie um único arquivo com toda suíte de testes para o plano proposto.
+Grave o plano no diretório specs/.
 ```
 
-- Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
-- Caso tenha sido criada em outro local, mova-a para esse diretório.
-- Verifique a execução dos testes e respectivo relatório gerado.
+> Caso a especificação ainda não tenha sido sincronizada, ela pode ser encontrada em `openspec/changes/<id da mudança>/specs/` ou, se já arquivada, em `openspec/changes/archive/`.
 
+* Verifique a criação do arquivo de planejamento em `specs/`.
 
-#### Ajustes nos testes
+#### Geração dos casos de teste
 
-Desenvolva esta seção caso tenham ocorrido erros na execução dos testes.
+* Inicie uma nova sessão do agente.
+* Execute o prompt a seguir, substituindo o nome do plano pelo criado no seu projeto.
 
-- Crie uma nova seção do agente.
-- Execute o seguinte prompt. Substitua o plano de testes com o arquivo criado em seu projeto. Substitua os valores de usuário e senha pelas credenciais configuradas anteriormente.
+```text
+Use as orientações disponíveis em @<prompts do agente>/playwright-test-generator.md para
+criar os testes do fluxo de login.
 
+Explore o plano disponível em @specs/login-flow-test-plan.md e a documentação disponível
+em @docs/spec.md.
+
+Crie um único arquivo com toda a suíte de testes para o plano proposto, em
+apps/frontend/tests/.
 ```
-Use as orientações disponíveis em <@.agents/prompts/playwright-test-healer.md> para ajustar os testes para o fluxo de login criados em <@apps/frontend/tests/login-flow.spec.ts>.
+
+> Os planos de teste ficam em `specs/`; os casos de teste executáveis ficam em `apps/frontend/tests/`.
+
+* Verifique a execução dos testes e o relatório gerado.
+
+#### Revisão obrigatória dos testes gerados
+
+Antes de aceitar os testes, percorra este checklist:
+
+* [ ] O teste verifica o critério de aceite da especificação, não apenas que a página carregou
+* [ ] As asserções são específicas (conteúdo, estado, status), não genéricas
+* [ ] Não há espera fixa (`sleep`) nem timeout inflado para contornar instabilidade
+* [ ] O teste falha quando o comportamento quebra
+
+O último item se verifica na prática: quebre o código de propósito e confirme que a suíte fica vermelha. Se continuar verde, a suíte não serve.
+
+#### Ajuste dos testes
+
+Execute esta seção caso tenham ocorrido erros na execução.
+
+* Inicie uma nova sessão do agente.
+* Execute:
+
+```text
+Use as orientações disponíveis em @<prompts do agente>/playwright-test-healer.md para
+ajustar os testes do fluxo de login criados em @apps/frontend/tests/login-flow.spec.ts.
+
+Restrições:
+- Não altere asserções existentes para fazer o teste passar.
+- Se concluir que o teste está errado, pare e me explique, em vez de corrigi-lo.
+- Ao final, liste o que mudou e por quê.
 ```
 
-- Verifique a criação do arquivo de casos de teste. Por default, ele deve se encontrar no diretório specs.
-- Caso tenha sido criada em outro local, mova-a para esse diretório.
-- Acesse o terminal.
-- Reexecute a suíte de testes com o recurso de acompanhamento visual:
+* Reexecute a suíte com acompanhamento visual:
 
 ```bash
 npx playwright test --headed
 ```
 
-- Verifique o relatório de execução de testes:
+* Verifique o relatório:
 
 ```bash
 npx playwright show-report
 ```
 
-Os procedimentos de planejamento -> geração -> ajustes devem ser realizados para cada nova mudança implementada.
+> Revise o diff dos arquivos de teste, não só o do código. Um agente em ciclo de correção pode relaxar uma asserção, aumentar um timeout ou remover uma verificação: o resultado é um teste verde que não verifica nada.
 
----
+O ciclo planejamento → geração → revisão → ajuste deve ser executado para cada nova mudança implementada.
 
-## 7. Inspeção de código
+### Inspeção de código
 
-### Configuração do servidor Sonar
+#### Servidor SonarQube
 
-- Acesse o terminal.
-- Inicialize o servidor Sonar:
+* Acesse o terminal e inicialize o servidor:
 
 ```bash
 docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
 ```
 
-- Alternativamente, o Sonar pode ser configurado como um serviço no docker-compose.yaml:
+* Alternativamente, configure o Sonar como serviço no `docker-compose.yaml`:
 
-```bash
-sonar:
+```yaml
+  sonar:
     image: sonarqube:latest
     restart: unless-stopped
     environment:
@@ -703,66 +676,247 @@ sonar:
     networks:
       - app-network
 ```
-- Acesse o navegador e informe o endereço:
 
-```bash
-http://localhost:9000
-```
+* Acesse `http://localhost:9000`.
+* Informe as credenciais iniciais (usuário `admin`, senha `admin`) e altere a senha.
+* Em Projects, selecione "Create a local project", informe os dados e acione Next.
+* Em "Set up new code for project", escolha "Follows the instance's defaults" e acione Create project.
+* Na seção "Analysis Method", selecione Locally.
+* Em "Provide a token", acione Generate e anote o token.
+* Em "Run code analysis on your project", selecione "JS/TS & Web".
 
-- Informe como credenciais: usuário = admin, senha = admin.
-- Altere a senha conforme recomendado.
-- Aguarde a navegação até a seção Projects.
-- Para "How do you want to create your project?", selecione a opção "Create a local project".
-- Para "Create a local project", informe os dados solicitados. Acione Next.
-- Para "Set up new code for project", escolha a opção "Follows the instance's defaults". Acione Create project.
+#### Scanner
 
-- Aguarde o posicionamento na seção "Project onboarding", item "Analysis Method".
-- Para "How do you want to analyze your repository?", selecione Locally.
-- Em "1. Provide a token", acione Generate.
-- Anote o token criado.
-- Selecione “Continue” no canto inferior direito.
-- Em "2. Run code analysis on your project", selecione "JS/TS & Web".
+* No diretório raiz, crie o arquivo `sonar-project.properties`:
 
-
-### Execução do scanner Sonar
-
-- No diretório raiz, crie o arquivo sonar-project.properties com o seguinte conteúdo:
-
-```bash
-# Root Project Information
+```properties
+# Informações do projeto
 sonar.projectKey=<projectKey configurado>
-sonar.projectName=<Nome do projeto>
-sonar.host.url=<endereço do servidor>
+sonar.projectName=<nome do projeto>
+sonar.host.url=http://localhost:9000
 
-# Define comma-separated paths to all source and test roots
+# Fontes e testes
 sonar.sources=apps/backend/src,apps/frontend/src
 sonar.tests=apps/backend/src,apps/frontend/src,apps/frontend/tests
 
-# Monorepo Glob Inclusions
-sonar.test.inclusions=**/*.spec.ts
+# Separação entre fontes e testes
+sonar.test.inclusions=**/*.spec.ts,**/*.test.ts
+sonar.exclusions=**/*.spec.ts,**/*.test.ts
 
-# Pass a comma-separated list of all generated coverage reports
+# Relatórios de cobertura
 sonar.javascript.lcov.reportPaths=apps/backend/coverage/lcov.info,apps/frontend/coverage/lcov.info
 ```
 
-- Execute a suite de testes para coletar as métricas de cobertura de código.
-- Acesse o terminal e execute o comando para instalação do scanner (copie o comando disponibilizado na tela do Sonar):
+> Sem `sonar.exclusions`, o scanner indexa o mesmo arquivo como fonte e como teste e a análise falha.
 
-```
+* Execute a suíte de testes para coletar as métricas de cobertura.
+* Instale o scanner:
+
+```bash
 npm install -g @sonar/scan
 ```
 
-- Acesse o terminal e execute o comando para execução do scanner (substitua o token pelo valor anotado):
+* Exporte o token anotado e execute o scanner:
 
-```
+```bash
+export SONARQUBE_TOKEN=<token gerado no Sonar>
 sonar -Dsonar.token=$SONARQUBE_TOKEN
 ```
 
-- Acesse novamente o servidor do Sonar e verifique os resultados do scanner:
+* Acesse novamente `http://localhost:9000` e verifique os resultados.
 
-```
-localhost:9000
-```
+> Cobertura alta com asserções fracas transmite falsa confiança. Leia os relatórios com ceticismo.
+
 ---
 
+## 8. Liberação do MVP
 
+Esta seção coloca o MVP no ar nas plataformas gerenciadas, com pipeline de entrega e observabilidade. A migração para a versão final na AWS é tratada em roteiro específico, depois que o MVP estiver funcionando (seção 9).
+
+Trate cada item a seguir como uma mudança do OpenSpec, seguindo o mesmo ciclo da seção 6.
+
+### Banco de dados e identidade em ambiente remoto
+
+* Inicie uma nova sessão do agente.
+* Execute:
+
+```text
+/opsx-propose infra-mvp-remoto
+
+Contexto: @docs/architecture.md (visão de implantação), @AGENTS.md
+
+Requisitos:
+- Projeto criado no Supabase, com as migrações aplicadas a partir do esquema do projeto.
+- Variáveis NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, DATABASE_URL e
+  DIRECT_URL preenchidas no .env e documentadas no .env.example.
+- Aplicação do Clerk configurada para o domínio de produção, com os perfis de usuário
+  previstos na especificação.
+- Nenhuma credencial versionada no repositório.
+```
+
+* Confirme que a aplicação local consegue conversar com o banco remoto antes de prosseguir.
+
+### Publicação do frontend
+
+* Execute:
+
+```text
+/opsx-propose deploy-vercel
+
+Contexto: @docs/architecture.md, @AGENTS.md
+
+Requisitos:
+- Projeto na Vercel vinculado ao repositório, com build do monorepo configurado.
+- Variáveis de ambiente cadastradas no projeto da Vercel, separadas por ambiente.
+- Backend publicado de forma acessível ao frontend, com a URL refletida em
+  NEXT_PUBLIC_API_URL.
+- Domínio de produção registrado no Clerk e nas origens permitidas (CORS) do backend.
+```
+
+* Verifique a aplicação publicada percorrendo os dois fluxos de negócio ponta a ponta no navegador.
+
+### Observabilidade
+
+* Execute:
+
+```text
+/opsx-propose observabilidade
+
+Contexto: @docs/architecture.md, @AGENTS.md
+
+Requisitos:
+- Instrumentação com OpenTelemetry: logs, métricas e traces.
+- Identificador de correlação atravessando a requisição, do frontend ao banco.
+- Instrumentação específica do componente de inteligência artificial: modelo e provider
+  utilizados, tokens de entrada e saída, latência, ocorrência de fallback e rejeição da
+  resposta pela validação.
+- Não registrar dados pessoais: prefira metadados e hashes a conteúdo de prompts e
+  respostas.
+```
+
+Verifique a instrumentação tentando responder a estas três perguntas apenas com o que o sistema emite:
+
+1. Um usuário relatou erro ao concluir o fluxo principal há dez minutos. O que aconteceu na requisição dele?
+2. Qual a latência p95 do endpoint mais usado nas últimas vinte e quatro horas?
+3. Quantos tokens a funcionalidade de IA consumiu hoje e houve fallback de provider?
+
+Se alguma pergunta ficar sem resposta, a instrumentação está incompleta.
+
+### Pipeline de entrega contínua
+
+* Execute:
+
+```text
+/opsx-propose pipeline-cd
+
+Contexto: @docs/architecture.md, @AGENTS.md, @.github/workflows/
+
+Requisitos:
+- Workflow de entrega disparado na branch principal.
+- Etapas na ordem: lint, testes de unidade e integração, análise Sonar, build e publicação.
+- Token do Sonar e demais valores sensíveis como secrets do repositório; nenhum valor
+  sensível no arquivo do workflow.
+- Ambiente (environment) com regra de proteção exigindo aprovação manual antes da
+  publicação em produção.
+- Testes de aceite executados contra o ambiente publicado.
+```
+
+* Configure a proteção da branch principal exigindo os status checks do workflow. Sem isso, o gate de qualidade é apenas uma sugestão.
+
+### Verificação do MVP
+
+* [ ] Dois fluxos de negócio ponta a ponta percorríveis na aplicação publicada
+* [ ] Funcionalidade de inteligência artificial operando e instrumentada
+* [ ] Pipeline verde, com gate de qualidade ativo
+* [ ] URL e credenciais de acesso disponíveis
+* [ ] As três perguntas de observabilidade respondidas com o que o sistema emite
+
+---
+
+## 9. Migração para a versão final
+
+O MVP valida os fluxos de negócio, mas apoia-se em plataformas gerenciadas. Isso atende à entrega rápida e deixa em aberto a portabilidade, a implantação automatizada e a recriação completa de ambientes exigidas pelos Requisitos do Projeto.
+
+A **AWS é a referência desejada** para a versão final: contêineres compatíveis com o padrão OCI, infraestrutura descrita em Terraform e pipeline capaz de recriar o ambiente do zero.
+
+> **Esta migração é feita em roteiro específico:** [Configuração para interação com AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/configuracao_aws.md). Execute-o somente depois que o MVP estiver funcionando e com os fluxos validados.
+
+O que o roteiro de migração cobre:
+
+| Etapa | Resultado |
+| :---- | :---- |
+| Configuração do ambiente AWS | Credenciais, MCP servers da AWS e skills de implantação configurados no agente |
+| Análise de decisão arquitetural | `docs/ada.md`, comparando arquiteturas candidatas e definindo o plano de evolução incremental |
+| Empacotamento | Dockerfiles com build em múltiplos estágios, imagem base versionada e `.dockerignore` |
+| Infraestrutura como código | Descrição Terraform do ambiente, com estado remoto e variáveis para o que muda entre ambientes |
+| Implantação | Pipeline estendido com build da imagem, `terraform plan` e `terraform apply`, autenticando por OIDC |
+| Prova de reprodutibilidade | Ambiente destruído e recriado pelo pipeline, com registro do que exigiu intervenção manual |
+
+Dois avisos que valem antes de começar:
+
+> O arquivo de estado do Terraform contém dados sensíveis e não vai para o Git. O comando `terraform destroy` apaga recursos de verdade, então leia o plano antes de aplicar. Segredos vêm de variáveis, nunca escritos nos arquivos `.tf`.
+
+> O termo *provider* no Terraform designa um plugin de infraestrutura. Não tem relação com os providers de modelos de IA configurados no setup do ambiente.
+
+Ao final da migração, cada intervenção manual que tiver sido necessária é uma lacuna na infraestrutura como código. Transforme cada uma em uma nova mudança no backlog.
+
+---
+
+## 10. Evolução
+
+
+### Mudança evolutiva em sistema existente
+
+Esta atividade testa a qualidade da documentação e do harness que você produziu. O ganho vem de trabalhar sobre um sistema que você não escreveu.
+
+* Obtenha o repositório de outro projeto que siga este fluxo. Como o trabalho é individual, a alternativa é usar o [projeto de referência](https://github.com/valuedriven/devai), cujo domínio é diferente do seu — o que preserva o essencial do exercício, que é depender só do que está escrito.
+* Recrie o ambiente de desenvolvimento usando apenas o `README.md` e o setup documentado.
+* Implemente uma pequena mudança evolutiva usando apenas `docs/`, `AGENTS.md`, `backlog.md` e `openspec/specs/`, sem consultar quem escreveu o sistema.
+* Siga o ciclo completo: `/opsx-propose` → `/opsx-apply` → `/opsx-verify` → `/opsx-sync` → `/opsx-archive`.
+
+Registre os atritos encontrados:
+
+| Momento | Pergunta |
+| :---- | :---- |
+| Montagem do ambiente | Quanto tempo até rodar? O que faltou documentado? |
+| Entendimento do domínio | O `problem.md` e o `prd.md` foram suficientes? |
+| Localização do código | A arquitetura descrita corresponde ao que existe? |
+| Comportamento atual | As specs de capacidade eram verdadeiras? |
+| Uso do agente | O `AGENTS.md` deu contexto suficiente? |
+| Testes | A suíte deu confiança para alterar? |
+
+Em seguida, aplique a mesma leitura ao seu próprio repositório: cada atrito que você sentiu no projeto alheio provavelmente existe no seu.
+
+### Refatoração assistida
+
+* Refatore em passos pequenos, com a suíte verde entre eles.
+* Não aceite refatoração e mudança de comportamento no mesmo diff.
+* Desconfie se a suíte precisou ser ajustada para a refatoração passar: nesse caso, o comportamento mudou.
+
+### Síntese crítica
+
+Ao final, acrescente a `docs/ai-log.md` uma seção respondendo, com base nos registros feitos ao longo do fluxo:
+
+* Onde a IA acelerou de verdade?
+* Onde ela custou tempo?
+* Que tipo de erro ela cometeu com mais frequência?
+* O que melhorou quando o harness melhorou?
+* Quanto custou, em tokens e em escolhas de modelo e provider?
+* O que continuou sendo trabalho humano?
+
+---
+
+## Verificação final da entrega
+
+* [ ] `AGENTS.md`, skills e MCP servers configurados
+* [ ] `openspec/backlog.md` e propostas revisadas
+* [ ] Esqueleto andante executando, com integração contínua verde
+* [ ] Dois fluxos de negócio ponta a ponta implementados e testados nos três níveis
+* [ ] Funcionalidade de inteligência artificial implementada, testada e instrumentada
+* [ ] Pipeline de CI/CD com gate de qualidade e proteção de branch
+* [ ] Observabilidade respondendo às três perguntas de verificação
+* [ ] MVP publicado, com URL e credenciais disponíveis
+* [ ] Specs de capacidade sincronizadas e mudanças arquivadas
+* [ ] Migração para a AWS executada pelo roteiro específico, com contêineres OCI e Terraform versionados
+* [ ] Mudança evolutiva implementada e atritos registrados
+* [ ] `docs/ai-log.md` completo, com a síntese crítica
