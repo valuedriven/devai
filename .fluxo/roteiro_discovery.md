@@ -15,9 +15,8 @@ Ele não é o seu projeto. Você desenvolve uma solução própria, com domínio
 ### Pré-requisitos
 
 * Conta no GitHub, com repositório criado para o projeto.
-* Acesso a pelo menos duas IAs de fronteira com recurso de pesquisa profunda (deep research) e capacidade de ler arquivos anexados e URLs.
-* Conta no Google, para uso do Stitch.
-* Documento de requisitos da solução, com os requisitos não funcionais obrigatórios e os direcionamentos de requisitos funcionais.
+* Acesso a pelo menos duas IAs de uso geral de fronteira (ChatGPT, Claude, Deepseek etc.) com recurso de pesquisa profunda (deep research) e capacidade de ler arquivos anexados e URLs.
+* Acesso a ferramenta de prototipação (Google Stitch, OpenDesign etc.). Para maiores detalhes, verifique os roteiros para setup de ambiente [Antigraviy](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment.md) ou [Opensource](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment_opensource.md). 
 
 ### Como fornecer contexto aos prompts
 
@@ -67,7 +66,7 @@ Esse registro é o que torna reprodutível uma cadeia de decisões tomada com ap
 
 **Resultado:** `docs/problem.md`
 
-**Ferramentas:** IA de uso geral (ChatGPT, Gemini, Claude, Kimi etc.) com recurso de pesquisa profunda.
+**Ferramentas:** IA de uso geral com recurso de pesquisa profunda.
 
 **Exemplo de forma:** <https://github.com/valuedriven/devai/blob/main/docs/problem.md>
 
@@ -77,35 +76,34 @@ Esse registro é o que torna reprodutível uma cadeia de decisões tomada com ap
 
 * Identifique um cenário em que haja um problema ou oportunidade a resolver.
 * Prefira um domínio conhecido de perto. Sem esse conhecimento, não há como avaliar criticamente o que a IA produz.
-* Verifique desde já a viabilidade do escopo: a solução precisará de dois fluxos de negócio ponta a ponta e de uma funcionalidade de inteligência artificial.
 
 #### Criação do problem.md
 
-* Execute o prompt a seguir.
+* Em uma IA de uso geral, execute o prompt a seguir.
 
 ```text
-Atue como: Product Manager Sênior.
+**Prompt — Problem Statement**
 
-Objetivo: criar a "Declaração de Problema" (Problem Statement) para um novo produto
-de software.
+**Papel:** Atue como Product Manager Sênior, especialista em descoberta de produtos de software.
 
-Contexto:
-Cenário: <mercado, ex.: Logística de última milha>
-Persona: <usuário, ex.: Motoboys autônomos>
-A Dor: <dificuldade, ex.: Dificuldade em comprovar entregas quando o app trava>
-Impacto: <consequência, ex.: Bloqueio na plataforma e perda de renda diária>
-Solução Atual: <o que fazem hoje, ex.: Tiram prints da tela e mandam por e-mail>
+**Objetivo:** Elaborar uma sentença de problema clara, concisa e centrada na necessidade do usuário, para orientar o desenvolvimento posterior do produto apoiado por IA.
 
-Exemplo de forma: abra e leia o documento a seguir antes de responder.
-https://github.com/valuedriven/devai/blob/main/docs/problem.md
+**Entradas:**
+- **Público-alvo:** <quem sente o problema>
+- **Atividades:** <o que o público-alvo faz>
+- **Dores:** <dificuldades enfrentadas>
+- **Impacto:** <consequência do problema>
+- **Solução atual:** <como o problema é tratado hoje>
 
-Resultado esperado:
-- Arquivo problem.md com a mesma estrutura, extensão e nível de detalhe do exemplo.
-- O exemplo é referência de forma, não de conteúdo: não reaproveite o domínio dele.
-- Antes do resultado, liste os títulos das seções do exemplo, para confirmar que o leu.
+**Referência:** Leia https://github.com/valuedriven/devai/blob/main/docs/problem.md antes de responder. Liste os títulos das seções encontrados para confirmar a leitura. Utilize o documento como referência de estrutura, estilo e nível de detalhe, sem reutilizar seu conteúdo.
 
-Restrições:
-- Não invente dados de mercado. Marque toda suposição com [SUPOSIÇÃO].
+**Instruções:**
+- Elabore apenas a sentença que descreve o problema, sintetizando a dor e seu impacto no contexto do público-alvo.
+- Não proponha soluções nem antecipe objetivos, funcionalidades, requisitos ou decisões técnicas.
+- Não invente informações. Identifique suposições necessárias com `[SUPOSIÇÃO]`.
+- Se a referência estiver inacessível ou faltarem informações essenciais, informe a limitação antes de prosseguir.
+
+**Saída:** Apresente os títulos identificados na referência e, em seguida, o conteúdo de `problem.md`, em Markdown, contendo somente a sentença de problema.
 ```
 
 * Confira se os títulos listados correspondem ao documento de exemplo. Se não corresponderem, o modelo não o leu: reexecute em uma ferramenta com acesso à web.
@@ -114,13 +112,12 @@ Restrições:
 
 #### Validação do problema com pesquisa profunda
 
-* Em uma IA de fronteira, acione o recurso de pesquisa profunda (deep research).
+* Em uma IA de uso geral, acione o recurso de pesquisa profunda (deep research).
 * **Anexe** o arquivo `docs/problem.md`.
 * Execute o prompt a seguir.
 
 ```text
-Pesquise e me diga se o problema descrito no arquivo anexo é documentado por
-fontes externas.
+Pesquise e me diga se o problema descrito no arquivo anexo é documentado por fontes externas.
 
 Para cada afirmação relevante, informe a fonte, a data e o grau de confiança.
 Separe claramente o que é evidência encontrada do que é inferência sua.
@@ -135,9 +132,9 @@ Se não encontrar evidência, diga explicitamente que não encontrou.
 
 ## 1.2 Definição do produto e especificação
 
-**Resultados:** `docs/prd.md` (incluindo a seção de roadmap) e `docs/spec.md`
+**Resultados:** `docs/prd.md` e `docs/spec.md`
 
-**Ferramentas:** IA de uso geral, em pelo menos duas ferramentas de fornecedores diferentes.
+**Ferramentas:** IA de uso geral.
 
 **Exemplos de forma:**
 
@@ -148,56 +145,54 @@ Se não encontrar evidência, diga explicitamente que não encontrou.
 
 #### Criação do prd.md
 
-* **Anexe** dois arquivos: `docs/problem.md` e o documento de requisitos da solução.
+* **Anexe** dois arquivos: `docs/problem.md` e a documentação complementar, caso existente.
 * Execute o prompt a seguir.
 
 ```text
-Atue como: Product Manager Sênior.
+**Prompt — Criação do PRD**
 
-Objetivo: criar o "Product Requirements Document" (PRD) para um novo produto
-de software.
+**Papel:** Atue como Product Manager Sênior, especialista em descoberta e definição de produtos de software.
 
-Contexto: os arquivos anexos.
-- problem.md: o problema a resolver.
-- documento de requisitos: restrições obrigatórias. Considere tanto os requisitos
-  não funcionais quanto os direcionamentos de requisitos funcionais.
+**Objetivo:** Criar o `prd.md`, definindo o produto, seus fluxos de negócio e o roadmap de evolução.
 
-Exemplo de forma: abra e leia o documento a seguir antes de responder.
-https://github.com/valuedriven/devai/blob/main/docs/prd.md
+**Entradas:**
+- `problem.md`: declaração do problema a resolver.
+- (Opcional) Documentação complementar: requisitos não funcionais prévios e direcionamentos funcionais.
 
-Resultado esperado:
-- Arquivo prd.md com a mesma estrutura, extensão e nível de detalhe do exemplo.
-- O exemplo é referência de forma, não de conteúdo: não reaproveite o domínio dele.
-- A seção de escopo deve funcionar como roadmap do produto: para cada horizonte
-  (MVP e versões futuras), informe objetivo, fluxos de negócio contemplados,
-  hipóteses a validar e o que fica de fora.
-- O MVP deve conter os dois fluxos de negócio ponta a ponta e a funcionalidade de
-  inteligência artificial.
-- Antes do resultado, liste os títulos das seções do exemplo, para confirmar que o leu.
+Leia integralmente os arquivos de entrada antes de elaborar o PRD. Em caso de conflito ou lacuna relevante, sinalize a questão em vez de inventar informações.
 
-Restrições:
-- Não invente dados de mercado. Marque toda suposição com [SUPOSIÇÃO].
+**Referência estrutural:** Abra e leia https://github.com/valuedriven/devai/blob/main/docs/prd.md. Antes do PRD, liste os títulos e subtítulos identificados. Utilize o exemplo como referência de estrutura, extensão e nível de detalhe, sem reutilizar seu conteúdo ou domínio de negócio. Se não conseguir acessá-lo, informe a limitação.
+
+**Instruções:**
+- Defina o produto e suas capacidades a partir do problema e dos documentos complementares fornecidos, respeitando todas as restrições obrigatórias.
+- Estruture a seção de escopo como um **roadmap**, contemplando o MVP e as versões futuras. Para cada horizonte, informe: objetivo, fluxos de negócio contemplados, hipóteses a validar e itens fora do escopo.
+- Não invente dados de mercado ou evidências. Identifique toda suposição necessária com `[SUPOSIÇÃO]`.
+- Não introduza requisitos ou funcionalidades sem fundamento nas entradas. Diferencie requisitos obrigatórios de hipóteses ainda não validadas.
+- Concentre-se nos requisitos e no comportamento esperado do produto, sem antecipar decisões detalhadas de implementação, que serão tratadas em `spec.md` e `architecture.md`.
+
+**Resultado esperado:** Gere o arquivo `prd.md` em Markdown, preservando a estrutura e o nível de detalhe da referência. O arquivo deve conter somente o PRD, sem comentários sobre o processo de geração. Se o ambiente não permitir criar arquivos, apresente o conteúdo integral pronto para ser salvo como `prd.md`.
+
+**Verificação final:** Confirme a aderência aos documentos de entrada, a coerência do roadmap e a identificação das suposições.
 ```
 
-* Revise com atenção dois pontos: os fluxos descritos são mesmo ponta a ponta, e cada requisito não funcional obrigatório aparece de alguma forma.
 * Registre o resultado em `docs/prd.md`.
 
-#### Criação do spec.md comparando modelos
+#### Criação do spec.md
 
 A especificação é um bom momento para observar quanto a escolha do modelo muda o resultado, porque a tarefa é longa e estruturada o bastante para que as diferenças apareçam.
 
-* Escolha dois ou três modelos de fornecedores diferentes, entre as ferramentas de chat disponíveis.
-* Em cada um deles, **anexe** dois arquivos: `docs/prd.md` e o documento de requisitos da solução.
 * Execute o prompt a seguir em cada um, sem alterar o texto entre as execuções.
 
 ```text
+**Prompt — Criação do spec**
+
 Atue como: Analista de requisitos.
 
 Objetivo: criar a "Especificação Funcional" para um novo produto de software.
 
 Contexto: os arquivos anexos.
 - prd.md: o produto, incluindo a seção de escopo e roadmap.
-- documento de requisitos: restrições obrigatórias da solução.
+- Documentação complementar.
 
 Exemplo de forma: abra e leia o documento a seguir antes de responder.
 https://github.com/valuedriven/devai/blob/main/docs/spec.md
@@ -234,41 +229,45 @@ Resultado esperado:
 
 #### Criação do architecture.md
 
-* **Anexe** três arquivos: `docs/prd.md`, `docs/spec.md` e o documento de requisitos da solução.
+* **Anexe** três arquivos: `docs/prd.md`, `docs/spec.md` e a documentação complementar.
 * Execute o prompt a seguir.
 
 ```text
-Atue como: Arquiteto de Software.
+# Prompt — Criação da Arquitetura de Software
 
-Objetivo: criar a "Arquitetura de Software" para um novo produto de software.
+**Papel:** Atue como Arquiteto de Software Sênior, especializado em arquiteturas evolutivas, aplicações em nuvem e sistemas com inteligência artificial.
 
-Contexto: os arquivos anexos.
-- prd.md e spec.md: o produto e sua especificação funcional.
-- documento de requisitos: restrições obrigatórias da solução.
+**Objetivo:** Criar o arquivo `architecture.md`, documentando a arquitetura técnica do produto e seu caminho de evolução do MVP até a versão final.
 
-Restrições adicionais:
-- Repositório monolito (monorepo), com frontend e backend.
-- A solução incorpora uma funcionalidade de inteligência artificial, que deve ficar
-  isolada atrás de uma interface bem definida.
-- A implantação ocorre em duas etapas: MVP em plataformas gerenciadas (Vercel para o
-  frontend, Supabase para o banco, Clerk para identidade) e versão final na AWS, com
-  contêineres compatíveis com o padrão OCI e infraestrutura como código.
-  Descreva as duas etapas e o caminho entre elas.
+**Entradas:**
+- `prd.md` e `spec.md`: definição do produto, escopo, fluxos de negócio e requisitos funcionais.
+- Documentação complementar.
 
-Exemplo de forma: abra e leia o documento a seguir antes de responder.
-https://github.com/valuedriven/devai/blob/main/docs/architecture.md
+Leia integralmente os arquivos de entrada antes de definir a arquitetura. Preserve os requisitos e não introduza funcionalidades de negócio sem fundamento nos documentos.
 
-Resultado esperado:
-- Arquivo architecture.md com a mesma estrutura, extensão e nível de detalhe do exemplo.
-  O exemplo é referência de forma, não de conteúdo.
-- Inclua, além do que está no exemplo:
-  - visão de implantação para as duas etapas;
-  - modelo de dados;
-  - registros de decisão de arquitetura (ADRs) para as decisões principais, com contexto,
-    decisão e consequências;
-  - uma tabela relacionando cada requisito não funcional obrigatório à decisão
-    arquitetural correspondente.
-- Antes do resultado, liste os títulos das seções do exemplo, para confirmar que o leu.
+**Restrições arquiteturais obrigatórias:**
+- Organizar frontend e backend em um único repositório monorepo.
+- Planejar duas etapas de implantação:
+  1. **MVP**
+  2. **Versão final**.
+
+**Referência estrutural:** Abra e leia https://github.com/valuedriven/devai/blob/main/docs/architecture.md. Antes de elaborar a arquitetura, liste os títulos e subtítulos identificados. Utilize o documento como referência de estrutura, extensão e nível de detalhe, sem reutilizar seu conteúdo ou domínio. Se não conseguir acessá-lo, informe a limitação.
+
+**Instruções:**
+- Documente os componentes, suas responsabilidades, interfaces, dependências e principais interações.
+- Inclua a visão de implantação do MVP e da versão final, além do caminho de migração entre as duas etapas.
+- Inclua o modelo de dados, com entidades, atributos principais, relacionamentos e restrições relevantes, coerentes com os requisitos.
+- Registre as principais decisões arquiteturais (ADRs), contendo contexto, decisão e consequências. Inclua alternativas relevantes quando necessário.
+- Inclua uma tabela de rastreabilidade relacionando cada requisito não funcional obrigatório à decisão arquitetural que o atende e à forma de verificar seu atendimento.
+- Justifique as principais escolhas tecnológicas e arquiteturais considerando os requisitos, as restrições e a evolução prevista.
+- Identifique riscos, dependências externas, limitações e suposições relevantes com a marcação `[SUPOSIÇÃO]` quando aplicável.
+- Não confunda decisões obrigatórias, impostas pelas entradas, com decisões propostas pelo arquiteto. Não invente requisitos para justificar escolhas técnicas.
+
+**Resultado esperado:** Gere o arquivo `architecture.md` em Markdown, preservando a estrutura e o nível de detalhe da referência e acrescentando os elementos explicitamente exigidos neste prompt. Mantenha consistência entre componentes, modelo de dados, implantação, ADRs e requisitos não funcionais.
+
+Se o ambiente não permitir criar arquivos, apresente o conteúdo integral pronto para ser salvo como `architecture.md`.
+
+**Verificação final:** Confirme a cobertura dos requisitos, a viabilidade das duas etapas de implantação, o caminho de migração, a consistência do modelo de dados e a rastreabilidade dos requisitos não funcionais.
 ```
 
 * Registre o resultado em `docs/architecture.md`.
@@ -309,7 +308,7 @@ Cada arquivo deve conter um título em nível 1 e um único bloco Mermaid.
 #### Revisão de consistência da descoberta
 
 * Inicie uma sessão nova, de preferência em um modelo diferente do que gerou os documentos.
-* **Anexe** quatro arquivos: `docs/prd.md`, `docs/spec.md`, `docs/architecture.md` e o documento de requisitos da solução.
+* **Anexe** quatro arquivos: `docs/prd.md`, `docs/spec.md`, `docs/architecture.md` e a documentação complementar.
 * Execute o prompt a seguir.
 
 ```text
@@ -351,22 +350,19 @@ Não reescreva os documentos; apenas aponte os problemas.
 #### Definição do design system
 
 * Utilize um arquivo de design system de sua preferência. Se desejar, escolha dentre as opções disponíveis em <https://getdesign.md/>.
-* Acesse o Stitch.
+* Acesse a ferramenta de prototipação.
 * Solicite a criação de um design system com base no arquivo escolhido.
 * Aguarde a conclusão.
-* No menu superior, acione o comando de renomear projeto (ícone de lápis) e informe o nome do produto.
 
 #### Criação de protótipos
 
-* **Anexe** `docs/prd.md` e `docs/spec.md` ao prompt de criação dos protótipos, em vez de descrever os fluxos por escrito.
-* Solicite a criação dos protótipos das telas dos dois fluxos de negócio principais e da funcionalidade de IA.
+* **Anexe** `docs/prd.md` e `docs/spec.md` ao prompt de criação dos protótipos.
+* Solicite a criação dos protótipos das telas.
 * Avalie os resultados gerados, confrontando cada tela com um critério de aceite da especificação.
 * Explore os recursos da ferramenta: pré-visualização em nova aba, geração de variações, geração de protótipos a partir das telas selecionadas e o modo interativo.
 * Refine as telas até que cubram os fluxos descritos na especificação.
 
 #### Exportação obrigatória
-
-Esta atividade não é opcional. Na entrega, o agente de desenvolvimento não terá acesso à ferramenta de prototipação: ele enxerga apenas o que está no repositório.
 
 * Exporte o design system para `docs/design.md`, usando o exemplo de forma como referência.
 * Exporte as telas para `docs/prototypes/`, em HTML e imagens.
