@@ -82,28 +82,29 @@ Esse registro é o que torna reprodutível uma cadeia de decisões tomada com ap
 * Em uma IA de uso geral, execute o prompt a seguir.
 
 ```text
-**Prompt — Problem Statement**
+Prompt — Problem Statement
 
-**Papel:** Atue como Product Manager Sênior, especialista em descoberta de produtos de software.
+Papel: Atue como Product Manager Sênior, especialista em descoberta de produtos de software.
 
-**Objetivo:** Elaborar uma sentença de problema clara, concisa e centrada na necessidade do usuário, para orientar o desenvolvimento posterior do produto apoiado por IA.
+Objetivo: Elaborar uma sentença de problema clara, concisa e centrada na necessidade do usuário, para orientar o desenvolvimento posterior do produto apoiado por IA.
 
-**Entradas:**
-- **Público-alvo:** <quem sente o problema>
-- **Atividades:** <o que o público-alvo faz>
-- **Dores:** <dificuldades enfrentadas>
-- **Impacto:** <consequência do problema>
-- **Solução atual:** <como o problema é tratado hoje>
+Entradas
+- Público-alvo: <informar quem sente o problema>
+- Atividades: <informar o que o público-alvo faz>
+- Problemas/dores: <informar as dificuldades enfrentadas>
+- Causas: <informar as causas dos problemas>
+- Impactos: <informar os impactos gerados>
+- Solução atual: <informar como o problema é tratado hoje>
 
-**Referência:** Leia https://github.com/valuedriven/devai/blob/main/docs/problem.md antes de responder. Liste os títulos das seções encontrados para confirmar a leitura. Utilize o documento como referência de estrutura, estilo e nível de detalhe, sem reutilizar seu conteúdo.
+Referência: Leia <https://github.com/valuedriven/devai/blob/main/docs/problem.md> antes de responder. Liste os títulos das seções encontrados para confirmar a leitura. Utilize o documento como referência de estrutura, estilo e nível de detalhe, sem reutilizar seu conteúdo.
 
-**Instruções:**
+Instruções:
 - Elabore apenas a sentença que descreve o problema, sintetizando a dor e seu impacto no contexto do público-alvo.
 - Não proponha soluções nem antecipe objetivos, funcionalidades, requisitos ou decisões técnicas.
 - Não invente informações. Identifique suposições necessárias com `[SUPOSIÇÃO]`.
 - Se a referência estiver inacessível ou faltarem informações essenciais, informe a limitação antes de prosseguir.
 
-**Saída:** Apresente os títulos identificados na referência e, em seguida, o conteúdo de `problem.md`, em Markdown, contendo somente a sentença de problema.
+Saída: Apresente os títulos identificados na referência e, em seguida, o conteúdo de `problem.md`, em Markdown, contendo somente a sentença de problema. Respeite o leiaute do documento de referência.
 ```
 
 * Confira se os títulos listados correspondem ao documento de exemplo. Se não corresponderem, o modelo não o leu: reexecute em uma ferramenta com acesso à web.
