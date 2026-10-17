@@ -17,6 +17,7 @@ Ele não é o seu projeto. Você desenvolve uma solução própria, com domínio
 * Conta no GitHub, com repositório criado para o projeto.
 * Acesso a pelo menos duas IAs de uso geral de fronteira (ChatGPT, Claude, Deepseek etc.) com recurso de pesquisa profunda (deep research) e capacidade de ler arquivos anexados e URLs.
 * Acesso a ferramenta de prototipação (Google Stitch, OpenDesign etc.). Para maiores detalhes, verifique os roteiros para setup de ambiente [Antigraviy](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment.md) ou [Opensource](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment_opensource.md). 
+* (Opcional) Documentação complementar com requisitos não funcionais ou outras definições.
 
 ### Como fornecer contexto aos prompts
 

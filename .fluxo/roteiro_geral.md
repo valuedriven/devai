@@ -24,8 +24,8 @@ graph LR
         I --> L[Pipeline, deploy do MVP]
     end
 
-    subgraph Migracao["Migração"]
-        M[Contêineres, IaC, AWS]
+    subgraph Evolucao["Evolução"]
+        M[Contêineres, IaC, versão final]
     end
 
     D --> H
@@ -39,12 +39,16 @@ graph LR
 | Documento | Para que serve |
 | :---- | :---- |
 | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Da definição do problema ao design, usando IA de uso geral |
-| [Configuração do agente — Antigravity](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment.md) | Configuração específica do Google Antigravity como agente de desenvolvimento |
-| [Configuração do agente — OpenCode](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment_opensource.md) | Configuração específica do OpenCode, com providers de modelos e OmniRoute |
-| [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog de mudanças ao MVP publicado, e daí à evolução |
-| [Configuração para interação com AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/configuracao_aws.md) | Migração do MVP para a versão final |
+| [Catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md) | O que cada ferramenta do ambiente faz, onde obter e como instalar |
+| [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Regras, skills, MCP, hooks e subagentes implantados no agente escolhido, e ajustes de contexto e custo |
+| [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog de mudanças ao MVP publicado e verificado |
+| [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Criação dos recursos remotos e publicação do MVP nas plataformas da solução |
+| [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Depois do MVP: migração para a versão final, laço fechado com a telemetria e mudança evolutiva |
+| [Roteiros de plataforma](https://github.com/valuedriven/devai/tree/main/.fluxo/tarefas) | Passos próprios de cada plataforma de implantação, chamados pelos roteiros de implantação e de evolução |
 
-Os dois setups são alternativos: escolha um. O Roteiro de Entrega é escrito de forma independente da ferramenta de agente e funciona igual nos dois ambientes.
+A configuração do agente é a mesma para todos os ambientes suportados, e está no Roteiro de Configuração do Ambiente. Quais ferramentas existem, o que cada uma faz e onde obtê-la estão no catálogo de ferramentas.
+
+Os roteiros de implantação e de evolução são complementares ao Roteiro de Entrega: o primeiro traz os passos ligados às plataformas escolhidas, o segundo o que vem depois do MVP. As plataformas de cada etapa são declaradas nos requisitos do projeto, e não aqui.
 
 ## Objetivos
 
@@ -69,20 +73,12 @@ A documentação é desacoplada em três camadas. Cada assunto tem um lugar só.
 
 | Camada | Documento | Conteúdo |
 | :---- | :---- | :---- |
-| O que construir | Documento de requisitos da solução | Requisitos funcionais e não funcionais, artefatos esperados |
-| Como construir | Roteiros de descoberta, de entrega e de migração | Passo a passo, prompts, comandos e verificações |
-| Como configurar o agente | Documentos de configuração do Antigravity e do OpenCode | MCP, skills, regras, hooks e inicialização por ferramenta |
+| O que construir | Requisitos do projeto | Requisitos funcionais e não funcionais, artefatos esperados e as plataformas de cada etapa de implantação |
+| Como construir | Roteiros de descoberta, de entrega, de implantação e de evolução | Passo a passo, prompts, comandos e verificações |
+| Com que ferramentas | Catálogo de ferramentas | O que cada ferramenta faz, onde obter e como instalar |
+| Como configurar o agente | Roteiro de Configuração do Ambiente | MCP, skills, regras, hooks, subagentes e os passos próprios de cada agente |
 
-Cada assunto tem um lugar só. Um passo que vale para qualquer agente fica no roteiro; um passo que muda conforme a ferramenta fica no documento de configuração dela.
-
-## Estratégia de implantação em duas etapas
-
-| Etapa | Objetivo | Plataformas | Onde é tratada |
-| :---- | :---- | :---- | :---- |
-| MVP | Colocar a solução no ar rapidamente, para validar fluxos de negócio ponta a ponta | Vercel, Supabase, Clerk | Roteiro de Entrega |
-| Versão final | Atender integralmente aos requisitos de portabilidade e implantação | AWS, com contêineres OCI e Terraform | Roteiro de migração |
-
-A primeira etapa privilegia velocidade de validação; a segunda, reprodutibilidade e portabilidade. A **AWS é a referência desejada** para a versão final, e a migração é executada em roteiro específico, depois que o MVP estiver funcionando.
+Cada assunto tem um lugar só. Um passo que vale para qualquer agente fica no roteiro; um passo que muda conforme a ferramenta fica no roteiro de configuração do ambiente; o nome de uma plataforma ou de um agente fica no catálogo de ferramentas ou nos requisitos.
 
 ## Este repositório é um blueprint
 
@@ -100,4 +96,4 @@ Os documentos do projeto de referência servem como exemplo preenchido de cada a
 * [architecture.md](https://github.com/valuedriven/devai/blob/main/docs/architecture.md)
 * [design.md](https://github.com/valuedriven/devai/blob/main/docs/design.md)
 * [diagramas/](https://github.com/valuedriven/devai/tree/main/docs/diagramas) — modelos de contexto, contêineres, componentes, código, implantação e pipeline
-* [ada.md](https://github.com/valuedriven/devai/blob/main/docs/ada.md) — análise de decisão arquitetural, produzida na migração para a AWS
+* [ada.md](https://github.com/valuedriven/devai/blob/main/docs/ada.md) — análise de decisão arquitetural, produzida na migração para a versão final
