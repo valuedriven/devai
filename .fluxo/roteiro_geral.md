@@ -39,8 +39,8 @@ graph LR
 | Documento | Para que serve |
 | :---- | :---- |
 | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Da definição do problema ao design, usando IA de uso geral |
-| [Setup do ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/setup_environment.md) | Agente de desenvolvimento no ambiente de referência (Google Antigravity) |
-| [Setup do ambiente open source](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/setup_environment_opensource.md) | Agente de desenvolvimento com providers de modelos, OmniRoute e OpenCode |
+| [Configuração do agente — Antigravity](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment.md) | Configuração específica do Google Antigravity como agente de desenvolvimento |
+| [Configuração do agente — OpenCode](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment_opensource.md) | Configuração específica do OpenCode, com providers de modelos e OmniRoute |
 | [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog de mudanças ao MVP publicado, e daí à evolução |
 | [Configuração para interação com AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/configuracao_aws.md) | Migração do MVP para a versão final |
 
@@ -57,7 +57,7 @@ Os dois setups são alternativos: escolha um. O Roteiro de Entrega é escrito de
 
 * A saída de cada atividade é o contexto da atividade seguinte.
 * Fornecer o contexto completo em um único prompt sempre que possível (one-shot prompting), em vez de distribuí-lo em várias mensagens.
-* Usar documentos de exemplo já preenchidos nos prompts, em vez de descrever a estrutura em palavras.
+* Usar documentos de exemplo já preenchidos nos prompts, referenciados por URL ou anexados, em vez de descrever a estrutura em palavras ou colar conteúdo.
 * GitHub como fonte única de verdade em todo o fluxo.
 * Markdown como língua franca entre pessoas e agentes.
 * O que não está em arquivo no repositório não existe para o agente.
@@ -67,13 +67,13 @@ Os dois setups são alternativos: escolha um. O Roteiro de Entrega é escrito de
 
 A documentação é desacoplada em três camadas. Cada assunto tem um lugar só.
 
-| Camada | Artefato | Conteúdo |
+| Camada | Documento | Conteúdo |
 | :---- | :---- | :---- |
-| Requisitos | Requisitos do Projeto | O que a solução precisa atender: requisitos funcionais e não funcionais, artefatos esperados |
-| Conceitos | Material de aula das unidades e slides | Por que cada prática existe, definições, referências bibliográficas |
-| Prática | Roteiros de descoberta e de entrega, setups de ambiente e roteiro de migração | Passo a passo, prompts, comandos e verificações |
+| O que construir | Documento de requisitos da solução | Requisitos funcionais e não funcionais, artefatos esperados |
+| Como construir | Roteiros de descoberta, de entrega e de migração | Passo a passo, prompts, comandos e verificações |
+| Como configurar o agente | Documentos de configuração do Antigravity e do OpenCode | MCP, skills, regras, hooks e inicialização por ferramenta |
 
-Ao consultar o fluxo, procure a camada correspondente à sua dúvida: *o que preciso construir* está nos Requisitos do Projeto, *por que faço assim* está no material de aula, *como faço* está nos roteiros.
+Cada assunto tem um lugar só. Um passo que vale para qualquer agente fica no roteiro; um passo que muda conforme a ferramenta fica no documento de configuração dela.
 
 ## Estratégia de implantação em duas etapas
 
@@ -88,11 +88,11 @@ A primeira etapa privilegia velocidade de validação; a segunda, reprodutibilid
 
 Os documentos em `docs/` e a configuração deste repositório formam um **projeto de referência**: servem para mostrar a forma, a extensão e o nível de detalhe esperados de cada artefato, e são usados como exemplo nos prompts dos roteiros.
 
-Cada pessoa que percorre o fluxo desenvolve um **projeto próprio**, com domínio próprio, problema próprio e requisitos funcionais próprios. O exemplo é referência de forma, nunca de conteúdo: reaproveitar o domínio deste repositório, que é um micro-commerce, descaracteriza o exercício.
+Cada pessoa que percorre o fluxo desenvolve um **projeto próprio**, com domínio próprio, problema próprio e requisitos funcionais próprios. O exemplo é referência de forma, nunca de conteúdo: reaproveitar o domínio deste repositório, que é um micro-commerce, descaracteriza o percurso.
 
 ## Documentos de exemplo
 
-Os documentos do projeto de referência servem como exemplo preenchido de cada artefato e são citados diretamente nos prompts dos roteiros:
+Os documentos do projeto de referência servem como exemplo preenchido de cada artefato. Os prompts dos roteiros os referenciam **por URL**: o modelo abre e lê o documento, sem que seja necessário colar o conteúdo.
 
 * [problem.md](https://github.com/valuedriven/devai/blob/main/docs/problem.md)
 * [prd.md](https://github.com/valuedriven/devai/blob/main/docs/prd.md)
