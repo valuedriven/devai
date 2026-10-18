@@ -24,4 +24,4 @@ apps/frontend/playwright-report/index.html
 apps/backend/reports/mutation/mutation.html
 apps/backend/test/coverage/lcov-report/block-navigation.js
 
-#.deep-copilot/
+.deep-copilot/
