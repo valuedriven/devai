@@ -25,3 +25,4 @@ apps/backend/reports/mutation/mutation.html
 apps/backend/test/coverage/lcov-report/block-navigation.js
 
 .deep-copilot/
+apm_modules/

@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "openspec": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@fission-ai/openspec@latest"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp",
+        "--env",
+        "API_KEY=${env.CONTEXT7_API_KEY}"
+      ]
+    },
+    "supabase": {
+      "httpUrl": "https://mcp.supabase.com/mcp?features=docs"
+    }
+  }
+}

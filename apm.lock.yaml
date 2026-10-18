@@ -1,0 +1,665 @@
+lockfile_version: '1'
+apm_version: 0.33.0
+dependencies:
+- repo_url: addyosmani/agent-skills
+  name: agent-skills
+  host: github.com
+  resolved_commit: aeac41d4d005999432bb7312f7ff06383a91d59d
+  version: 0.6.13
+  package_type: skill_bundle
+  deployed_files:
+  - .agents/skills/ci-cd-and-automation
+  - .agents/skills/ci-cd-and-automation/SKILL.md
+  - .agents/skills/code-review-and-quality
+  - .agents/skills/code-review-and-quality/SKILL.md
+  - .agents/skills/frontend-ui-engineering
+  - .agents/skills/frontend-ui-engineering/SKILL.md
+  - .opencode/agents/code-reviewer.md
+  - .opencode/agents/security-auditor.md
+  - .opencode/agents/test-engineer.md
+  - .opencode/agents/web-performance-auditor.md
+  deployed_file_hashes:
+    .agents/skills/ci-cd-and-automation/SKILL.md: sha256:a6ed8ed56456b01ff8314c44eefc69897d9905ae4e06bb2b7036286efb79b5f0
+    .agents/skills/code-review-and-quality/SKILL.md: sha256:2db1e850379f255fd3091ef278cde24cd6c7d2ba23e360cc52ea522c40d4396e
+    .agents/skills/frontend-ui-engineering/SKILL.md: sha256:29a3e53d57c0a128831a20730ae874a8c4fda40c001fcdc15f8e9ad4b5f72f1b
+    .opencode/agents/code-reviewer.md: sha256:4efbd53e08e57291cc2869865be809897fbe598767600118ec687d00a557fff4
+    .opencode/agents/security-auditor.md: sha256:66a3f68f1c691b600ddb44e88afb138e239d0572df37be84e1f9a427c887dd0a
+    .opencode/agents/test-engineer.md: sha256:a7a0b33ec3294da8fb4ee02ed28c665056bafa48982930fe551dcfadda9117af
+    .opencode/agents/web-performance-auditor.md: sha256:0928b1cf8103262a364bce0c1fc689a918852e2275441f1b2e687adfa1e607e9
+  content_hash: sha256:a8df77178a60e0aab42be259a19728677f9353f97a4ff0349d5550783bd18db7
+  skill_subset:
+  - ci-cd-and-automation
+  - code-review-and-quality
+  - frontend-ui-engineering
+- repo_url: clerk/skills
+  name: clerk
+  host: github.com
+  resolved_commit: 8482d43fe12a5f06a2b5ab3008615875747a3e4e
+  version: 1.0.0
+  package_type: agent_plugin
+  content_hash: sha256:6bde85c61cadcf83fb1cc1ca8c91efa8c322c4f8919c9307b60daf458e9a41ba
+  skill_subset:
+  - clerk
+  - clerk-setup
+  declared_license: MIT
+- repo_url: hashicorp/agent-skills
+  name: 2a84acdba8c5366d
+  host: github.com
+  resolved_commit: f706481af9b8fedb66de909f6243ad29601afa0c
+  version: f706481
+  package_type: apm_package
+  content_hash: sha256:aab587dd6fbd1414271e502799004bcd2939724ea47fe4b4ea30965b9c22bc0d
+- repo_url: mattpocock/skills
+  name: mattpocock-skills
+  host: github.com
+  resolved_commit: 49dd158d1076134a641b33efb035946536778336
+  version: 1.3.1
+  package_type: apm_package
+  deployed_files:
+  - .agents/skills/improve-codebase-architecture
+  - .agents/skills/improve-codebase-architecture/HTML-REPORT.md
+  - .agents/skills/improve-codebase-architecture/SKILL.md
+  - .agents/skills/improve-codebase-architecture/agents/openai.yaml
+  deployed_file_hashes:
+    .agents/skills/improve-codebase-architecture/HTML-REPORT.md: sha256:581e8bb5a521e46bbda8ca7e19b15948bed882187108092ebb90c62513b77528
+    .agents/skills/improve-codebase-architecture/SKILL.md: sha256:552240a5ab5cec6b67c15dd1ad6e9f6962b1bca6ce870059a8c2713760c20392
+    .agents/skills/improve-codebase-architecture/agents/openai.yaml: sha256:c8cb20f68ebf0edb4e497bc11ae5fcaa196004e661cd189015b04f4109ced7f1
+  content_hash: sha256:049d4dfaaf2d783feedaf677626385d0dee10a47734f7d86cd006b7258c79aa3
+  skill_subset:
+  - improve-codebase-architecture
+  declared_license: MIT
+- repo_url: sickn33/antigravity-awesome-skills
+  name: agentic-awesome-skills
+  host: github.com
+  resolved_commit: 71b1c1a9e2e85e492bc647aeae0b86c21642c249
+  version: 19.9.0
+  package_type: skill_bundle
+  deployed_files:
+  - .agents/skills/backend-architect
+  - .agents/skills/backend-architect/SKILL.md
+  - .agents/skills/docker-expert
+  - .agents/skills/docker-expert/SKILL.md
+  - .agents/skills/github-actions-templates
+  - .agents/skills/github-actions-templates/SKILL.md
+  - .agents/skills/github-actions-templates/references/common-workflows.md
+  - .agents/skills/github-actions-templates/resources/implementation-playbook.md
+  - .agents/skills/nestjs-expert
+  - .agents/skills/nestjs-expert/SKILL.md
+  - .agents/skills/nestjs-expert/references/detailed-guide.md
+  deployed_file_hashes:
+    .agents/skills/backend-architect/SKILL.md: sha256:9f62ee2efa48cfd318a5c287168d426ecb3bc4db4af822b81569fea6289147c1
+    .agents/skills/docker-expert/SKILL.md: sha256:92ecdd1c0a7f4079dabf51d7338210bb3bec85761fbaf83edc1834add835820b
+    .agents/skills/github-actions-templates/SKILL.md: sha256:efa8104db74febab0c3805bbe1adf17eeca834aa067fa5a914d09607de90e6b4
+    .agents/skills/github-actions-templates/references/common-workflows.md: sha256:12f6ae05c4354c74ae13334d87869c01629c093b257e9e9a363d0b6c8ac4b89f
+    .agents/skills/github-actions-templates/resources/implementation-playbook.md: sha256:20a2d801777e8582ab4a044b8f53e10fd727607e345e5a7f9655eee9ff919b48
+    .agents/skills/nestjs-expert/SKILL.md: sha256:06ad1ebba5d87f811660a8da841af8d88176232db33f2c88af7fc7cdb3b626cd
+    .agents/skills/nestjs-expert/references/detailed-guide.md: sha256:85c9d94a1505b8d14bddf2fb1a4e0aa6a9e5ed1cb7b4967f2f58f8968e6d5a23
+  content_hash: sha256:d813d0c018b7bfa1206902cfa92761e5e33daff18abd59aac568451ddc30f8d0
+  skill_subset:
+  - backend-architect
+  - docker-expert
+  - github-actions-templates
+  - nestjs-expert
+  declared_license: MIT
+- repo_url: supabase/agent-skills
+  name: 41352163640e12c7
+  host: github.com
+  resolved_commit: c9be0e931b7930f7d02126d04774d904c381e7d7
+  version: c9be0e9
+  package_type: skill_bundle
+  deployed_files:
+  - .agents/skills/supabase
+  - .agents/skills/supabase/CHANGELOG.md
+  - .agents/skills/supabase/SKILL.md
+  - .agents/skills/supabase/assets/feedback-issue-template.md
+  - .agents/skills/supabase/references/skill-feedback.md
+  deployed_file_hashes:
+    .agents/skills/supabase/CHANGELOG.md: sha256:4b9c9387871d7888f18e9c97a7d5691ea38e333401ccdcb0161d2140cb16b2d8
+    .agents/skills/supabase/SKILL.md: sha256:697e0e949f97621c6fc1784169eb3ccbf673747d6bb8299a52962d3d84d93dc6
+    .agents/skills/supabase/assets/feedback-issue-template.md: sha256:ea211aa174c5a096fe76461f25143b8bc23f3bde3adc9e727cda38218cc8c282
+    .agents/skills/supabase/references/skill-feedback.md: sha256:09ad94c0291735dfc04c92557c8734fa259ec39e1d56bf2bd5c6a6529d838717
+  content_hash: sha256:e57dfa993f528aa94e0d337363a81beb50659177f004fc79fa9348f12771acec
+- repo_url: valuedriven/devai
+  name: devai
+  host: github.com
+  resolved_commit: 35117c938b59c3f7cf823254ea4936c8530f72fc
+  version: 1.0.0
+  package_type: apm_package
+  deployed_files:
+  - .agents/skills/supertest-integration-test
+  - .agents/skills/supertest-integration-test/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/supertest-integration-test/SKILL.md: sha256:9a2dd229a70b34758b838291217b412be55c9f29bcc7bd3242a71e7f6e61b29e
+  content_hash: sha256:59e85c009cee6642ab8fcc774bba7cd2cb5fea5ca5a13290b2fddffb76ca085c
+  skill_subset:
+  - jest-unit-tests
+  - playwright-e2e-tests
+  - quality-gate
+  - supertest-integration-test
+- repo_url: vercel/next.js
+  name: 079c03199beebe9b
+  host: github.com
+  resolved_commit: bb63c72077ad7b81b2319f74a7ef3b00c1751483
+  version: bb63c72
+  package_type: skill_bundle
+  deployed_files:
+  - .agents/skills/next-cache-components-adoption
+  - .agents/skills/next-cache-components-adoption/SKILL.md
+  - .agents/skills/next-cache-components-adoption/references/dev-only-validations.md
+  - .agents/skills/next-cache-components-adoption/references/per-page-decisions.md
+  - .agents/skills/next-cache-components-optimizer
+  - .agents/skills/next-cache-components-optimizer/SKILL.md
+  - .agents/skills/next-cache-components-optimizer/reference/red-test-robustness.md
+  - .agents/skills/next-cache-components-optimizer/rig-template.md
+  - .agents/skills/next-cache-components-optimizer/test-template.md
+  deployed_file_hashes:
+    .agents/skills/next-cache-components-adoption/SKILL.md: sha256:20bd3022e370fff23f3c3956c7f02e79edcee451a6533aa8d98f7e0fce40e35e
+    .agents/skills/next-cache-components-adoption/references/dev-only-validations.md: sha256:57383f4216cf0409041cf0129f97bad0f489246f7c4fa9e7308576b6b843817f
+    .agents/skills/next-cache-components-adoption/references/per-page-decisions.md: sha256:5064a7efdfe073bb644883edfa00ae919b60b8c76bf12d25b2e1e83b49913c83
+    .agents/skills/next-cache-components-optimizer/SKILL.md: sha256:3d0e8eb9d922538de71def2e75ebfc1e1d5ec86e5eeaf0b3b51f22cc38a29f99
+    .agents/skills/next-cache-components-optimizer/reference/red-test-robustness.md: sha256:d1355ef608d8c7319e1f6f2eeca6075f156b21a65a5e36af8242f1270ea59433
+    .agents/skills/next-cache-components-optimizer/rig-template.md: sha256:6128549ae453d0f5169e5c85d0ef11a19a09e9c97de04b64bc59e9851f6f92d7
+    .agents/skills/next-cache-components-optimizer/test-template.md: sha256:dfdca255b0704d1b904512664cb9a9bb1266ca1eb5df4e75b6d4e72d7ad07b39
+  content_hash: sha256:f97b00acbbf7668056d2609b543e5d1427558702e358224d3beeca39a8d0c854
+  skill_subset:
+  - next-cache-components-adoption
+  - next-cache-components-optimizer
+deployments:
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/backend-architect
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/backend-architect/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:9f62ee2efa48cfd318a5c287168d426ecb3bc4db4af822b81569fea6289147c1
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/ci-cd-and-automation
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/ci-cd-and-automation/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:a6ed8ed56456b01ff8314c44eefc69897d9905ae4e06bb2b7036286efb79b5f0
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/code-review-and-quality
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/code-review-and-quality/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:2db1e850379f255fd3091ef278cde24cd6c7d2ba23e360cc52ea522c40d4396e
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/docker-expert
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/docker-expert/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:92ecdd1c0a7f4079dabf51d7338210bb3bec85761fbaf83edc1834add835820b
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/frontend-ui-engineering
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/frontend-ui-engineering/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:29a3e53d57c0a128831a20730ae874a8c4fda40c001fcdc15f8e9ad4b5f72f1b
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/github-actions-templates
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/github-actions-templates/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:efa8104db74febab0c3805bbe1adf17eeca834aa067fa5a914d09607de90e6b4
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/github-actions-templates/references/common-workflows.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:12f6ae05c4354c74ae13334d87869c01629c093b257e9e9a363d0b6c8ac4b89f
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/github-actions-templates/resources/implementation-playbook.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:20a2d801777e8582ab4a044b8f53e10fd727607e345e5a7f9655eee9ff919b48
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/improve-codebase-architecture
+  runtime: null
+  scope: project
+  owners:
+  - mattpocock/skills
+  active_owner: mattpocock/skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/improve-codebase-architecture/HTML-REPORT.md
+  runtime: null
+  scope: project
+  owners:
+  - mattpocock/skills
+  active_owner: mattpocock/skills
+  content_hash: sha256:581e8bb5a521e46bbda8ca7e19b15948bed882187108092ebb90c62513b77528
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/improve-codebase-architecture/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - mattpocock/skills
+  active_owner: mattpocock/skills
+  content_hash: sha256:552240a5ab5cec6b67c15dd1ad6e9f6962b1bca6ce870059a8c2713760c20392
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/improve-codebase-architecture/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - mattpocock/skills
+  active_owner: mattpocock/skills
+  content_hash: sha256:c8cb20f68ebf0edb4e497bc11ae5fcaa196004e661cd189015b04f4109ced7f1
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/nestjs-expert
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/nestjs-expert/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:06ad1ebba5d87f811660a8da841af8d88176232db33f2c88af7fc7cdb3b626cd
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/nestjs-expert/references/detailed-guide.md
+  runtime: null
+  scope: project
+  owners:
+  - sickn33/antigravity-awesome-skills
+  active_owner: sickn33/antigravity-awesome-skills
+  content_hash: sha256:85c9d94a1505b8d14bddf2fb1a4e0aa6a9e5ed1cb7b4967f2f58f8968e6d5a23
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-adoption
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-adoption/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:20bd3022e370fff23f3c3956c7f02e79edcee451a6533aa8d98f7e0fce40e35e
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-adoption/references/dev-only-validations.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:57383f4216cf0409041cf0129f97bad0f489246f7c4fa9e7308576b6b843817f
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-adoption/references/per-page-decisions.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:5064a7efdfe073bb644883edfa00ae919b60b8c76bf12d25b2e1e83b49913c83
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-optimizer
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-optimizer/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:3d0e8eb9d922538de71def2e75ebfc1e1d5ec86e5eeaf0b3b51f22cc38a29f99
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-optimizer/reference/red-test-robustness.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:d1355ef608d8c7319e1f6f2eeca6075f156b21a65a5e36af8242f1270ea59433
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-optimizer/rig-template.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:6128549ae453d0f5169e5c85d0ef11a19a09e9c97de04b64bc59e9851f6f92d7
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/next-cache-components-optimizer/test-template.md
+  runtime: null
+  scope: project
+  owners:
+  - vercel/next.js
+  active_owner: vercel/next.js
+  content_hash: sha256:dfdca255b0704d1b904512664cb9a9bb1266ca1eb5df4e75b6d4e72d7ad07b39
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supabase
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills
+  active_owner: supabase/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supabase/CHANGELOG.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills
+  active_owner: supabase/agent-skills
+  content_hash: sha256:4b9c9387871d7888f18e9c97a7d5691ea38e333401ccdcb0161d2140cb16b2d8
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supabase/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills
+  active_owner: supabase/agent-skills
+  content_hash: sha256:697e0e949f97621c6fc1784169eb3ccbf673747d6bb8299a52962d3d84d93dc6
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supabase/assets/feedback-issue-template.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills
+  active_owner: supabase/agent-skills
+  content_hash: sha256:ea211aa174c5a096fe76461f25143b8bc23f3bde3adc9e727cda38218cc8c282
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supabase/references/skill-feedback.md
+  runtime: null
+  scope: project
+  owners:
+  - supabase/agent-skills
+  active_owner: supabase/agent-skills
+  content_hash: sha256:09ad94c0291735dfc04c92557c8734fa259ec39e1d56bf2bd5c6a6529d838717
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supertest-integration-test
+  runtime: null
+  scope: project
+  owners:
+  - valuedriven/devai
+  - .
+  active_owner: valuedriven/devai
+  content_hash: null
+- kind: project-relative
+  target: antigravity
+  value: .agents/skills/supertest-integration-test/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - valuedriven/devai
+  - .
+  active_owner: valuedriven/devai
+  content_hash: sha256:9a2dd229a70b34758b838291217b412be55c9f29bcc7bd3242a71e7f6e61b29e
+- kind: uri
+  target: mcp
+  value: context7
+  runtime: antigravity
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: openspec
+  runtime: antigravity
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: playwright
+  runtime: antigravity
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: supabase
+  runtime: antigravity
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: context7
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: openspec
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: playwright
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: supabase
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: opencode
+  value: .opencode/agents/code-reviewer.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:4efbd53e08e57291cc2869865be809897fbe598767600118ec687d00a557fff4
+- kind: project-relative
+  target: opencode
+  value: .opencode/agents/security-auditor.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:66a3f68f1c691b600ddb44e88afb138e239d0572df37be84e1f9a427c887dd0a
+- kind: project-relative
+  target: opencode
+  value: .opencode/agents/test-engineer.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:a7a0b33ec3294da8fb4ee02ed28c665056bafa48982930fe551dcfadda9117af
+- kind: project-relative
+  target: opencode
+  value: .opencode/agents/web-performance-auditor.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:0928b1cf8103262a364bce0c1fc689a918852e2275441f1b2e687adfa1e607e9
+mcp_servers:
+- context7
+- openspec
+- playwright
+- supabase
+mcp_configs:
+  context7:
+    name: context7
+    transport: stdio
+    args:
+    - -y
+    - '@upstash/context7-mcp'
+    - --env
+    - API_KEY=${env.CONTEXT7_API_KEY}
+    registry: false
+    command: npx
+  openspec:
+    name: openspec
+    transport: stdio
+    args:
+    - -y
+    - '@fission-ai/openspec@latest'
+    registry: false
+    command: npx
+  playwright:
+    name: playwright
+    transport: stdio
+    args:
+    - -y
+    - '@playwright/mcp@latest'
+    registry: false
+    command: npx
+  supabase:
+    name: supabase
+    transport: http
+    registry: false
+    url: https://mcp.supabase.com/mcp?features=docs
+mcp_target_servers:
+  antigravity:
+  - context7
+  - openspec
+  - playwright
+  - supabase
+  opencode:
+  - context7
+  - openspec
+  - playwright
+  - supabase
+mcp_config_provenance:
+  supabase: 41352163640e12c7
+local_deployed_files:
+- .agents/skills/supertest-integration-test
+- .agents/skills/supertest-integration-test/SKILL.md
+local_deployed_file_hashes:
+  .agents/skills/supertest-integration-test/SKILL.md: sha256:9a2dd229a70b34758b838291217b412be55c9f29bcc7bd3242a71e7f6e61b29e

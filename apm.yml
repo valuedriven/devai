@@ -2,19 +2,64 @@ name: devai
 version: 1.0.0
 description: blueprint of agentic software development
 author: valuedriven
-# Which agent platforms to deploy to.
-# Resolution order: --target flag > this field > auto-detect from filesystem.
-# Accepted values: agent-skills, antigravity, claude, codex, copilot, cursor, gemini, grok-build, hermes, kiro, opencode, vscode, windsurf
 targets:
-- claude
-- opencode
+  - antigravity
+  - opencode
 dependencies:
-  apm: []
-  mcp: []
-#primitives:
-#  skills:
-#    - path: .fluxo/skills/jest-unit-tests
-#      name: Jest Unit Tests
-#      description: Jest Unit Tests skill for AI agents
+  apm:
+    - git: vercel/next.js
+      skills:
+        - next-cache-components-adoption
+        - next-cache-components-optimizer
+    - git: clerk/skills
+      skills:
+        - clerk
+        - clerk-setup
+    - supabase/agent-skills
+    - git: mattpocock/skills
+      skills:
+        - improve-codebase-architecture
+    - git: addyosmani/agent-skills
+      skills:
+        - ci-cd-and-automation
+        - code-review-and-quality
+        - frontend-ui-engineering
+    - git: sickn33/antigravity-awesome-skills
+      skills:
+        - backend-architect
+        - docker-expert
+        - github-actions-templates
+        - nestjs-expert
+    - git: valuedriven/devai
+      skills:
+        - jest-unit-tests
+        - playwright-e2e-tests
+        - quality-gate
+        - supertest-integration-test
+    - hashicorp/agent-skills
+  mcp:
+    - name: openspec
+      registry: false
+      transport: stdio
+      command: npx
+      args:
+        - -y
+        - '@fission-ai/openspec@latest'
+    - name: playwright
+      registry: false
+      transport: stdio
+      command: npx
+      args:
+        - -y
+        - '@playwright/mcp@latest'
+    - name: context7
+      registry: false
+      transport: stdio
+      command: npx
+      args:
+        - -y
+        - '@upstash/context7-mcp'
+        - --env
+        - API_KEY=${env.CONTEXT7_API_KEY}
 includes: auto
 scripts: {}
