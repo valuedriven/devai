@@ -23,3 +23,5 @@ apps/frontend/playwright-report/index.html
 .stryker-tmp
 apps/backend/reports/mutation/mutation.html
 apps/backend/test/coverage/lcov-report/block-navigation.js
+
+#.deep-copilot/
