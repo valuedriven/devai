@@ -11,5 +11,10 @@ targets:
 dependencies:
   apm: []
   mcp: []
+primitives:
+  skills:
+    - path: .fluxo/skills/jest-unit-tests
+      name: Jest Unit Tests
+      description: Jest Unit Tests skill for AI agents
 includes: auto
 scripts: {}
