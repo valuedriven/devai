@@ -1,0 +1,15 @@
+name: devai
+version: 1.0.0
+description: blueprint of agentic software development
+author: valuedriven
+# Which agent platforms to deploy to.
+# Resolution order: --target flag > this field > auto-detect from filesystem.
+# Accepted values: agent-skills, antigravity, claude, codex, copilot, cursor, gemini, grok-build, hermes, kiro, opencode, vscode, windsurf
+targets:
+- claude
+- opencode
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}
