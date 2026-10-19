@@ -1,6 +1,6 @@
 # Roteiro geral
 
-Este repositório organiza o fluxo de desenvolvimento de uma solução web full stack apoiada por agentes de inteligência artificial. Este documento é o ponto de entrada: apresenta o fluxo, as diretrizes gerais e os demais roteiros.
+Este repositório organiza o fluxo de desenvolvimento de uma solução de software conforme os requisitos definidos para o projeto, apoiada por agentes de inteligência artificial. Este documento é o ponto de entrada: apresenta o fluxo, as diretrizes gerais e os demais roteiros.
 
 ## Visão geral do fluxo
 
@@ -17,38 +17,59 @@ graph LR
         A --> D["design.md<br/>prototypes/"]
     end
 
+    subgraph Ambiente["Ambiente"]
+        H[AGENTS.md, skills, MCP, hooks]
+    end
+
     subgraph Delivery["Entrega"]
-        H[AGENTS.md, skills, MCP] --> B[backlog.md]
-        B --> C[changes]
+        B[backlog.md] --> C[changes]
         C --> I[Incremento testado]
-        I --> L[Pipeline, deploy do MVP]
+        I --> L[Pipeline de CI/CD]
+    end
+
+    subgraph Deploy["Implantação"]
+        N[IaC, recursos remotos, publicação]
     end
 
     subgraph Evolucao["Evolução"]
-        M[Contêineres, IaC, versão final]
+        O[Observabilidade, faixas, indicadores]
+    end
+
+    subgraph Migracao["Migração"]
+        M[Contêineres OCI, ambiente completo]
     end
 
     D --> H
-    L --> M
-    M -. aprendizado .-> PRD
-    M -. novas changes .-> B
+    H --> B
+    L --> N
+    N --> O
+    O --> M
+    O -. aprendizado .-> PRD
+    O -. novas changes .-> B
 ```
 
-## Roteiros e setups
+## Roteiros
+
+Os seis roteiros são executados **nesta ordem**. Cada um pressupõe o anterior concluído e verificado.
+
+| # | Documento | Escopo |
+| :---- | :---- | :---- |
+| 1 | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Da definição do problema ao desenho da interface |
+| 2 | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Agente instalado e configurado: regras, skills, MCP, hooks e subagentes |
+| 3 | [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog de mudanças ao pipeline de CI/CD com testes automatizados |
+| 4 | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Provisionamento por código, recursos remotos, publicação e IaC no pipeline |
+| 5 | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Observabilidade da solução e aspectos evolutivos do trabalho com agentes |
+| 6 | [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) | Versão final: contêineres OCI, ambiente completo por código e prova de reprodutibilidade |
+
+Documentos de apoio, consultados a partir dos roteiros:
 
 | Documento | Para que serve |
 | :---- | :---- |
-| [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Da definição do problema ao design, usando IA de uso geral |
+| [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md) | O que a solução precisa conter e atender, e a stack de referência |
 | [Catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md) | O que cada ferramenta do ambiente faz, onde obter e como instalar |
-| [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Regras, skills, MCP, hooks e subagentes implantados no agente escolhido, e ajustes de contexto e custo |
-| [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog de mudanças ao MVP publicado e verificado |
-| [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Criação dos recursos remotos e publicação do MVP nas plataformas da solução |
-| [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Depois do MVP: migração para a versão final, laço fechado com a telemetria e mudança evolutiva |
-| [Roteiros de plataforma](https://github.com/valuedriven/devai/tree/main/.fluxo/tarefas) | Passos próprios de cada plataforma de implantação, chamados pelos roteiros de implantação e de evolução |
+| [Roteiros de plataforma](https://github.com/valuedriven/devai/tree/main/.fluxo/tarefas) | Passos próprios de cada plataforma, chamados pelos roteiros de implantação e de migração |
 
-A configuração do agente é a mesma para todos os ambientes suportados, e está no Roteiro de Configuração do Ambiente. Quais ferramentas existem, o que cada uma faz e onde obtê-la estão no catálogo de ferramentas.
-
-Os roteiros de implantação e de evolução são complementares ao Roteiro de Entrega: o primeiro traz os passos ligados às plataformas escolhidas, o segundo o que vem depois do MVP. As plataformas de cada etapa são declaradas nos requisitos do projeto, e não aqui.
+A configuração do agente é a mesma para os dois ambientes suportados, e está no Roteiro de Configuração do Ambiente. Quais ferramentas existem, o que cada uma faz e onde obtê-la estão no catálogo de ferramentas. As plataformas de cada etapa de implantação são declaradas nos requisitos da solução, e não aqui.
 
 ## Objetivos
 
@@ -73,8 +94,8 @@ A documentação é desacoplada em três camadas. Cada assunto tem um lugar só.
 
 | Camada | Documento | Conteúdo |
 | :---- | :---- | :---- |
-| O que construir | Requisitos do projeto | Requisitos funcionais e não funcionais, artefatos esperados e as plataformas de cada etapa de implantação |
-| Como construir | Roteiros de descoberta, de entrega, de implantação e de evolução | Passo a passo, prompts, comandos e verificações |
+| O que construir | Requisitos da solução | Requisitos funcionais e não funcionais, artefatos esperados e as plataformas de cada etapa de implantação |
+| Como construir | Os seis roteiros, na ordem da tabela acima | Passo a passo, prompts, comandos e verificações |
 | Com que ferramentas | Catálogo de ferramentas | O que cada ferramenta faz, onde obter e como instalar |
 | Como configurar o agente | Roteiro de Configuração do Ambiente | MCP, skills, regras, hooks, subagentes e os passos próprios de cada agente |
 
@@ -96,4 +117,4 @@ Os documentos do projeto de referência servem como exemplo preenchido de cada a
 * [architecture.md](https://github.com/valuedriven/devai/blob/main/docs/architecture.md)
 * [design.md](https://github.com/valuedriven/devai/blob/main/docs/design.md)
 * [diagramas/](https://github.com/valuedriven/devai/tree/main/docs/diagramas) — modelos de contexto, contêineres, componentes, código, implantação e pipeline
-* [ada.md](https://github.com/valuedriven/devai/blob/main/docs/ada.md) — análise de decisão arquitetural, produzida na migração para a versão final
+* [ada.md](https://github.com/valuedriven/devai/blob/main/docs/ada.md) — análise de decisão arquitetural, produzida no roteiro de migração

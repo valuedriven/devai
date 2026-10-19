@@ -10,23 +10,28 @@ Este roteiro descreve o passo a passo da construção, da liberação e da evolu
 
 **Resultados:**
 
-* Agente de desenvolvimento configurado, com `AGENTS.md` próprio do projeto
 * Backlog de mudanças (`backlog.md`) e propostas de mudança
 * Esqueleto andante com integração contínua
 * Incrementos de produto com testes de unidade, integração e aceite
+* Testes de aceite gerados por agentes, revisados e executando
+* Inspeção estática com quality gate aprovado
 * Política de revisão assistida (`REVIEW.md`), aplicada ao final de cada mudança
-* Pipeline de CI/CD e MVP publicado, com indicadores do ciclo acompanhados
+* Pipeline de CI/CD com os testes automatizados, e proteção de branch exigindo seus status checks
 
-**Ferramentas:** agente de desenvolvimento, OpenSpec, Playwright, SonarQube, GitHub Actions e Terraform. A descrição e o endereço de cada uma estão no [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md); a stack da solução, nos [Requisitos do Projeto](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_do_projeto.md).
+**Ferramentas:** agente de desenvolvimento, OpenSpec, Playwright, SonarQube e GitHub Actions. A descrição e o endereço de cada uma estão no [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md); a stack da solução, nos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md).
 
-**Escopo:** este roteiro vai do backlog de mudanças ao MVP publicado e verificado. Ele é escrito de forma independente da ferramenta de agente e da plataforma de implantação; o que é específico de uma ou de outra fica em documentos próprios.
+**Escopo:** terceira etapa do fluxo. Este roteiro vai do backlog de mudanças ao **pipeline de CI/CD com os testes automatizados**, e para aí. Ele é escrito de forma independente da ferramenta de agente e da plataforma de implantação; o que é específico de uma ou de outra fica em documentos próprios.
 
-| Documento complementar | Para que serve |
-| :---- | :---- |
-| [Catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md) | O que cada ferramenta faz, onde obter e como instalar |
-| [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Regras, skills, MCP, hooks e subagentes implantados no agente escolhido, e ajustes de contexto e custo |
-| [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Passos de implantação nas plataformas gerenciadas: Vercel, Supabase e Clerk |
-| [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | O que vem depois do MVP: migração para a versão final na AWS, laço fechado com a telemetria e mudança evolutiva |
+| Etapa | Documento | Relação com esta |
+| :---- | :---- | :---- |
+| 1 | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Produz o `docs/` de que a seção 3 parte |
+| 2 | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Pré-requisito: agente configurado, com regras, skills, MCP, hooks e subagentes |
+| **3** | **Este roteiro** | **Do backlog ao pipeline de CI/CD** |
+| 4 | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Etapa seguinte: provisionamento por código, recursos remotos, publicação e IaC no pipeline |
+| 5 | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Observabilidade e aspectos evolutivos do trabalho com agentes |
+| 6 | [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) | Versão final, com ambiente completo por código |
+
+Documentos de apoio: o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md), para o que cada ferramenta faz e como instalá-la, e os [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md), para o que a solução precisa atender.
 
 ---
 
@@ -36,20 +41,19 @@ Os comandos deste roteiro consideram tanto execuções via terminal quanto pela 
 
 ### Pré-requisitos
 
-Instale, conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md):
+Três condições antes de iniciar. Nenhuma delas é atendida por este roteiro.
 
-* a plataforma base — Node.js e npm, Git, Docker e Terraform;
-* as ferramentas do projeto — OpenSpec e Playwright;
-* um dos agentes de desenvolvimento.
+| Pré-requisito | Onde é atendido |
+| :---- | :---- |
+| Repositório no GitHub, com a documentação da descoberta versionada em `docs/` | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) |
+| Ferramentas instaladas: Node.js, Git, Docker, OpenSpec e Playwright | [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md) |
+| Agente de desenvolvimento instalado e configurado, com regras, skills, servidores MCP, hooks e subagentes implantados | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) |
 
-Crie contas em:
+* Confirme que `docs/` contém `problem.md`, `prd.md`, `spec.md`, `architecture.md`, `design.md`, `diagramas/` e `prototypes/`. A seção 3 parte deles, e `prototypes/` é indispensável: o agente não acessa a ferramenta de prototipação.
+* Confirme que o repositório está no GitHub, com integração contínua habilitada e permissão para proteger a branch principal. A seção 6 depende disso.
+* Confirme que a verificação final do [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) está completa, inclusive o `.env` com as chaves do agente e dos modelos.
 
-* [GitHub](https://github.com/) — repositório, integração contínua e proteção de branch;
-* [Context7](https://context7.com/) — servidor MCP de documentação atualizada.
-
-As credenciais das plataformas de implantação pertencem à stack da solução e estão nos [Requisitos do Projeto](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_do_projeto.md); o roteiro de implantação indica onde obter cada valor.
-
-Certifique-se de estar autenticado nesses serviços antes de executar o roteiro.
+As credenciais das plataformas de implantação pertencem à stack da solução, declarada nos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md); o [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) indica onde obter cada valor.
 
 ### Gerenciamento da janela de contexto
 
@@ -91,84 +95,30 @@ Certifique-se de que a documentação produzida na descoberta esteja disponível
 
 A pasta `docs/prototypes/` é obrigatória: o agente não acessa a ferramenta de prototipação e trabalhará a partir desses arquivos.
 
+> Este roteiro é agnóstico quanto à stack e à forma de implementação: ele conduz o ciclo, e não prescreve o código. A stack é declarada na seção 5 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md) e registrada como decisão em `docs/architecture.md`; é desses artefatos, com o `prd.md` e o `spec.md`, que o agente tira o contexto para propor cada mudança. Onde o roteiro mostra um comando ou um caminho concreto, ele vale para a stack de referência e é ajustado à do projeto.
+
 ### Ferramentas do projeto
 
-Instale as ferramentas conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md). Esta seção trata apenas da **inicialização no projeto**, que exige indicar o agente em uso.
+As ferramentas já estão registradas pelo APM, conforme a seção 2 do [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md), cuja seção 2.6 também cobre a inicialização do OpenSpec no projeto (árvore `openspec/`, comandos e skills nos diretórios de cada agente) e a geração dos prompts de teste do Playwright (`playwright-test-planner`, `playwright-test-generator` e `playwright-test-healer`). Esta seção trata apenas de indicar o agente em uso, exigido pelos dois.
 
 | Agente | Identificador nas CLIs |
 | :---- | :---- |
 | Google Antigravity | `antigravity` |
 | OpenCode | `opencode` |
-| DeepSeek Harness | `dsh` |
 
 > Grafias diferentes desses identificadores fazem o comando falhar ou, pior, serem ignoradas em silêncio.
 
-#### OpenSpec
-
-Usado a partir da seção 5.
-
-* No diretório raiz do projeto, declarando os agentes que serão usados:
-
-```bash
-openspec init --tools antigravity,opencode,dsh
-openspec view
-```
-
-> Separe os nomes por vírgula **sem espaço**. Um espaço após a vírgula faz o shell tratar o segundo nome como argumento separado, e a inicialização falha. Declarar os três de uma vez permite trocar de agente sem reinicializar.
-
-O `init` cria a árvore `openspec/`, com `changes/`, `config.yaml` e `specs/`, e grava comandos e skills nos diretórios de cada agente:
-
-| Agente | Skills do OpenSpec | Comandos e workflows |
-| :---- | :---- | :---- |
-| `antigravity` | `.agents/skills/` | `.agents/workflows/` |
-| `opencode` | `.opencode/skills/` | `.opencode/commands/` |
-| `dsh` | `.dsh/skills/` | não há arquivos de comando |
-
-* Caso tenha sido criada a pasta `.agent`, no singular, mova seu conteúdo para `.agents`.
-
-**Convivência com os arquivos do projeto.** O `openspec update` — executado após atualização da CLI ou mudança de perfil — **reescreve** os arquivos que o `init` gerou.
-
-| Cuidado | Razão |
-| :---- | :---- |
-| Não edite os arquivos gerados pelo OpenSpec | `openspec update` os sobrescreve, e a edição se perde |
-| Mantenha o que é do projeto fora dos diretórios gerados | Regras, hooks e subagentes nascem no diretório de autoria do [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md), e não são tocados |
-| Confira os diretórios após cada `openspec update` | Para verificar que nada próprio foi removido |
-
-O ajuste do `openspec/config.yaml` é feito na seção 5, depois da configuração do agente.
-
-#### Playwright
-
-Usado a partir da seção 8.
-
-* No diretório raiz do projeto, gere os prompts que o agente usa para planejar, gerar e corrigir testes de aceite:
-
-```bash
-npx playwright init-agents --loop=opencode
-```
-
-| Agente | Procedimento |
-| :---- | :---- |
-| OpenCode | Os arquivos ficam em `.opencode/prompts/` |
-| Antigravity | Não há laço específico. **Mova** os arquivos para `.agents/prompts/` |
-| DeepSeek Harness | Não há laço específico. **Mova** os arquivos para `.agents/skills/`, um diretório por prompt, acrescentando o *frontmatter* de skill descrito no [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) |
-
-* Confirme os três prompts gerados: `playwright-test-planner`, `playwright-test-generator` e `playwright-test-healer`.
-* Consulte os laços aceitos pela versão instalada com `npx playwright init-agents --help`.
-
-> Regenere esses arquivos após cada atualização do Playwright: eles descrevem a API da versão instalada e envelhecem com ela.
+O ajuste do `openspec/config.yaml` é feito na seção 5, depois da configuração do agente. O uso do OpenSpec no ciclo de mudanças está a partir da seção 5, e o uso dos prompts de teste do Playwright está na seção 8.
 
 ### Configuração de variáveis de ambiente
 
-* No diretório raiz do projeto, crie o arquivo `.env` com o conteúdo a seguir.
-* Acesse os endereços indicados junto a cada credencial e obtenha os valores solicitados.
+O arquivo `.env` e sua entrada no `.gitignore` foram criados no [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md), com as chaves do agente e dos modelos. Acrescente a ele as variáveis da aplicação.
+
+O conjunto depende da stack declarada em `docs/architecture.md`. Para a stack de referência da seção 5 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md), ele é este:
 
 ```bash
 PROJECT_NAME=<nome do projeto>
 GLOBAL_PREFIX=api/v1
-
-# Context7 — documentação atualizada de bibliotecas, consumida pelo servidor MCP
-# https://context7.com/dashboard → API Keys → Create API Key
-CONTEXT7_API_KEY=
 
 # Aplicação
 FRONTEND_PORT=3000
@@ -176,19 +126,14 @@ BACKEND_PORT=3001
 NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 ```
 
-> O valor de `NEXT_PUBLIC_API_URL` precisa coincidir com `BACKEND_PORT` e `GLOBAL_PREFIX`. Divergências aqui produzem erros de integração difíceis de diagnosticar.
+> O prefixo `NEXT_PUBLIC_` é convenção do framework de frontend: ele marca a variável como legível pelo navegador. Com outro framework, o prefixo muda, e segredo nenhum recebe prefixo público.
 
-* Acrescente as credenciais das plataformas escolhidas na arquitetura do projeto. As das plataformas gerenciadas usadas no MVP estão no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md), com o endereço de onde obter cada valor.
+> A URL da API precisa coincidir com a porta e o prefixo global do backend. Divergências aqui produzem erros de integração difíceis de diagnosticar.
 
-* Crie ou atualize o arquivo `.gitignore` e inclua nele:
+* Acrescente as credenciais das plataformas declaradas na arquitetura. As da etapa de MVP estão no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md), com o endereço de onde obter cada valor.
 
-```text
-.env
-```
-
-* Crie também um arquivo `.env.example` com as mesmas chaves e sem os valores. Esse arquivo é versionado e documenta as variáveis necessárias.
-
-> O Roteiro de Configuração do Ambiente, indicado na seção 4, acrescenta a este arquivo as variáveis do agente e dos modelos. Preencha-as lá.
+* Confirme que `.env` está listado no `.gitignore`.
+* Mantenha o `.env.example` com as mesmas chaves e sem os valores. Esse arquivo é versionado e documenta as variáveis necessárias.
 
 ### Criação do README.md
 
@@ -209,11 +154,15 @@ Siga as boas práticas recomendadas pelo GitHub, disponíveis em
 
 ## 4. Preparação do agente de IA
 
-### Setup do ambiente
+### Confirmação do ambiente
 
-Execute o [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) antes de prosseguir. Ele instala a configuração — regras, skills, servidores MCP, hooks e subagentes — no agente escolhido, em formato único para Antigravity, OpenCode e DeepSeek Harness.
+A configuração do agente é pré-requisito deste roteiro, conforme a seção 2. Antes de prosseguir, confirme em uma sessão nova do agente:
 
-Ao terminar, retome aqui.
+```text
+Liste as skills disponíveis, os servidores MCP conectados e os subagentes declarados.
+```
+
+Se a resposta não trouxer os três conjuntos, volte ao [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md).
 
 ### Regras no arquivo AGENTS.md
 
@@ -295,7 +244,7 @@ context: |
   - Quality gate do SonarQube aprovado.
 ```
 
-> Dois cuidados. Os arquivos que o OpenSpec **gera** — comandos, skills e workflows nos diretórios do agente — são reescritos por `openspec update`, executado após atualização da CLI ou mudança de perfil. Edições manuais nesses arquivos se perdem: o que é do projeto nasce no `AGENTS.md` e no diretório de autoria do Roteiro de Configuração do Ambiente. E os subagentes convivem com esses diretórios, mas não dentro deles.
+> Dois cuidados. Os arquivos que o OpenSpec **gera** — comandos, skills e workflows nos diretórios do agente — são reescritos pelo comando `update` do OpenSpec, executado após mudança de versão ou de perfil. Edições manuais nesses arquivos se perdem: o que é do projeto nasce no `AGENTS.md` e no diretório de autoria do Roteiro de Configuração do Ambiente. E os subagentes convivem com esses diretórios, mas não dentro deles.
 
 ### Definição do backlog de mudanças
 
@@ -391,7 +340,7 @@ Mudança | Problema | Critério | Severidade | Ajuste sugerido.
 A qualquer momento, verifique o progresso:
 
 ```bash
-openspec view
+npx -y @fission-ai/openspec@latest view
 ```
 
 Resultado esperado:
@@ -418,11 +367,11 @@ Use openspec list --changes or openspec list --specs for detailed view
 
 ---
 
-## 6. Esqueleto andante, integração contínua e provisionamento
+## 6. Esqueleto andante e integração contínua
 
 A primeira mudança do backlog é o **esqueleto andante**: a menor versão do sistema que atravessa todas as camadas e efetivamente executa — frontend chamando a API, API acessando o banco — sem funcionalidade de negócio relevante. Ela é implementada pelo ciclo descrito na seção 7.
 
-Concluído o esqueleto, a automação entra **imediatamente**, e não ao final do percurso. A partir daqui, toda mudança do backlog é verificada por um pipeline e publicada em um ambiente provisionado por código.
+Concluído o esqueleto, a automação entra **imediatamente**, e não ao final do percurso. A partir daqui, toda mudança do backlog é verificada por um pipeline antes de ser integrada.
 
 ### Critérios de conclusão do esqueleto
 
@@ -455,50 +404,12 @@ jobs:
 
 > Fixe a versão das actions de terceiros. Uma action apontada para `@main` executa, a cada build, o que o autor publicou naquele dia.
 
-### Provisionamento inicial com Terraform
-
-O provisionamento por código começa aqui, com o recurso mais simples do MVP: a hospedagem do frontend. O objetivo desta etapa não é cobrir toda a infraestrutura, e sim instalar o hábito — a partir deste ponto, alterações de ambiente passam por commit e revisão, como qualquer outra mudança.
-
-* Instale o Terraform, conforme <https://developer.hashicorp.com/terraform/install>.
-* Crie o diretório `infra/` no repositório.
-* Inicie uma nova sessão do agente e execute o prompt a seguir.
-
-```text
-/opsx-propose infra-vercel
-
-Contexto: @docs/architecture.md, @AGENTS.md, @.env.example
-
-Requisitos:
-- Diretório infra/ com configuração Terraform para o provider de hospedagem definido
-  em docs/architecture.md.
-- Recurso de projeto da plataforma ligado ao repositório do GitHub.
-- Variáveis de ambiente da aplicação declaradas como recursos, com os valores vindos
-  de variáveis do Terraform, nunca escritos nos arquivos de configuração.
-- Arquivo de variáveis de exemplo versionado, sem valores.
-- Arquivo de estado e arquivos locais do Terraform declarados no .gitignore.
-- README curto em infra/ com a sequência de comandos.
-```
-
-* Execute o ciclo, sempre lendo o plano antes de aplicar:
-
-```bash
-cd infra
-terraform init
-terraform plan
-terraform apply
-```
-
-> O arquivo de estado contém dados sensíveis e não vai para o controle de versão. O comando `terraform destroy` remove recursos de verdade: o plano é lido antes de qualquer aplicação.
-
-> **Atenção ao vocabulário:** *provider* no Terraform designa um plugin de infraestrutura. Não guarda relação com os *providers de modelos de IA* configurados no Roteiro de Configuração do Ambiente.
-
 ### Verificação da etapa
 
 * [ ] Esqueleto andante executando localmente
 * [ ] Workflow de integração contínua executando a cada push
-* [ ] `terraform plan` sem divergências após o `apply`
-* [ ] Frontend publicado a partir do projeto provisionado
-* [ ] Nenhum segredo no repositório nem no estado versionado
+* [ ] Nenhum segredo no repositório
+* [ ] Versões das actions de terceiros fixadas
 
 ---
 
@@ -576,36 +487,35 @@ O ciclo a seguir é executado para cada mudança do backlog, a começar pelo esq
 
 ### Verificação manual
 
-Após cada mudança, execute o ciclo básico. Interaja com o agente para corrigir o que falhar.
+Após cada mudança, execute o ciclo básico com os comandos declarados no `README.md` e no `AGENTS.md` do projeto. Interaja com o agente para corrigir o que falhar.
 
-```bash
-npm run lint
-npm run test
-npm run build
-npm run dev
-```
+| Etapa | O que verifica |
+| :---- | :---- |
+| Inspeção estática e formatação | Convenções e erros detectáveis sem executar |
+| Testes | Comportamento, nos níveis que a mudança alcança |
+| Build | Integridade da compilação e das dependências |
+| Execução local | Fluxo percorrido na interface, do gatilho ao desfecho |
 
-Acesse os endereços da aplicação:
+Na stack de referência, são `npm run lint`, `npm run test`, `npm run build` e `npm run dev`, com o frontend e o backend nas portas declaradas no `.env`.
 
-```text
-http://localhost:3000   (frontend)
-http://localhost:3001   (backend)
-```
+### Configuração do executor de testes de aceite
 
-### Configuração do Playwright
+O executor é dependência de desenvolvimento da aplicação, declarada na stack da seção 5 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md). Esta etapa o acrescenta ao projeto e cria a sua configuração.
 
 * Acesse o terminal no diretório raiz do projeto.
-* Inicialize o Playwright:
+* Acrescente o executor e o seu andaime ao projeto:
 
 ```bash
 npm init playwright@latest
 ```
 
+> Este comando não é instalação de ferramenta do ambiente: ele grava uma dependência de desenvolvimento no `package.json` do projeto, versionada como qualquer outra. O que o APM registra é o servidor MCP, que dá ao agente o controle do navegador.
+
 * Informe os seguintes valores:
 
 ```text
 Do you want to use TypeScript or JavaScript? TypeScript
-Where to put your end-to-end tests? apps/frontend/tests
+Where to put your end-to-end tests? <diretório de testes de aceite do projeto>
 Add a GitHub Actions workflow? yes
 Install Playwright browsers? yes
 Install Playwright operating system dependencies? yes
@@ -628,9 +538,9 @@ To open last HTML report run:
   npx playwright show-report
 ```
 
-* Remova o arquivo `apps/frontend/tests/example.spec.ts`.
+* Remova o arquivo de exemplo `example.spec.ts` gerado no diretório de testes.
 
-> Os agentes de planejamento, geração e correção de testes foram gerados na seção 3, e o servidor MCP do Playwright foi configurado no Roteiro de Configuração do Ambiente. Se o diretório de prompts do agente em uso não contiver `playwright-test-planner.md`, `playwright-test-generator.md` e `playwright-test-healer.md`, volte à seção 3 antes de prosseguir.
+> Os agentes de planejamento, geração e correção de testes foram gerados na seção 2.6 do [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md), e o servidor MCP do Playwright foi configurado na seção 2.3 do mesmo roteiro. Se o diretório de prompts do agente em uso não contiver `playwright-test-planner.md`, `playwright-test-generator.md` e `playwright-test-healer.md`, volte a essa seção antes de prosseguir.
 
 ### Geração de testes com agentes
 
@@ -651,7 +561,7 @@ estado reutilizado pelos demais testes.
 
 #### Criação do plano de testes
 
-> Nos prompts a seguir, substitua `<prompts do agente>` pelo diretório do agente em uso: `.agents/prompts` no Antigravity, `.opencode/prompts` no OpenCode, `.agents/skills` no DeepSeek Harness.
+> Nos prompts a seguir, substitua `<prompts do agente>` pelo diretório do agente em uso: `.agents/prompts` no Antigravity, `.opencode/prompts` no OpenCode.
 
 * Inicie uma nova sessão do agente.
 * Execute o prompt a seguir, substituindo o caminho da especificação pelo correspondente no seu projeto.
@@ -682,10 +592,10 @@ Explore o plano disponível em @specs/login-flow-test-plan.md e a documentação
 em @docs/spec.md.
 
 Crie um único arquivo com toda a suíte de testes para o plano proposto, em
-apps/frontend/tests/.
+<diretório de testes de aceite>/.
 ```
 
-> Os planos de teste ficam em `specs/`; os casos de teste executáveis ficam em `apps/frontend/tests/`.
+> Os planos de teste ficam em `specs/`; os casos de teste executáveis ficam no diretório de testes de aceite declarado na configuração do Playwright.
 
 * Verifique a execução dos testes e o relatório gerado.
 
@@ -709,7 +619,7 @@ Execute esta seção caso tenham ocorrido erros na execução.
 
 ```text
 Use as orientações disponíveis em @<prompts do agente>/playwright-test-healer.md para
-ajustar os testes do fluxo de login criados em @apps/frontend/tests/login-flow.spec.ts.
+ajustar os testes do fluxo de login criados no diretório de testes de aceite.
 
 Restrições:
 - Não altere asserções existentes para fazer o teste passar.
@@ -779,7 +689,7 @@ sonar.projectKey=<projectKey configurado>
 sonar.projectName=<nome do projeto>
 sonar.host.url=http://localhost:9000
 
-# Fontes e testes
+# Fontes e testes — ajuste os caminhos à estrutura declarada em docs/architecture.md
 sonar.sources=apps/backend/src,apps/frontend/src
 sonar.tests=apps/backend/src,apps/frontend/src,apps/frontend/tests
 
@@ -861,47 +771,11 @@ Quem produz a mudança não é quem a aprova. Aplicado ao agente: ele atua até 
 
 ---
 
-## 9. Liberação do MVP
+## 9. Pipeline de CI/CD
 
-Esta seção coloca o MVP no ar, com pipeline de entrega e observabilidade. Ela encerra o escopo deste roteiro.
+Esta seção completa a automação: o pipeline que verifica cada mudança e a prepara para publicação, com os testes automatizados da seção 8 executando nele. Ela encerra o escopo deste roteiro.
 
-Trate cada item a seguir como uma mudança do OpenSpec, seguindo o mesmo ciclo da seção 7.
-
-> Os passos de criação dos recursos nas plataformas gerenciadas — banco, identidade e hospedagem — estão no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md). Execute-o ao chegar aqui e retorne para a observabilidade e o pipeline. O que vem depois do MVP está no [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md).
-
-### Banco, identidade e hospedagem em ambiente remoto
-
-Esta etapa cria os recursos remotos e publica a aplicação. Os passos dependem da plataforma escolhida na arquitetura do projeto e estão no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md).
-
-* Execute o roteiro complementar correspondente à plataforma do projeto.
-* Confirme que a aplicação local conversa com o banco remoto antes de publicar.
-* Verifique a aplicação publicada percorrendo os dois fluxos de negócio ponta a ponta no navegador.
-* Retorne a este ponto para a observabilidade, o pipeline e os indicadores.
-
-### Observabilidade
-
-* Execute:
-
-```text
-/opsx-propose observabilidade
-
-Contexto: @docs/architecture.md, @AGENTS.md
-
-Requisitos:
-- Instrumentação com OpenTelemetry: logs, métricas e traces.
-- Identificador de correlação atravessando a requisição, do frontend ao banco.
-- Métricas por endpoint: contagem, latência e taxa de erro.
-- Não registrar dados pessoais: prefira metadados e hashes a conteúdo de requisições
-  e respostas.
-```
-
-Verifique a instrumentação tentando responder a estas três perguntas apenas com o que o sistema emite:
-
-1. Um usuário relatou erro ao concluir o fluxo principal há dez minutos. O que aconteceu na requisição dele?
-2. Qual a latência p95 do endpoint mais usado nas últimas vinte e quatro horas?
-3. Qual endpoint concentra os erros do dia, e em que proporção das requisições?
-
-Se alguma pergunta ficar sem resposta, a instrumentação está incompleta.
+Trate o item a seguir como uma mudança do OpenSpec, seguindo o mesmo ciclo da seção 7.
 
 ### Pipeline de entrega contínua
 
@@ -914,83 +788,31 @@ Contexto: @docs/architecture.md, @AGENTS.md, @.github/workflows/
 
 Requisitos:
 - Workflow de entrega disparado na branch principal.
-- Etapas na ordem: lint, testes de unidade e integração, análise Sonar, build e publicação.
+- Etapas na ordem: lint, testes de unidade e integração, análise Sonar e build.
 - Token do Sonar e demais valores sensíveis como secrets do repositório; nenhum valor
   sensível no arquivo do workflow.
-- Ambiente (environment) com regra de proteção exigindo aprovação manual antes da
-  publicação em produção.
-- Testes de aceite executados contra o ambiente publicado.
+- Ambiente (environment) declarado, com regra de proteção exigindo aprovação manual
+  antes de qualquer etapa que altere produção.
+- Etapa de publicação declarada, ainda sem destino: ele é configurado na implantação.
 ```
 
 * Configure a proteção da branch principal exigindo os status checks do workflow. Sem isso, o gate de qualidade é apenas uma sugestão.
 
-### Métricas do ciclo
-
-Com o pipeline em produção, o repositório e a integração contínua já produzem o suficiente para medir o próprio processo. Medir apenas o que já existe é a regra aqui: nenhuma instrumentação adicional.
-
-* Crie em `docs/ai-log.md` uma tabela com os cinco indicadores e atualize-a ao encerrar cada mudança:
-
-| Indicador | Onde se obtém |
-| :---- | :---- |
-| Mudanças integradas na primeira passagem | Histórico de pull requests |
-| Tempo da proposta até a integração | Registro do OpenSpec e do Git |
-| Ciclos de retrabalho por mudança | Contagem de reaberturas |
-| Sucesso de primeira passagem no pipeline | Registros da integração contínua |
-| Custo em tokens por mudança | Telemetria do agente, instalada pelo Roteiro de Configuração do Ambiente |
-
-* Comandos úteis para a coleta:
-
-```bash
-# tempo entre abertura e integração das últimas vinte solicitações
-gh pr list --state merged --limit 20 --json number,createdAt,mergedAt
-
-# execuções do pipeline e o respectivo veredito
-gh run list --limit 20 --json displayTitle,conclusion,createdAt
-```
-
-* Restrinja o indicador de **sucesso de primeira passagem** às mudanças escritas pelo agente: é esse recorte que mede a qualidade do harness. Se o número cai, algum guia ou sensor está faltando — e a resposta está na seção 4 do Roteiro de Configuração do Ambiente, **Contexto e custo**.
-* O **custo em tokens por mudança** é o denominador do ganho. Sem ele, a afirmação de que o agente acelerou o trabalho não tem com o que ser comparada.
-
-> As quatro medidas consagradas de desempenho de entrega — frequência de implantação, tempo de espera até a produção, tempo de restauração e taxa de falha de alteração — pressupõem uma equipe e um histórico. O conjunto acima é a redução viável para um projeto individual, e preserva o essencial: rendimento e estabilidade medidos separadamente.
-
-### Verificação do MVP
-
-* [ ] Dois fluxos de negócio ponta a ponta percorríveis na aplicação publicada
-* [ ] Pipeline verde, com gate de qualidade ativo
-* [ ] URL e credenciais de acesso disponíveis
-* [ ] As três perguntas de observabilidade respondidas com o que o sistema emite
-* [ ] Tabela de indicadores do ciclo iniciada em `docs/ai-log.md`
-
----
-
-## 10. Síntese crítica
-
-Ao final, acrescente a `docs/ai-log.md` uma seção respondendo, com base nos registros feitos ao longo do fluxo:
-
-* Onde a IA acelerou de verdade? Sustente a resposta com os indicadores do ciclo, da seção 9.
-* Onde ela custou tempo?
-* Que tipo de erro ela cometeu com mais frequência?
-* O que melhorou quando o harness melhorou? Compare o sucesso de primeira passagem antes e depois dos ajustes da seção 4 do Roteiro de Configuração do Ambiente.
-* Quanto custou, em tokens e em escolhas de modelo e provider?
-* Quais políticas precisaram de hook, e por que a recomendação não bastou?
-* O que continuou sendo trabalho humano?
-
----
+> O workflow fica pronto para publicar, mas ainda não publica: o destino, as credenciais da plataforma e as etapas de infraestrutura como código entram no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md), a etapa seguinte. Os testes de aceite passam a executar contra o ambiente publicado a partir de lá.
 
 ## Verificação final da entrega
 
 * [ ] Agente configurado pelo Roteiro de Configuração do Ambiente, com regras, skills, MCP, hooks e subagentes implantados
-* [ ] `openspec view` executando sem erro, e prompts do Playwright no diretório do agente
+* [ ] `openspec view` respondendo pela CLI invocada por `npx`, e prompts do Playwright no diretório do agente
 * [ ] `openspec/backlog.md` e propostas revisadas
-* [ ] Esqueleto andante executando, com integração contínua verde
-* [ ] `terraform plan` sem divergências após o `apply`
+* [ ] Esqueleto andante executando localmente, com integração contínua verde
 * [ ] Dois fluxos de negócio ponta a ponta implementados e testados nos três níveis
+* [ ] Testes de aceite gerados, revisados e executando
+* [ ] Quality gate do SonarQube aprovado, com a cobertura coletada
 * [ ] `REVIEW.md` versionado e revisão assistida em uso ao final de cada mudança
-* [ ] Pipeline de CI/CD com gate de qualidade e proteção de branch
-* [ ] Observabilidade respondendo às três perguntas de verificação
-* [ ] MVP publicado, com URL e credenciais disponíveis
-* [ ] Indicadores do ciclo registrados em `docs/ai-log.md`
+* [ ] Pipeline de CI/CD executando lint, testes, análise estática e build
+* [ ] Proteção da branch principal exigindo os status checks do workflow
 * [ ] Specs de capacidade sincronizadas e mudanças arquivadas
-* [ ] `docs/ai-log.md` completo, com a síntese crítica
+* [ ] Registros de cada mudança em `docs/ai-log.md`
 
-Concluída a entrega do MVP, o que vem depois está no [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md).
+Concluída a entrega, a etapa seguinte é o [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md).

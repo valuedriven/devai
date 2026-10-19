@@ -1,68 +1,72 @@
 # Roteiro de Evolução
 
-Este roteiro cobre o que vem **depois do MVP**: a migração para a versão final, o fechamento do laço entre a telemetria de produção e o agente, e a mudança evolutiva em sistema existente.
+Quinta etapa do fluxo, executada depois do [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md). Ela cobre a **observabilidade da solução** e os **aspectos evolutivos do trabalho com agentes**: o laço fechado entre a telemetria de produção e o agente, a medição do próprio ciclo e a evolução de sistema existente a partir da sua documentação.
 
-Ele parte do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md), que vai do backlog de mudanças ao MVP publicado e verificado. Execute-o somente depois de concluir a verificação final daquele roteiro.
-
-> O ciclo de mudança, a política de revisão e as ferramentas continuam os mesmos. Este roteiro não introduz ferramenta nova além do Terraform, já instalado nos pré-requisitos do Roteiro de Entrega.
-
-| Documento relacionado | Para que serve |
+| Escopo | Resultado |
 | :---- | :---- |
-| [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog ao MVP publicado |
-| [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Implantação do MVP nas plataformas gerenciadas |
-| [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Instalação e configuração do agente |
+| Entra | Instrumentação e perguntas de verificação, `ops/faixas.yaml`, indicadores do ciclo, mudança evolutiva e síntese crítica |
+| Não entra | Migração para a AWS, que é a etapa final e está no [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) |
 
----
+A sequência pressupõe a solução publicada e o pipeline com infraestrutura como código, conforme o Roteiro de Implantação: sem produção no ar não há telemetria, e sem telemetria não há laço a fechar.
 
-## 1. Estratégia de implantação em duas etapas
-
-A solução é implantada em duas etapas, e a primeira não é descartada pela segunda.
-
-| Etapa | Objetivo | Plataformas | Onde é tratada |
-| :---- | :---- | :---- | :---- |
-| MVP | Validar os fluxos de negócio ponta a ponta com rapidez | Plataformas gerenciadas: Vercel, Supabase e Clerk | [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md), com os passos de plataforma no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) |
-| Versão final | Atender integralmente aos requisitos de portabilidade e implantação | AWS, com contêineres OCI e Terraform | Seção 2 deste roteiro |
-
-A **AWS é a referência desejada** para a versão final, e a migração acontece depois que o MVP estiver validado.
-
-A versão final não descarta a primeira: o provedor de identidade continua o mesmo e o código permanece o mesmo. O que muda é onde a aplicação executa e como o ambiente é criado.
-
-> A ordem importa. Migrar antes de validar os fluxos troca um problema conhecido — a portabilidade pendente — por um desconhecido: não se sabe se o que foi migrado funciona, porque nunca funcionou.
-
----
-
-## 2. Migração para a versão final
-
-O MVP valida os fluxos de negócio, mas apoia-se em plataformas gerenciadas. Isso atende à entrega rápida e deixa em aberto a portabilidade, a implantação automatizada e a recriação completa de ambientes.
-
-A **AWS é a referência desejada** para a versão final: contêineres compatíveis com o padrão OCI, infraestrutura descrita em Terraform e pipeline capaz de recriar o ambiente do zero.
-
-> **Esta migração é feita em roteiro específico:** [Configuração para interação com AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/tarefas/configuracao_aws.md). Execute-o somente depois que o MVP estiver publicado e com os fluxos validados.
-
-O que o roteiro de migração cobre:
-
-| Etapa | Resultado |
+| Pré-requisito | Onde é atendido |
 | :---- | :---- |
-| Configuração do ambiente AWS | Credenciais, MCP servers da AWS e skills de implantação configurados no agente |
-| Análise de decisão arquitetural | `docs/ada.md`, comparando arquiteturas candidatas e definindo o plano de evolução incremental |
-| Empacotamento | Dockerfiles com build em múltiplos estágios, imagem base versionada e `.dockerignore` |
-| Infraestrutura como código | Descrição Terraform do ambiente, com estado remoto e variáveis para o que muda entre ambientes |
-| Implantação | Pipeline estendido com build da imagem, `terraform plan` e `terraform apply`, autenticando por OIDC |
-| Prova de reprodutibilidade | Ambiente destruído e recriado pelo pipeline, com registro do que exigiu intervenção manual |
+| Aplicação publicada, com os fluxos percorríveis | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md), seções 4 e 5 |
+| Pipeline com `plan` e `apply` automatizados | Roteiro de Implantação, seção 6 |
+| Conta na plataforma de observabilidade, com credenciais de ingestão | Seção 1 deste roteiro |
 
-Dois avisos que valem antes de começar:
-
-> O arquivo de estado do Terraform contém dados sensíveis e não vai para o Git. O comando `terraform destroy` apaga recursos de verdade, então leia o plano antes de aplicar. Segredos vêm de variáveis, nunca escritos nos arquivos `.tf`.
-
-> O termo *provider* no Terraform designa um plugin de infraestrutura. Não tem relação com os providers de modelos de IA configurados no Roteiro de Configuração do Ambiente.
-
-Ao final da migração, cada intervenção manual que tiver sido necessária é uma lacuna na infraestrutura como código. Transforme cada uma em uma nova mudança no backlog, pelo ciclo da seção 7 do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md).
+> O ciclo de mudança, a política de revisão e as ferramentas continuam os mesmos. Trate cada item como uma mudança do OpenSpec, seguindo o ciclo da seção 7 do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md).
 
 ---
 
-## 3. Faixas de controle e laço fechado
+## 1. Observabilidade da solução
 
-A telemetria instalada na seção 9 do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) informa. Falta ligá-la à ação: o monitoramento determinístico detecta a quebra de uma faixa e **só então** aciona o agente. A detecção não é delegada ao agente, que é caro como observador contínuo e, sendo probabilístico, pouco confiável como detector.
+A instrumentação precisa de um destino. Antes do prompt:
+
+* Crie conta na plataforma de observabilidade declarada em `docs/architecture.md` — na stack de referência da seção 5 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md), o Grafana Cloud.
+* Obtenha as credenciais de ingestão e acrescente-as ao `.env`, e as chaves correspondentes ao `.env.example`.
+* Cadastre-as também como secrets do repositório, para que o ambiente publicado exporte telemetria.
+
+```bash
+# Plataforma de observabilidade — endpoint de ingestão e credencial
+OTEL_EXPORTER_OTLP_ENDPOINT=
+OTEL_EXPORTER_OTLP_HEADERS=
+```
+
+> Os nomes acima são os do padrão aberto de telemetria, aceitos pela maioria das plataformas. Confirme no painel da escolhida como ela espera receber o endpoint e a credencial.
+
+* Execute:
+
+```text
+/opsx-propose observabilidade
+
+Contexto: @docs/architecture.md, @AGENTS.md
+
+Requisitos:
+- Instrumentação por padrões abertos: logs, métricas e traces.
+- Exportação para a plataforma de observabilidade declarada em docs/architecture.md.
+- Identificador de correlação atravessando a requisição, do frontend ao banco.
+- Métricas por endpoint: contagem, latência e taxa de erro.
+- Limiares de desvio declarados em arquivo versionado, com a ação de cada severidade.
+- Não registrar dados pessoais: prefira metadados e hashes a conteúdo de requisições
+  e respostas.
+```
+
+> Qual plataforma recebe a instrumentação é decisão da arquitetura, não deste roteiro. O que este roteiro exige é que as três perguntas a seguir tenham resposta.
+
+Verifique a instrumentação tentando responder a estas três perguntas apenas com o que o sistema emite:
+
+1. Um usuário relatou erro ao concluir o fluxo principal há dez minutos. O que aconteceu na requisição dele?
+2. Qual a latência p95 do endpoint mais usado nas últimas vinte e quatro horas?
+3. Qual endpoint concentra os erros do dia, e em que proporção das requisições?
+
+Se alguma pergunta ficar sem resposta, a instrumentação está incompleta.
+
+---
+
+## 2. Faixas de controle e laço fechado
+
+A instrumentação da seção 1 informa. Falta ligá-la à ação: o monitoramento determinístico detecta a quebra de uma faixa e **só então** aciona o agente. A detecção não é delegada ao agente, que é caro como observador contínuo e, sendo probabilístico, pouco confiável como detector.
 
 * Crie o arquivo `ops/faixas.yaml`, versionado no repositório:
 
@@ -139,6 +143,37 @@ requisições de exemplo, causa provável e o que confirmaria a hipótese.
 
 ---
 
+## 3. Métricas do ciclo
+
+Com o pipeline em produção, o repositório e a integração contínua já produzem o suficiente para medir o próprio processo. Medir apenas o que já existe é a regra aqui: nenhuma instrumentação adicional.
+
+* Crie em `docs/ai-log.md` uma tabela com os cinco indicadores e atualize-a ao encerrar cada mudança:
+
+| Indicador | Onde se obtém |
+| :---- | :---- |
+| Mudanças integradas na primeira passagem | Histórico de pull requests |
+| Tempo da proposta até a integração | Registro do OpenSpec e do Git |
+| Ciclos de retrabalho por mudança | Contagem de reaberturas |
+| Sucesso de primeira passagem no pipeline | Registros da integração contínua |
+| Custo em tokens por mudança | Telemetria do agente, instalada pela seção 4 do Roteiro de Configuração do Ambiente |
+
+* Comandos úteis para a coleta:
+
+```bash
+# tempo entre abertura e integração das últimas vinte solicitações
+gh pr list --state merged --limit 20 --json number,createdAt,mergedAt
+
+# execuções do pipeline e o respectivo veredito
+gh run list --limit 20 --json displayTitle,conclusion,createdAt
+```
+
+* Restrinja o indicador de **sucesso de primeira passagem** às mudanças escritas pelo agente: é esse recorte que mede a qualidade do harness. Se o número cai, algum guia ou sensor está faltando — e a resposta está na seção 4 do Roteiro de Configuração do Ambiente, **Contexto e custo**.
+* O **custo em tokens por mudança** é o denominador do ganho. Sem ele, a afirmação de que o agente acelerou o trabalho não tem com o que ser comparada.
+
+> As quatro medidas consagradas de desempenho de entrega — frequência de implantação, tempo de espera até a produção, tempo de restauração e taxa de falha de alteração — pressupõem uma equipe e um histórico. O conjunto acima é a redução viável para um projeto individual, e preserva o essencial: rendimento e estabilidade medidos separadamente.
+
+---
+
 ## 4. Mudança evolutiva em sistema existente
 
 Esta atividade testa a qualidade da documentação e do harness produzidos. O ganho vem de trabalhar sobre um sistema escrito por outra pessoa.
@@ -171,15 +206,31 @@ Em seguida, aplique a mesma leitura ao repositório próprio: cada atrito encont
 
 ---
 
-## 6. Verificação final da evolução
+## 6. Síntese crítica
 
-* [ ] `docs/ada.md` versionado, com as arquiteturas candidatas comparadas
-* [ ] Imagens OCI construídas em múltiplos estágios, com imagem base versionada
-* [ ] Ambiente descrito em Terraform, com estado remoto e variáveis para o que muda entre ambientes
-* [ ] Pipeline estendido com build da imagem, `terraform plan` e `terraform apply`, autenticando por OIDC
-* [ ] Ambiente destruído e recriado pelo pipeline, com as intervenções manuais registradas
-* [ ] Cada intervenção manual convertida em mudança no `backlog.md`
+Ao final, acrescente a `docs/ai-log.md` uma seção respondendo, com base nos registros feitos ao longo do fluxo:
+
+* Onde a IA acelerou de verdade? Sustente a resposta com os indicadores do ciclo, da seção 3.
+* Onde ela custou tempo?
+* Que tipo de erro ela cometeu com mais frequência?
+* O que melhorou quando o harness melhorou? Compare o sucesso de primeira passagem antes e depois dos ajustes da seção 4 do Roteiro de Configuração do Ambiente.
+* Quanto custou, em tokens e em escolhas de modelo e provider?
+* Quais políticas precisaram de hook, e por que a recomendação não bastou?
+* O que continuou sendo trabalho humano?
+
+---
+---
+
+## 7. Verificação final da evolução
+
+* [ ] Credenciais da plataforma de observabilidade no `.env` e nos secrets do repositório
+* [ ] Instrumentação respondendo às três perguntas de verificação com o que o sistema emite
 * [ ] `ops/faixas.yaml` versionado, com limiares e níveis de autonomia declarados
 * [ ] Faixas revisadas na periodicidade declarada
+* [ ] Prompt de diagnóstico em uso, com o agente investigando em modo somente leitura
+* [ ] Tabela de indicadores do ciclo em `docs/ai-log.md`, atualizada ao encerrar cada mudança
 * [ ] Mudança evolutiva implementada em sistema existente, com os atritos registrados
 * [ ] Atritos aplicados também ao repositório próprio, como mudanças no `backlog.md`
+* [ ] `docs/ai-log.md` completo, com a síntese crítica
+
+Concluída a evolução, a etapa final é o [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md).

@@ -1,6 +1,6 @@
 # Roteiro de Descoberta
 
-Este roteiro descreve o passo a passo da descoberta do produto: da definição do problema ao desenho da interface. Ele produz os artefatos que o [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) consome.
+Primeira etapa do fluxo. Este roteiro descreve o passo a passo da descoberta do produto: da definição do problema ao desenho da interface. Ele produz os artefatos que as etapas seguintes consomem, e a ordem completa está no [Roteiro Geral](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_geral.md).
 
 ---
 
@@ -14,9 +14,9 @@ Ele não é o seu projeto. Você desenvolve uma solução própria, com domínio
 
 ### Pré-requisitos
 
-* Conta no GitHub, com repositório criado para o projeto.
-* Acesso a pelo menos duas IAs de uso geral de fronteira (ChatGPT, Claude, Deepseek etc.) com recurso de pesquisa profunda (deep research) e capacidade de ler arquivos anexados e URLs.
-* Acesso a ferramenta de prototipação (Google Stitch, OpenDesign etc.). Para maiores detalhes, verifique os roteiros para setup de ambiente [Antigraviy](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment.md) ou [Opensource](https://github.com/valuedriven/devai/blob/main/.fluxo/setup_environment_opensource.md). 
+* Repositório criado para o projeto no serviço de controle de versão, conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md).
+* Acesso a pelo menos duas IAs de uso geral de fornecedores diferentes, com recurso de pesquisa profunda (deep research) e capacidade de ler arquivos anexados e URLs. As opções estão no [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md).
+* Acesso a ferramenta de prototipação, igualmente listada no [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md). Se a opção escolhida operar sobre um agente de código instalado na máquina, execute antes o [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md).
 * (Opcional) Documentação complementar com requisitos não funcionais ou outras definições.
 
 ### Como fornecer contexto aos prompts
@@ -304,7 +304,7 @@ Resultado esperado: um arquivo por diagrama, no diretório docs/diagramas/
 Cada arquivo deve conter um título em nível 1 e um único bloco Mermaid.
 ```
 
-* Confira a sintaxe dos diagramas: o modelo costuma gerar Mermaid que não renderiza. Abra cada arquivo no GitHub e verifique se o diagrama aparece.
+* Confira a sintaxe dos diagramas: o modelo costuma gerar Mermaid que não renderiza. Abra cada arquivo no repositório e verifique se o diagrama aparece.
 * Acrescente ao `docs/architecture.md` uma seção que liste os diagramas e aponte para os arquivos.
 
 #### Revisão de consistência da descoberta
@@ -322,12 +322,11 @@ Contexto: os arquivos anexos.
 
 Critérios:
 1. Todo requisito funcional do PRD está detalhado na spec, e vice-versa.
-2. O roadmap do PRD distribui os dois fluxos ponta a ponta e a funcionalidade de IA em
-   horizontes coerentes.
-3. Existem pelo menos dois fluxos de negócio ponta a ponta, sem contar cadastros de apoio.
-4. Cada requisito não funcional obrigatório tem uma decisão arquitetural correspondente.
-5. Todo componente da arquitetura atende a pelo menos um requisito.
-6. Termos ambíguos, requisitos não testáveis ou decisões implícitas.
+2. O roadmap do PRD distribui os fluxos de negócio em horizontes coerentes, e o MVP
+   contempla fluxos ponta a ponta.
+3. Cada requisito não funcional obrigatório tem uma decisão arquitetural correspondente.
+4. Todo componente da arquitetura atende a pelo menos um requisito.
+5. Termos ambíguos, requisitos não testáveis ou decisões implícitas.
 
 Formato de saída: tabela com as colunas
 Documento | Trecho | Problema | Critério | Severidade (alta/média/baixa) | Correção sugerida.
@@ -343,7 +342,7 @@ Não reescreva os documentos; apenas aponte os problemas.
 
 **Resultados:** `docs/design.md` e `docs/prototypes/`
 
-**Ferramentas:** Stitch (<https://stitch.withgoogle.com/>), com OpenDesign (<https://open-design.ai/>) como alternativa open source.
+**Ferramentas:** ferramenta de prototipação, conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md).
 
 **Exemplo de forma:** <https://github.com/valuedriven/devai/blob/main/docs/design.md>
 
@@ -351,7 +350,7 @@ Não reescreva os documentos; apenas aponte os problemas.
 
 #### Definição do design system
 
-* Utilize um arquivo de design system de sua preferência. Se desejar, escolha dentre as opções disponíveis em <https://getdesign.md/>.
+* Utilize um arquivo de design system de sua preferência. Os catálogos de onde escolher um estão no [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md).
 * Acesse a ferramenta de prototipação.
 * Solicite a criação de um design system com base no arquivo escolhido.
 * Aguarde a conclusão.
@@ -366,15 +365,17 @@ Não reescreva os documentos; apenas aponte os problemas.
 
 #### Exportação obrigatória
 
+Na entrega, o agente de desenvolvimento não tem acesso à ferramenta de prototipação: ele enxerga apenas o que está no repositório.
+
 * Exporte o design system para `docs/design.md`, usando o exemplo de forma como referência.
 * Exporte as telas para `docs/prototypes/`, em HTML e imagens.
-* Verifique se as telas exportadas cobrem os dois fluxos ponta a ponta, contemplam a funcionalidade de IA e atendem ao comportamento responsivo exigido pelo documento de requisitos.
+* Verifique se as telas exportadas cobrem os fluxos de negócio da especificação e atendem ao comportamento responsivo exigido pela documentação de requisitos.
 
 ---
 
 ## Verificação final da descoberta
 
-Antes de passar para o Roteiro de Entrega, confirme:
+Antes de passar para a etapa seguinte, confirme:
 
 * [ ] `docs/problem.md` validado com fontes externas conferidas
 * [ ] `docs/prd.md` com seção de escopo funcionando como roadmap
@@ -385,3 +386,5 @@ Antes de passar para o Roteiro de Entrega, confirme:
 * [ ] `docs/ai-log.md` com os registros de cada atividade
 * [ ] Relatório de revisão de consistência aplicado
 * [ ] Comparação entre modelos registrada no `docs/ai-log.md`
+
+Concluída a descoberta, a etapa seguinte é o [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md).
