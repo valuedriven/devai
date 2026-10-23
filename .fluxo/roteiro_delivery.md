@@ -1,6 +1,15 @@
 # Roteiro de Entrega
 
-Este roteiro descreve o passo a passo da construção, da liberação e da evolução da solução. Ele parte dos artefatos produzidos no [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) e vai até a evolução do sistema em produção.
+Este roteiro cobre a fase **Entrega** inteira, com as suas quatro atividades: **Ambiente**, **Construção**, **Liberação** e **Evolução**. Ele parte dos artefatos produzidos na fase de Descoberta e vai do ambiente configurado até a solução publicada, observável e em evolução.
+
+A atividade de Construção está descrita aqui, nas seções 3 a 9. As outras três têm roteiros complementares, chamados a partir deste no ponto em que entram:
+
+| Atividade | Onde está o passo a passo |
+| :---- | :---- |
+| Ambiente | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) |
+| Construção | Seções 3 a 9 **deste roteiro** |
+| Liberação | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) e, para a versão final, [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) |
+| Evolução | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) |
 
 > O repositório [valuedriven/devai](https://github.com/valuedriven/devai) é um **blueprint**: serve de exemplo de forma para os artefatos e a configuração, e é citado nos prompts. O projeto é seu, com domínio próprio e requisitos funcionais próprios.
 
@@ -20,16 +29,18 @@ Este roteiro descreve o passo a passo da construção, da liberação e da evolu
 
 **Ferramentas:** agente de desenvolvimento, OpenSpec, Playwright, SonarQube e GitHub Actions. A descrição e o endereço de cada uma estão no [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md); a stack da solução, nos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md).
 
-**Escopo:** terceira etapa do fluxo. Este roteiro vai do backlog de mudanças ao **pipeline de CI/CD com os testes automatizados**, e para aí. Ele é escrito de forma independente da ferramenta de agente e da plataforma de implantação; o que é específico de uma ou de outra fica em documentos próprios.
+**Escopo:** a fase de Entrega inteira. As seções 3 a 9 descrevem a atividade de Construção, do backlog de mudanças ao pipeline de CI/CD com os testes automatizados; as demais atividades são conduzidas pelos roteiros complementares, na ordem da tabela abaixo. Este roteiro é escrito de forma independente da ferramenta de agente e da plataforma de implantação; o que é específico de uma ou de outra fica nos complementos.
 
-| Etapa | Documento | Relação com esta |
-| :---- | :---- | :---- |
-| 1 | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Produz o `docs/` de que a seção 3 parte |
-| 2 | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Pré-requisito: agente configurado, com regras, skills, MCP, hooks e subagentes |
-| **3** | **Este roteiro** | **Do backlog ao pipeline de CI/CD** |
-| 4 | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Etapa seguinte: provisionamento por código, recursos remotos, publicação e IaC no pipeline |
-| 5 | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Observabilidade e aspectos evolutivos do trabalho com agentes |
-| 6 | [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) | Versão final, com ambiente completo por código |
+| Ordem | Atividade | Documento | O que faz |
+| :---- | :---- | :---- | :---- |
+| — | Descoberta | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Fase anterior: produz o `docs/` de que a seção 3 parte |
+| 1 | Ambiente | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Complemento: agente configurado, com regras, skills, MCP, hooks e subagentes |
+| **2** | **Construção** | **Seções 3 a 9 deste roteiro** | **Do backlog ao pipeline de CI/CD** |
+| 3 | Liberação | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Complemento: provisionamento por código, recursos remotos, publicação e IaC no pipeline |
+| 4 | Evolução | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Complemento: observabilidade e aspectos evolutivos do trabalho com agentes |
+| 5 | Liberação | [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) | Complemento: versão final, com ambiente completo por código |
+
+A liberação ocupa dois lugares na ordem porque acontece em dois momentos: primeiro o MVP nas plataformas gerenciadas e, ao final, a versão final na AWS. A evolução fica entre os dois, já que a migração pressupõe a solução publicada e observável.
 
 Documentos de apoio: o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md), para o que cada ferramenta faz e como instalá-la, e os [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md), para o que a solução precisa atender.
 
@@ -800,7 +811,7 @@ Requisitos:
 
 > O workflow fica pronto para publicar, mas ainda não publica: o destino, as credenciais da plataforma e as etapas de infraestrutura como código entram no [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md), a etapa seguinte. Os testes de aceite passam a executar contra o ambiente publicado a partir de lá.
 
-## Verificação final da entrega
+## Verificação final da construção
 
 * [ ] Agente configurado pelo Roteiro de Configuração do Ambiente, com regras, skills, MCP, hooks e subagentes implantados
 * [ ] `openspec view` respondendo pela CLI invocada por `npx`, e prompts do Playwright no diretório do agente
@@ -815,4 +826,12 @@ Requisitos:
 * [ ] Specs de capacidade sincronizadas e mudanças arquivadas
 * [ ] Registros de cada mudança em `docs/ai-log.md`
 
-Concluída a entrega, a etapa seguinte é o [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md).
+## Como seguir até o fim da fase
+
+Concluída a construção, a fase de Entrega prossegue nos roteiros complementares, nesta ordem:
+
+1. **Liberação** — [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md): provisionamento por código, recursos remotos, publicação do MVP e infraestrutura como código no pipeline.
+2. **Evolução** — [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md): observabilidade, faixas de controle, indicadores do ciclo e a mudança evolutiva sobre o sistema em produção.
+3. **Liberação, segundo momento** — [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md): a versão final, com o ambiente completo descrito em código e a prova de reprodutibilidade.
+
+A fase termina quando a solução está publicada, observável e evoluída, e o ambiente pode ser recriado do zero a partir do repositório.

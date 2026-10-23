@@ -1,11 +1,11 @@
 # Roteiro de Migração para a AWS
 
-Sexta e última etapa do fluxo, executada depois do [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md). Ela leva a solução das plataformas gerenciadas do MVP para a **versão final na AWS**, atendendo integralmente ao RNF-06 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md).
+Complemento do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) para a atividade **Liberação**, no seu segundo momento — a versão final —, executado depois do [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md). Ela leva a solução das plataformas gerenciadas do MVP para a **versão final na AWS**, atendendo integralmente ao RNF-06 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md).
 
 | Escopo | Resultado |
 | :---- | :---- |
 | Entra | Ambiente AWS configurado, análise de decisão arquitetural, empacotamento OCI, infraestrutura descrita em Terraform, pipeline capaz de recriar o ambiente do zero |
-| Não entra | Nada: esta é a última etapa do fluxo |
+| Não entra | Nada: este é o último roteiro do fluxo |
 
 Execute-a somente depois que o MVP estiver publicado, com os fluxos validados e a observabilidade respondendo às perguntas de verificação.
 

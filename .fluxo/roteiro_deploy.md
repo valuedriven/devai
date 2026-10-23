@@ -1,6 +1,6 @@
 # Roteiro de Implantação
 
-Quarta etapa do fluxo, executada depois do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md). Ela cobre o **provisionamento por código**, a criação dos recursos remotos e a publicação do MVP nas plataformas gerenciadas declaradas na seção 5 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md) — e termina com a infraestrutura como código integrada ao pipeline de CI/CD.
+Complemento do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) para a atividade **Liberação**, executada depois do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md). Ela cobre o **provisionamento por código**, a criação dos recursos remotos e a publicação do MVP nas plataformas gerenciadas declaradas na seção 5 dos [Requisitos da Solução](https://github.com/valuedriven/devai/blob/main/.fluxo/requisitos_solucao.md) — e termina com a infraestrutura como código integrada ao pipeline de CI/CD.
 
 | Escopo | Resultado |
 | :---- | :---- |

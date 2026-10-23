@@ -4,62 +4,66 @@ Este repositório organiza o fluxo de desenvolvimento de uma solução de softwa
 
 ## Visão geral do fluxo
 
+O fluxo tem **duas fases**, e cada fase tem as suas **atividades**. É esse o vocabulário usado em todos os artefatos da disciplina: slides, materiais de aula e roteiros.
+
 ```mermaid
 ---
 title: Visão geral do fluxo de desenvolvimento com IA
 ---
 graph LR
 
-    subgraph Discovery["Descoberta"]
-        P[problem.md] --> PRD[prd.md]
-        PRD --> S[spec.md]
-        S --> A["architecture.md<br/>diagramas/"]
-        A --> D["design.md<br/>prototypes/"]
+    subgraph FASE1["FASE 1 — Descoberta"]
+        direction LR
+        P["<b>Problema</b><br/>problem.md · prd.md"]
+        E["<b>Especificação</b><br/>spec.md · architecture.md<br/>diagramas/"]
+        D["<b>Desenho</b><br/>design.md · prototypes/"]
+        P --> E --> D
     end
 
-    subgraph Ambiente["Ambiente"]
-        H[AGENTS.md, skills, MCP, hooks]
+    subgraph FASE2["FASE 2 — Entrega"]
+        direction LR
+        A["<b>Ambiente</b><br/>AGENTS.md · skills<br/>MCP · hooks"]
+        C["<b>Construção</b><br/>backlog.md · changes<br/>testes · pipeline de CI/CD"]
+        L["<b>Liberação</b><br/>IaC · recursos remotos<br/>publicação · contêineres OCI"]
+        V["<b>Evolução</b><br/>observabilidade<br/>faixas · indicadores"]
+        A --> C --> L --> V
     end
 
-    subgraph Delivery["Entrega"]
-        B[backlog.md] --> C[changes]
-        C --> I[Incremento testado]
-        I --> L[Pipeline de CI/CD]
-    end
-
-    subgraph Deploy["Implantação"]
-        N[IaC, recursos remotos, publicação]
-    end
-
-    subgraph Evolucao["Evolução"]
-        O[Observabilidade, faixas, indicadores]
-    end
-
-    subgraph Migracao["Migração"]
-        M[Contêineres OCI, ambiente completo]
-    end
-
-    D --> H
-    H --> B
-    L --> N
-    N --> O
-    O --> M
-    O -. aprendizado .-> PRD
-    O -. novas changes .-> B
+    D --> A
 ```
+
+O fluxo não termina na última atividade: a evolução o realimenta. O sinal de produção reabre a especificação, no `prd.md` e no `spec.md`, e origina novas propostas de mudança no backlog da construção. É esse laço que torna o percurso um ciclo, e não uma linha.
+
+A liberação acontece em dois momentos: o MVP nas plataformas gerenciadas e, ao final, a versão final na AWS. A evolução ocorre entre os dois, porque a migração pressupõe a solução publicada e observável.
+
+## Fases, atividades e roteiros
+
+| Fase | Atividade | Roteiro correspondente |
+| :---- | :---- | :---- |
+| Descoberta | Problema | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md), seção 1.1 |
+| Descoberta | Especificação | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md), seções 1.2 e 1.3 |
+| Descoberta | Desenho | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md), seção 1.4 |
+| Entrega | Ambiente | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md), complemento |
+| Entrega | Construção | [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md), seções 3 a 9 |
+| Entrega | Liberação | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) e [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md), complementos |
+| Entrega | Evolução | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md), complemento |
+
+Há **um roteiro por fase**: o Roteiro de Descoberta e o Roteiro de Entrega. Cada um cobre a sua fase inteira. Os outros quatro documentos são **complementos**, chamados pelo Roteiro de Entrega no ponto em que cada atividade entra — a de Construção é a única descrita no próprio Roteiro de Entrega. Uma atividade pode apoiar-se em mais de um complemento, como ocorre na liberação.
 
 ## Roteiros
 
-Os seis roteiros são executados **nesta ordem**. Cada um pressupõe o anterior concluído e verificado.
+Há **um roteiro por fase**, e cada um cobre a sua fase inteira. Os quatro **complementos** detalham uma atividade e são chamados pelo Roteiro de Entrega no ponto em que ela entra.
 
-| # | Documento | Escopo |
-| :---- | :---- | :---- |
-| 1 | [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Da definição do problema ao desenho da interface |
-| 2 | [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Agente instalado e configurado: regras, skills, MCP, hooks e subagentes |
-| 3 | [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Do backlog de mudanças ao pipeline de CI/CD com testes automatizados |
-| 4 | [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Provisionamento por código, recursos remotos, publicação e IaC no pipeline |
-| 5 | [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Observabilidade da solução e aspectos evolutivos do trabalho com agentes |
-| 6 | [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) | Versão final: contêineres OCI, ambiente completo por código e prova de reprodutibilidade |
+| Documento | Papel | Fase · atividade | Escopo |
+| :---- | :---- | :---- | :---- |
+| [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md) | Roteiro de fase | Descoberta · Problema, Especificação e Desenho | Da definição do problema ao desenho da interface |
+| [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) | Roteiro de fase | Entrega · as quatro atividades | Conduz a fase inteira e descreve a Construção, do backlog ao pipeline de CI/CD |
+| ↳ [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md) | Complemento | Entrega · Ambiente | Agente instalado e configurado: regras, skills, MCP, hooks e subagentes |
+| ↳ [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md) | Complemento | Entrega · Liberação | Provisionamento por código, recursos remotos, publicação e IaC no pipeline |
+| ↳ [Roteiro de Evolução](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_evolucao.md) | Complemento | Entrega · Evolução | Observabilidade da solução e aspectos evolutivos do trabalho com agentes |
+| ↳ [Roteiro de Migração para a AWS](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_migracao_aws.md) | Complemento | Entrega · Liberação (versão final) | Contêineres OCI, ambiente completo por código e prova de reprodutibilidade |
+
+**Ordem de execução.** Descoberta e, em seguida, Entrega. Dentro da Entrega: Ambiente, Construção, Liberação do MVP, Evolução e, por último, a versão final na AWS. Cada documento pressupõe o anterior concluído e verificado.
 
 Documentos de apoio, consultados a partir dos roteiros:
 
@@ -95,7 +99,7 @@ A documentação é desacoplada em três camadas. Cada assunto tem um lugar só.
 | Camada | Documento | Conteúdo |
 | :---- | :---- | :---- |
 | O que construir | Requisitos da solução | Requisitos funcionais e não funcionais, artefatos esperados e as plataformas de cada etapa de implantação |
-| Como construir | Os seis roteiros, na ordem da tabela acima | Passo a passo, prompts, comandos e verificações |
+| Como construir | Os dois roteiros de fase e os seus complementos, na ordem da tabela acima | Passo a passo, prompts, comandos e verificações |
 | Com que ferramentas | Catálogo de ferramentas | O que cada ferramenta faz, onde obter e como instalar |
 | Como configurar o agente | Roteiro de Configuração do Ambiente | MCP, skills, regras, hooks, subagentes e os passos próprios de cada agente |
 

@@ -1,6 +1,6 @@
 # Roteiro de Evolução
 
-Quinta etapa do fluxo, executada depois do [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md). Ela cobre a **observabilidade da solução** e os **aspectos evolutivos do trabalho com agentes**: o laço fechado entre a telemetria de produção e o agente, a medição do próprio ciclo e a evolução de sistema existente a partir da sua documentação.
+Complemento do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) para a atividade **Evolução**, executada depois do [Roteiro de Implantação](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_deploy.md). Ela cobre a **observabilidade da solução** e os **aspectos evolutivos do trabalho com agentes**: o laço fechado entre a telemetria de produção e o agente, a medição do próprio ciclo e a evolução de sistema existente a partir da sua documentação.
 
 | Escopo | Resultado |
 | :---- | :---- |

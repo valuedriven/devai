@@ -1,6 +1,6 @@
 # Roteiro de Configuração do Ambiente
 
-Segunda etapa do fluxo, executada depois do [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md). Ele parte das ferramentas já instaladas conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md), e produz regras, skills, servidores MCP, hooks e subagentes implantados no agente escolhido.
+Complemento do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md) para a atividade **Ambiente**, a primeira da fase de Entrega, executada depois do [Roteiro de Descoberta](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_discovery.md). Ele parte das ferramentas já instaladas conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md), e produz regras, skills, servidores MCP, hooks e subagentes implantados no agente escolhido.
 
 Execute-o **antes** do [Roteiro de Entrega](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_delivery.md), de que é pré-requisito.
 
@@ -25,9 +25,9 @@ Execute-o **antes** do [Roteiro de Entrega](https://github.com/valuedriven/devai
 | Antigravity | `antigravity` | Painel **Agent**, comando **+**, opção **Start a New Conversation** | `.agents/` |
 | OpenCode | `opencode` | `/new` na área de prompt | `.opencode/` e `.agents/` |
 
-Perfil de modelo por fase do ciclo planejar/executar:
+Perfil de modelo por etapa do ciclo planejar/executar:
 
-| Fase | Perfil de modelo |
+| Etapa do ciclo | Perfil de modelo |
 | :---- | :---- |
 | Planejamento | Maior capacidade de raciocínio, com modo *thinking* quando disponível e, se a ferramenta oferecer, agente sem permissão de edição |
 | Execução | Mais rápido e barato |
@@ -320,7 +320,7 @@ npx playwright init-agents --loop=opencode
 
 > O controle do navegador pelo agente vem do servidor MCP do Playwright, registrado pelo APM na seção 2.3. Este comando é outra coisa: gera arquivos de prompt a partir da versão do executor instalada.
 
-* Como o executor ainda não existe nesta etapa do fluxo, execute este comando **apenas depois** de instalar o executor de testes, no Roteiro de Entrega. Ele está listado aqui porque a geração de prompts é parte da configuração do agente, não da configuração da aplicação.
+* Como o executor ainda não existe nesta atividade, execute este comando **apenas depois** de instalar o executor de testes, no Roteiro de Entrega. Ele está listado aqui porque a geração de prompts é parte da configuração do agente, não da configuração da aplicação.
 
 | Agente | Procedimento |
 | :---- | :---- |

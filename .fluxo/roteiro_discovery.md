@@ -1,6 +1,6 @@
 # Roteiro de Descoberta
 
-Primeira etapa do fluxo. Este roteiro descreve o passo a passo da descoberta do produto: da definição do problema ao desenho da interface. Ele produz os artefatos que as etapas seguintes consomem, e a ordem completa está no [Roteiro Geral](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_geral.md).
+Fase **Descoberta**, que reúne as atividades **Problema**, **Especificação** e **Desenho**. Este roteiro descreve o passo a passo da descoberta do produto: da definição do problema ao desenho da interface. Ele produz os artefatos que a fase de Entrega consome, e a ordem completa está no [Roteiro Geral](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_geral.md).
 
 ---
 
@@ -65,13 +65,14 @@ Esse registro é o que torna reprodutível uma cadeia de decisões tomada com ap
 
 ## 1.1 Definição do problema
 
+**Atividade:** Problema
 **Resultado:** `docs/problem.md`
 
 **Ferramentas:** IA de uso geral com recurso de pesquisa profunda.
 
 **Exemplo de forma:** <https://github.com/valuedriven/devai/blob/main/docs/problem.md>
 
-### Atividades
+### Passos
 
 #### Escolha do cenário
 
@@ -134,6 +135,7 @@ Se não encontrar evidência, diga explicitamente que não encontrou.
 
 ## 1.2 Definição do produto e especificação
 
+**Atividade:** Especificação
 **Resultados:** `docs/prd.md` e `docs/spec.md`
 
 **Ferramentas:** IA de uso geral.
@@ -143,7 +145,7 @@ Se não encontrar evidência, diga explicitamente que não encontrou.
 * <https://github.com/valuedriven/devai/blob/main/docs/prd.md>
 * <https://github.com/valuedriven/devai/blob/main/docs/spec.md>
 
-### Atividades
+### Passos
 
 #### Criação do prd.md
 
@@ -223,11 +225,12 @@ Resultado esperado:
 
 ## 1.3 Arquitetura
 
+**Atividade:** Especificação
 **Resultado:** `docs/architecture.md`
 
 **Exemplo de forma:** <https://github.com/valuedriven/devai/blob/main/docs/architecture.md>
 
-### Atividades
+### Passos
 
 #### Criação do architecture.md
 
@@ -340,13 +343,14 @@ Não reescreva os documentos; apenas aponte os problemas.
 
 ## 1.4 Desenho
 
+**Atividade:** Desenho
 **Resultados:** `docs/design.md` e `docs/prototypes/`
 
 **Ferramentas:** ferramenta de prototipação, conforme o [catálogo de ferramentas](https://github.com/valuedriven/devai/blob/main/.fluxo/ferramentas.md).
 
 **Exemplo de forma:** <https://github.com/valuedriven/devai/blob/main/docs/design.md>
 
-### Atividades
+### Passos
 
 #### Definição do design system
 
