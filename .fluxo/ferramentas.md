@@ -1,18 +1,18 @@
 # Ferramentas do ambiente de desenvolvimento
 
-Catálogo das ferramentas citadas nos roteiros, agrupadas por categoria: o que cada uma faz e onde obtê-la.
+Catálogo das ferramentas citadas nos roteiros, agrupadas por categoria: o que cada uma faz e onde obtê-la. A última coluna indica a atividade do fluxo a que cada categoria serve — as atividades são Problema, Especificação e Desenho, na fase de Descoberta, e Ambiente, Construção, Liberação e Evolução, na fase de Entrega.
 
-| Categoria | Seção |
-| :---- | :---- |
-| Plataforma base | 1 |
-| IA de uso geral | 2 |
-| Agente de desenvolvimento | 3 |
-| Acesso a modelos | 4 |
-| Configuração do agente | 5 |
-| Spec-driven development | 6 |
-| Testes e qualidade | 7 |
-| Integração, entrega e infraestrutura | 8 |
-| Prototipação | 9 |
+| Categoria | Seção | Atividade que serve |
+| :---- | :---- | :---- |
+| Plataforma base | 1 | Ambiente |
+| IA de uso geral | 2 | Problema, Especificação e Desenho |
+| Agente de desenvolvimento | 3 | Ambiente |
+| Acesso a modelos | 4 | Ambiente |
+| Configuração do agente | 5 | Ambiente |
+| Spec-driven development | 6 | Construção |
+| Testes e qualidade | 7 | Construção |
+| Integração, entrega e infraestrutura | 8 | Construção, Liberação e Evolução |
+| Prototipação | 9 | Desenho |
 
 Duas regras valem para todo o catálogo:
 

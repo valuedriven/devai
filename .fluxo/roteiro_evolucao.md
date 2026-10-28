@@ -214,7 +214,7 @@ Ao final, acrescente a `docs/ai-log.md` uma seção respondendo, com base nos re
 * Onde ela custou tempo?
 * Que tipo de erro ela cometeu com mais frequência?
 * O que melhorou quando o harness melhorou? Compare o sucesso de primeira passagem antes e depois dos ajustes da seção 4 do Roteiro de Configuração do Ambiente.
-* Quanto custou, em tokens e em escolhas de modelo e provider?
+* Quanto custou a sessão do agente, em tokens e em escolhas de modelo e provider?
 * Quais políticas precisaram de hook, e por que a recomendação não bastou?
 * O que continuou sendo trabalho humano?
 

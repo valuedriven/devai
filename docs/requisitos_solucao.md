@@ -22,24 +22,24 @@ O domínio e o problema são próprios de cada solução, definidos em `docs/pro
 
 ## 2. Artefatos esperados
 
-| Artefato | Arquivo | Etapa |
-| :---- | :---- | :---- |
-| Definição do problema | `docs/problem.md` | Descoberta |
-| Definição dos requisitos do produto, com roadmap | `docs/prd.md` | Descoberta |
-| Especificação funcional | `docs/spec.md` | Descoberta |
-| Arquitetura de software | `docs/architecture.md` | Descoberta |
-| Modelos de contexto, contêineres, componentes, código e implantação | `docs/diagramas/` | Descoberta |
-| Design system e protótipos | `docs/design.md`, `docs/prototypes/` | Descoberta |
-| Configuração do agente | `apm.yml`, `AGENTS.md`, skills, servidores MCP, hooks, subagentes | Configuração do ambiente |
-| Backlog de mudanças e propostas | `openspec/backlog.md`, `openspec/changes/` | Entrega |
-| Repositório monolito com código-fonte e demais artefatos | Repositório | Entrega |
-| Testes automatizados de unidade, integração e aceite | Junto ao código, conforme a estrutura declarada na arquitetura | Entrega |
-| Política de revisão | `REVIEW.md` | Entrega |
-| Pipeline de CI/CD | `.github/workflows/` | Entrega |
-| Infraestrutura como código | `infra/` | Implantação |
-| Solução implantada, com URL e credenciais de demonstração por perfil | — | Implantação |
-| Faixas de controle da telemetria | `ops/faixas.yaml` | Evolução |
-| Registro de uso de IA e indicadores do ciclo | `docs/ai-log.md` | Todas |
+| Artefato | Arquivo | Fase | Atividade |
+| :---- | :---- | :---- | :---- |
+| Definição do problema | `docs/problem.md` | Descoberta | Problema |
+| Definição dos requisitos do produto, com roadmap | `docs/prd.md` | Descoberta | Problema |
+| Especificação funcional | `docs/spec.md` | Descoberta | Especificação |
+| Arquitetura de software | `docs/architecture.md` | Descoberta | Especificação |
+| Modelos de contexto, contêineres, componentes, código e implantação | `docs/diagramas/` | Descoberta | Especificação |
+| Design system e protótipos | `docs/design.md`, `docs/prototypes/` | Descoberta | Desenho |
+| Configuração do agente | `apm.yml`, `AGENTS.md`, skills, servidores MCP, hooks, subagentes | Entrega | Ambiente |
+| Backlog de mudanças e propostas | `openspec/backlog.md`, `openspec/changes/` | Entrega | Construção |
+| Repositório monolito com código-fonte e demais artefatos | Repositório | Entrega | Construção |
+| Testes automatizados de unidade, integração e aceite | Junto ao código, conforme a estrutura declarada na arquitetura | Entrega | Construção |
+| Política de revisão | `REVIEW.md` | Entrega | Construção |
+| Pipeline de CI/CD | `.github/workflows/` | Entrega | Construção |
+| Infraestrutura como código | `infra/` | Entrega | Liberação |
+| Solução implantada, com URL e credenciais de demonstração por perfil | — | Entrega | Liberação |
+| Faixas de controle da telemetria | `ops/faixas.yaml` | Entrega | Evolução |
+| Registro de uso de IA e indicadores do ciclo | `docs/ai-log.md` | Todas | Todas |
 
 O `docs/ai-log.md` acompanha todo o fluxo e registra os prompts relevantes, os modelos e providers utilizados, o que funcionou, o que falhou, as imprecisões identificadas e os ajustes aplicados. É ele que torna reprodutível uma cadeia de decisões tomada com apoio de modelos probabilísticos.
 
@@ -55,7 +55,7 @@ Não são computados como fluxos os recursos que provêm informações parciais 
 
 **RF-B — Funcionalidade de inteligência artificial.** A solução deve incorporar pelo menos uma funcionalidade baseada em inteligência artificial, integrada aos fluxos de negócio do RF-A.
 
-Como qualquer requisito funcional, ela é detalhada na interação com o usuário: o comportamento esperado, os dados de entrada, o tratamento de falha e os critérios de aceite ficam em `docs/prd.md` e `docs/spec.md`. Recursos de natureza semelhante, como blockchain ou IoT, são aceitáveis como alternativa.
+Como qualquer requisito funcional, ela é detalhada na interação com o usuário: o comportamento esperado, os dados de entrada, o tratamento de falha e os critérios de aceite ficam em `docs/prd.md` e `docs/spec.md`. Recursos de natureza semelhante, como blockchain ou IoT, são aceitáveis como alternativa. As diretrizes de projeto do componente estão na seção 5.6.
 
 Os demais requisitos funcionais são definidos no `docs/prd.md` e no `docs/spec.md`, a partir do problema escolhido.
 
@@ -177,6 +177,27 @@ Skills de teste e gate de qualidade, do projeto de referência: `valuedriven/dev
 > Trocar uma peça da stack implica trocar o pacote correspondente. Skill de uma tecnologia que o projeto não usa ocupa contexto e orienta para o lugar errado: conferida a lista instalada, remova pelo manifesto o que não servir.
 
 Os comandos de instalação estão na seção 2.3 do [Roteiro de Configuração do Ambiente](https://github.com/valuedriven/devai/blob/main/.fluxo/roteiro_environment.md).
+
+### 5.6 O componente de inteligência artificial da solução
+
+Esta seção trata da funcionalidade de IA exigida pelo RF-B — a que o **usuário final** da solução aciona. Não trata do agente de desenvolvimento, que é instrumento do processo de engenharia e está nos roteiros e no material de aula.
+
+O componente é probabilístico dentro de um sistema majoritariamente determinístico, e isso tem consequências de projeto. Seis diretrizes, verificáveis na arquitetura e no código:
+
+| Diretriz | O que significa |
+| :---- | :---- |
+| Encapsular | A chamada ao modelo permanece atrás de uma interface definida, e não espalhada pelos fluxos |
+| Validar a saída | A resposta é validada e normalizada antes de circular pelo restante do sistema |
+| Definir a falha | Timeout, cota esgotada e resposta inválida têm tratamento declarado, com caminho alternativo |
+| Instrumentar | Provider, modelo, tokens e latência de cada chamada são observáveis |
+| Testar por propriedades | A verificação incide sobre formato, campos e contrato, não sobre igualdade exata |
+| Isolar o custo | O consumo da funcionalidade é visível em separado do custo da aplicação |
+
+**Decisão registrada.** A escolha de provider e modelo é decisão arquitetural: fica em `docs/architecture.md`, com a alternativa descartada e o critério que a decidiu — qualidade, custo, latência ou política de dados.
+
+**Telemetria da chamada.** O registro mínimo por chamada ao modelo é provider, modelo, tokens de entrada e saída, latência, uso de caminho alternativo e erros de validação de contrato. **Conteúdo do usuário não entra na telemetria.**
+
+**Avaliação da qualidade.** Quando a qualidade da resposta importar o bastante para ser medida, a técnica é a avaliação: critérios aplicados a um conjunto de tarefas representativas, com limiar declarado. É **prática recomendada, não artefato exigido** — o que os requisitos cobram, no RNF-05, é a suíte de testes nos três níveis. Os conceitos de avaliação estão no tópico 2.9 do material de aula, aplicados ali à saída do agente; a técnica é a mesma.
 
 ---
 
